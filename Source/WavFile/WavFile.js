@@ -113,8 +113,8 @@ function WavFile
 		var numberOfChannels = reader.readShort();
 		var samplesPerSecond = reader.readInt();
 
-		var bytesPerSecond = reader.readInt();
-		var bytesPerSampleMaybe = reader.readShort();
+		var bytesPerSecond = reader.readInt(); // samplesPerSecond * numberOfChannels * bitsPerSample / 8
+		var bytesPerSampleForAllChannels = reader.readShort(); // numberOfChannels * bitsPerSample / 8
 		var bitsPerSample = reader.readShort();
 
 		var numberOfBytesInChunkSoFar = 16;
@@ -122,12 +122,7 @@ function WavFile
 			chunkSizeInBytes
 			- numberOfBytesInChunkSoFar;
 
-		var extraBytes = reader.readBytes(numberOfExtraBytesInChunk)
-
-		if (bitsPerSample == 0)
-		{
-			bitsPerSample = bytesPerSampleMaybe * Constants.BitsPerByte;
-		}
+		var extraBytes = reader.readBytes(numberOfExtraBytesInChunk);
 
 		var samplingInfo = new WavFileSamplingInfo
 		(
@@ -296,8 +291,8 @@ function WavFile
 		writer.writeShort(this.samplingInfo.numberOfChannels);
 		writer.writeInt(this.samplingInfo.samplesPerSecond);
 
-		writer.writeInt(this.samplingInfo.bytesPerSecond);
-		writer.writeShort(this.samplingInfo.bytesPerSampleMaybe);
+		writer.writeInt(this.samplingInfo.bytesPerSecond());
+		writer.writeShort(this.samplingInfo.bytesPerSampleForAllChannels());
 		writer.writeShort(this.samplingInfo.bitsPerSample);
 
 		if (this.samplingInfo.extraBytes != null)

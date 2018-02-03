@@ -35,11 +35,20 @@ function WavFileSamplingInfo
 		return returnValue;
 	}
 
+	WavFileSamplingInfo.prototype.bytesPerSample = function()
+	{
+		return this.bitsPerSample / Constants.BitsPerByte;
+	}
+
+	WavFileSamplingInfo.prototype.bytesPerSampleForAllChannels = function()
+	{
+		return this.bytesPerSample() * this.numberOfChannels;
+	}
+
 	WavFileSamplingInfo.prototype.bytesPerSecond = function()
 	{
 		return this.samplesPerSecond
-			* this.numberOfChannels
-			* this.bitsPerSample / Constants.BitsPerByte;
+			* this.bytesPerSampleForAllChannels();
 	}
 
 	WavFileSamplingInfo.prototype.toString = function()

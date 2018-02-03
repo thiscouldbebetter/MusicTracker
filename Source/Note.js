@@ -52,7 +52,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 	
 	Note.prototype.timeStartInSeconds = function(song)
 	{
-		return this.timeStartInTicks * song.ticksPerSecond;
+		return this.timeStartInTicks / song.ticksPerSecond;
 	}
 	
 	Note.prototype.volumeAsFraction = function()

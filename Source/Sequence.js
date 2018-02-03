@@ -63,7 +63,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 	Sequence.prototype.durationInSeconds = function()
 	{
-		return this.ticksPerSecond * this.durationInTicks;
+		return this.durationInTicks / this.ticksPerSecond;
 	}
 	
 	Sequence.prototype.tickSelectedAsString = function()

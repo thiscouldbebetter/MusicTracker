@@ -56,7 +56,7 @@ function Song(name, samplesPerSecond, instruments, sequences, sequenceNamesToPla
 		var returnValue = new Song
 		(
 			"Scale",
-			1200, // samplesPerSecond
+			8000, // samplesPerSecond
 			[
 				Instrument.Instances.Sine
 			],
@@ -191,14 +191,23 @@ function Song(name, samplesPerSecond, instruments, sequences, sequenceNamesToPla
 				for (var s = 0; s < songAsSamples.length; s++)
 				{
 					var sample = songAsSamples[s];
-					var sampleScaled = sample;//Math.round((sample + 1) / 2 * 255) - 128;
-					songAsWavFileSamples.push(sampleScaled);
+					var sampleConverted = Math.round((sample + 1) / 2 * 255) - 128;
+					songAsWavFileSamples.push(sampleConverted);
 				}
 				var songFilePath = song.name + ".wav";
 				var songAsWavFile = new WavFile
 				(
 					songFilePath,
-					WavFileSamplingInfo.buildDefault(), // todo
+					new WavFileSamplingInfo
+					(
+						"SamplingInfo",
+						16, // chunkSizeInBytes
+						1, // formatCode
+						1, // numberOfChannels
+						song.samplesPerSecond,
+						8, // bitsPerSample
+						null // extraBytes
+					),
 					[ songAsWavFileSamples ] // samplesForChannels
 				);
 				var songAsWavFileBytes = songAsWavFile.toBytes();
