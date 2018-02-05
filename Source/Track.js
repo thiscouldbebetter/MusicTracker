@@ -10,11 +10,11 @@ function Track(instrumentName, notes)
 	{
 		return song.instruments[this.instrumentName];
 	}
-	
+
 	Track.prototype.noteAtTick = function(tickIndexToSearch)
 	{
 		var returnValue = null;
-	
+
 		for (var i = 0; i < this.notes.length; i++)
 		{
 			var note = this.notes[i];
@@ -28,14 +28,14 @@ function Track(instrumentName, notes)
 				break;
 			}
 		}
-				
+
 		return returnValue;
 	}
-	
+
 	Track.prototype.noteAtTick_Set = function(tickIndexToSearch, valueToSet)
 	{
 		var returnValue = null;
-	
+
 		var noteExisting = null;
 		var n;
 		for (n = 0; n < this.notes.length; n++)
@@ -51,7 +51,7 @@ function Track(instrumentName, notes)
 				break;
 			}
 		}
-		
+
 		if (noteExisting == null)
 		{
 			if (valueToSet != null)
@@ -68,41 +68,41 @@ function Track(instrumentName, notes)
 			else
 			{
 				note.overwriteWith(valueToSet);
-			}		
+			}
 		}
-				
-		return returnValue;	
+
+		return returnValue;
 	}
-	
+
 
 	// samples
-	
+
 	Track.prototype.toSamples = function(song, sequence)
 	{
 		var trackAsSamples = [];
-		
+
 		var durationInSamples = sequence.durationInSamples(song);
 		for (var s = 0; s < durationInSamples; s++)
 		{
 			trackAsSamples[s] = 0;
 		}
-		
+
 		var instrument = this.instrument(song);
-			
+
 		for (var n = 0; n < this.notes.length; n++)
 		{
 			var note = this.notes[n];
-			var noteAsSamples = 
+			var noteAsSamples =
 				note.toSamples(song, sequence, this, instrument);
-			
-			var noteTimeStartInSeconds = 
+
+			var noteTimeStartInSeconds =
 				note.timeStartInSeconds(sequence);
 			var noteTimeStartInSamples = Math.round
 			(
 				noteTimeStartInSeconds
 				* song.samplesPerSecond
 			);
-				
+
 			for (var s = 0; s < noteAsSamples.length; s++)
 			{
 				var sampleFromNote = noteAsSamples[s];
@@ -110,7 +110,7 @@ function Track(instrumentName, notes)
 				trackAsSamples[trackSampleIndex] = sampleFromNote;
 			}
 		}
-		
+
 		return trackAsSamples;
-	}	
+	}
 }
