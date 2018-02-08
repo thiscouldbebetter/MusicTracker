@@ -246,10 +246,8 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 					var sampleRectified = (sample + 1) / 2;
 					var bitsPerSample = song.bitsPerSample;
 					var sampleMultiplier = Math.pow(2, bitsPerSample) - 1;
-					var sampleSubtrahend = Math.pow(2, bitsPerSample - 1);
 					var sampleScaled =
-						Math.round(sampleRectified * sampleMultiplier)
-						- sampleSubtrahend;
+						Math.round(sampleRectified * sampleMultiplier);
 					// todo - Little-Endian?
 					songAsWavFileSamples.push(sampleScaled);
 				}
@@ -259,13 +257,10 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 					songFilePath,
 					new WavFileSamplingInfo
 					(
-						"SamplingInfo",
-						16, // chunkSizeInBytes
 						1, // formatCode
 						1, // numberOfChannels
 						song.samplesPerSecond,
-						song.bitsPerSample,
-						null // extraBytes
+						song.bitsPerSample
 					),
 					[ songAsWavFileSamples ] // samplesForChannels
 				);
