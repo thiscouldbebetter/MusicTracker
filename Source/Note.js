@@ -64,23 +64,15 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 
 	Note.prototype.toSamples = function(song, sequence, track, instrument)
 	{
-		var noteAsSamples = [];
-
 		var samplesPerSecond = song.samplesPerSecond;
 		var durationInSamples = this.durationInSamples(song, sequence);
 		var frequencyInHertz = this.frequencyInHertz();
 		var volumeAsFraction = this.volumeAsFraction();
 
-		for (var s = 0; s < durationInSamples; s++)
-		{
-			var timeInSeconds = s / samplesPerSecond;
-			var sample = instrument.sampleForFrequencyAndTime
-			(
-				frequencyInHertz, timeInSeconds
-			);
-			sample *= volumeAsFraction;
-			noteAsSamples.push(sample);
-		}
+		var noteAsSamples = this.instrument.samplesForNote
+		(
+			samplesPerSecond, durationInSamples, frequencyInHertz, volumeAsFraction
+		);
 
 		return noteAsSamples;
 	}

@@ -6,7 +6,7 @@ function Octave(frequencyInHertzOfC)
 
 {
 	Octave.Instances = new Octave_Instances();
-	
+
 	function Octave_Instances()
 	{
 		this.Lower = new Octave(65.5);
@@ -14,8 +14,8 @@ function Octave(frequencyInHertzOfC)
 		this.Middle = new Octave(262);
 		this.High = new Octave(524);
 		this.Higher = new Octave(1048);
-	
-		this._All = 
+
+		this._All =
 		[
 			this.Lower,
 			this.Low,

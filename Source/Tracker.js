@@ -3,14 +3,14 @@ function Tracker(songCurrent)
 {
 	this.songCurrent = songCurrent;
 }
-{	
+{
 	Tracker.new = function()
 	{
 		var song = Song.new();
 		var returnValue = new Tracker(song);
 		return returnValue;
 	}
-	
+
 	Tracker.Instance = Tracker.new();
 
 	Tracker.prototype.uiUpdate = function()
@@ -18,16 +18,16 @@ function Tracker(songCurrent)
 		if (this.divTracker == null)
 		{
 			this.divTracker = document.createElement("div");
-			
+
 			var divSong = this.songCurrent.uiUpdate();
 			this.divTracker.appendChild(divSong);
-		
+
 			var divMain = document.getElementById("divMain");
 			divMain.appendChild(this.divTracker);
-			
+
 			this.songCurrent.uiUpdate(); // hack
 		}
-		
+
 		this.songCurrent.uiUpdate();
 	}
 }

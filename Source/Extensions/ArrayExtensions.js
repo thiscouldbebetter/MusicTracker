@@ -17,18 +17,18 @@ function ArrayExtensions()
 		}
 		return this;
 	}
-	
+
 	Array.prototype.contains = function(element)
 	{
 		return (this.indexOf(element) >= 0);
 	}
-	
+
 	Array.prototype.insertElementAt = function(element, index)
 	{
 		this.splice(index, 0, element);
 		return this;
 	}
-	
+
 	Array.prototype.remove = function(element)
 	{
 		if (this.contains(element) == true)
@@ -37,7 +37,7 @@ function ArrayExtensions()
 		}
 		return this;
 	}
-	
+
 	Array.prototype.removeAt = function(index)
 	{
 		this.splice(index, 1);
