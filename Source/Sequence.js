@@ -18,6 +18,8 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		var noteVolume = 25;
 		var noteOctaveIndex = 3;
 		var noteDuration = Math.floor(ticksPerSecond / 2);
+		var noteOctaveIndexLow = noteOctaveIndex - 1;
+		var noteDurationLong = noteDuration * 2;
 
 		var sequenceName = "Sequence" + sequencesSoFar;
 
@@ -49,7 +51,24 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 						new Note(13 * noteDuration, noteOctaveIndex, "D_", noteVolume, noteDuration),
 						new Note(14 * noteDuration, noteOctaveIndex, "C_", noteVolume, noteDuration),
 					]
+				),
+				new Track
+				(
+					instrumentName,
+					[
+						// notes
+						// timeStartInTicks, octaveIndex, pitchCode, volume, durationInTicks
+						new Note(0 * noteDurationLong, noteOctaveIndexLow, "C_", noteVolume, noteDurationLong),
+						new Note(1 * noteDurationLong, noteOctaveIndexLow, "D_", noteVolume, noteDurationLong),
+						new Note(2 * noteDurationLong, noteOctaveIndexLow, "E_", noteVolume, noteDurationLong),
+						new Note(3 * noteDurationLong, noteOctaveIndexLow, "F_", noteVolume, noteDurationLong),
+						new Note(4 * noteDurationLong, noteOctaveIndexLow, "G_", noteVolume, noteDurationLong),
+						new Note(5 * noteDurationLong, noteOctaveIndexLow, "A_", noteVolume, noteDurationLong),
+						new Note(6 * noteDurationLong, noteOctaveIndexLow, "B_", noteVolume, noteDurationLong),
+						new Note(7 * noteDurationLong, noteOctaveIndexLow + 1, "C_", noteVolume, noteDurationLong),
+					]
 				)
+
 			]
 		);
 
@@ -163,6 +182,20 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			divSequence.appendChild(inputSequenceName);
 			this.inputSequenceName = inputSequenceName;
 
+			var buttonSequenceSelectedPlay = d.createElement("button");
+			buttonSequenceSelectedPlay.innerText = "Play";
+			buttonSequenceSelectedPlay.onclick = function()
+			{
+				var sequenceAsSamples = sequence.toSamples(song, sequence);
+				var sequenceAsWavFile = Tracker.samplesToWavFile
+				(
+					"", song.samplesPerSecond, song.bitsPerSample, sequenceAsSamples
+				);
+				var sequenceAsSound = new Sound("", sequenceAsWavFile);
+				sequenceAsSound.play();
+			}
+			divSequence.appendChild(buttonSequenceSelectedPlay);
+
 			divSequence.appendChild(d.createElement("br"));
 
 			var labelTicksPerSecond = d.createElement("label");
@@ -268,6 +301,21 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			}
 			divTracks.appendChild(selectTrack);
 			this.selectTrack = selectTrack;
+
+			var buttonTrackSelectedPlay = d.createElement("button");
+			buttonTrackSelectedPlay.innerText = "Play";
+			buttonTrackSelectedPlay.onclick = function()
+			{
+				var trackSelected = sequence.trackSelected();
+				var trackAsSamples = trackSelected.toSamples(song, sequence);
+				var trackAsWavFile = Tracker.samplesToWavFile
+				(
+					"", song.samplesPerSecond, song.bitsPerSample, trackAsSamples
+				);
+				var trackAsSound = new Sound("", trackAsWavFile);
+				trackAsSound.play();
+			}
+			divTracks.appendChild(buttonTrackSelectedPlay);
 
 			var buttonTrackSelectedDelete = d.createElement("button");
 			buttonTrackSelectedDelete.innerText = "Delete";

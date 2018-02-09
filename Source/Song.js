@@ -54,7 +54,9 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 	Song.new = function()
 	{
-		var sequence0 = Sequence.new(null, 0);
+		var instrument0 = Instrument.new("Instrument0");
+
+		var sequence0 = Sequence.new(instrument0.name, 0);
 
 		var returnValue = new Song
 		(
@@ -62,7 +64,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			8000, // samplesPerSecond
 			8, // bitsPerSample
 			[
-				Instrument.new("Instrument0")
+				instrument0
 			],
 			// sequences
 			[
@@ -271,30 +273,9 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			buttonPlay.onclick = function()
 			{
 				var songAsSamples = song.toSamples();
-				var songAsWavFileSamples = [];
-				for (var s = 0; s < songAsSamples.length; s++)
-				{
-					var sample = songAsSamples[s];
-					var sampleRectified = (sample + 1) / 2;
-					var bitsPerSample = song.bitsPerSample;
-					var sampleMultiplier = Math.pow(2, bitsPerSample) - 1;
-					var sampleScaled =
-						Math.round(sampleRectified * sampleMultiplier);
-					// todo - Little-Endian?
-					songAsWavFileSamples.push(sampleScaled);
-				}
-				var songFilePath = song.name + ".wav";
-				var songAsWavFile = new WavFile
+				var songAsWavFile = Tracker.samplesToWavFile
 				(
-					songFilePath,
-					new WavFileSamplingInfo
-					(
-						1, // formatCode
-						1, // numberOfChannels
-						song.samplesPerSecond,
-						song.bitsPerSample
-					),
-					[ songAsWavFileSamples ] // samplesForChannels
+					"", song.samplesPerSecond, song.bitsPerSample, songAsSamples
 				);
 				var songAsSound = new Sound("", songAsWavFile);
 				songAsSound.play();
@@ -306,30 +287,9 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			buttonExport.onclick = function()
 			{
 				var songAsSamples = song.toSamples();
-				var songAsWavFileSamples = [];
-				for (var s = 0; s < songAsSamples.length; s++)
-				{
-					var sample = songAsSamples[s];
-					var sampleRectified = (sample + 1) / 2;
-					var bitsPerSample = song.bitsPerSample;
-					var sampleMultiplier = Math.pow(2, bitsPerSample) - 1;
-					var sampleScaled =
-						Math.round(sampleRectified * sampleMultiplier);
-					// todo - Little-Endian?
-					songAsWavFileSamples.push(sampleScaled);
-				}
-				var songFilePath = song.name + ".wav";
-				var songAsWavFile = new WavFile
+				var songAsWavFile = Tracker.samplesToWavFile
 				(
-					songFilePath,
-					new WavFileSamplingInfo
-					(
-						1, // formatCode
-						1, // numberOfChannels
-						song.samplesPerSecond,
-						song.bitsPerSample
-					),
-					[ songAsWavFileSamples ] // samplesForChannels
+					song.name + ".wav", song.samplesPerSecond, song.bitsPerSample, songAsSamples
 				);
 				var songAsWavFileBytes = songAsWavFile.toBytes();
 				FileHelper.saveBytesToFile(songAsWavFileBytes, songFilePath);
