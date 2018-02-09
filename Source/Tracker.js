@@ -13,6 +13,13 @@ function Tracker(songCurrent)
 
 	Tracker.Instance = Tracker.new();
 
+	Tracker.prototype.uiClear = function()
+	{
+		this.divTracker.parentElement.removeChild(this.divTracker);
+		this.songCurrent.uiClear();
+		delete this.divTracker;
+	}
+
 	Tracker.prototype.uiUpdate = function()
 	{
 		if (this.divTracker == null)

@@ -11,7 +11,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 }
 
 {
-	Sequence.new = function(sequencesSoFar)
+	Sequence.new = function(instrumentName, sequencesSoFar)
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
@@ -29,7 +29,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			[
 				new Track
 				(
-					"Sine", // instrumentName
+					instrumentName,
 					[
 						// notes
 						// timeStartInTicks, octaveIndex, pitchCode, volume, durationInTicks
@@ -74,8 +74,12 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return tickAsString;
 	}
 
-	Sequence.prototype.trackSelected = function()
+	Sequence.prototype.trackSelected = function(value)
 	{
+		if (value != null)
+		{
+			this.trackIndexSelected = this.tracks.indexOf(value);
+		}
 		return this.tracks[this.trackIndexSelected];
 	}
 
@@ -120,23 +124,36 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 	// ui
 
+	Sequence.prototype.uiClear = function()
+	{
+		delete this.divSequence;
+		delete this.inputSequenceName;
+		delete this.inputTicksPerSecond;
+		delete this.inputDurationInTicks;
+		delete this.divTracks;
+		delete this.selectTrack;
+		delete this.selectInstrument;
+		delete this.inputTickSelected;
+		delete this.selectTicks;
+	}
+
 	Sequence.prototype.uiUpdate = function(song)
 	{
-		var divSequence = document.getElementById("divSequence");
-		if (divSequence == null)
+		var d = document;
+
+		if (this.divSequence == null)
 		{
 			var sequence = this;
 
-			divSequence = document.createElement("div");
-			divSequence.id = "divSequence";
+			divSequence = d.createElement("div");
 			divSequence.style.border = "1px solid";
+			this.divSequence = divSequence;
 
-			var labelSequenceName = document.createElement("label");
+			var labelSequenceName = d.createElement("label");
 			labelSequenceName.innerText = "Sequence Name:";
 			divSequence.appendChild(labelSequenceName);
 
-			var inputSequenceName = document.createElement("input");
-			inputSequenceName.id = "inputSequenceName";
+			var inputSequenceName = d.createElement("input");
 			inputSequenceName.onchange = function(event)
 			{
 				var sequenceNameNew = event.target.value;
@@ -144,14 +161,15 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				Tracker.Instance.uiUpdate();
 			}
 			divSequence.appendChild(inputSequenceName);
-			divSequence.appendChild(document.createElement("br"));
+			this.inputSequenceName = inputSequenceName;
 
-			var labelTicksPerSecond = document.createElement("label");
+			divSequence.appendChild(d.createElement("br"));
+
+			var labelTicksPerSecond = d.createElement("label");
 			labelTicksPerSecond.innerText = "Ticks per Second:";
 			divSequence.appendChild(labelTicksPerSecond);
 
-			var inputTicksPerSecond = document.createElement("input");
-			inputTicksPerSecond.id = "inputTicksPerSecond";
+			var inputTicksPerSecond = d.createElement("input");
 			inputTicksPerSecond.type = "number";
 			inputTicksPerSecond.onchange = function(event)
 			{
@@ -161,137 +179,133 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				sequence.ticksPerSecond = ticksPerSecond;
 			}
 			divSequence.appendChild(inputTicksPerSecond);
-			divSequence.appendChild(document.createElement("br"));
+			this.inputTicksPerSecond = inputTicksPerSecond;
 
-			var labelDurationInTicks = document.createElement("label");
+			divSequence.appendChild(d.createElement("br"));
+
+			var labelDurationInTicks = d.createElement("label");
 			labelDurationInTicks.innerText = "Duration in Ticks:";
 			divSequence.appendChild(labelDurationInTicks);
 
-			var inputDurationInTicks = document.createElement("input");
-			inputDurationInTicks.id = "inputDurationInTicks";
+			var inputDurationInTicks = d.createElement("input");
 			inputDurationInTicks.type = "number";
 			inputDurationInTicks.onchange = function(event)
 			{
 				var inputDurationInTicks = event.target;
 				var durationInTicksAsString = inputDurationInTicks.value;
-				var durationInTicks = parseInt(durationInTicks);
+				var durationInTicks = parseInt(durationInTicksAsString);
 				sequence.durationInTicks = durationInTicks;
 			}
 			divSequence.appendChild(inputDurationInTicks);
-			divSequence.appendChild(document.createElement("br"));
+			this.inputDurationInTicks = inputDurationInTicks;
 
-			var labelTracks = document.createElement("label");
+			divSequence.appendChild(d.createElement("br"));
+
+			var labelTracks = d.createElement("label");
 			labelTracks.innerText = "Tracks:";
 			divSequence.appendChild(labelTracks);
 
-			var buttonTrackNew = document.createElement("button");
+			var buttonTrackNew = d.createElement("button");
 			buttonTrackNew.innerText = "New";
 			buttonTrackNew.onclick = function()
 			{
 				var instrument = song.instruments[0];
 				var track = new Track(instrument.name, []);
 				sequence.tracks.push(track);
+				sequence.trackSelected(track);
 				sequence.uiUpdate(song);
 			}
 			divSequence.appendChild(buttonTrackNew);
 
-			divSequence.appendChild(document.createElement("br"));
+			divSequence.appendChild(d.createElement("br"));
 
 			var divTracks = this.uiUpdate_Tracks(song);
 
 			divSequence.appendChild(divTracks);
 		}
-		else
+
+		var selectTrack = this.selectTrack;
+		selectTrack.innerHTML = "";
+		for (var i = 0; i < this.tracks.length; i++)
 		{
-			var selectTrack = document.getElementById("selectTrack");
-			if (this.tracks.length != selectTrack.children.length)
-			{
-				selectTrack.innerHTML = "";
-				for (var i = 0; i < this.tracks.length; i++)
-				{
-					var track = this.tracks[i];
-					var trackAsSelectOption = document.createElement("option");
-					trackAsSelectOption.innerText = "" + i;
-					selectTrack.appendChild(trackAsSelectOption);
-				}
-				selectTrack.selectedIndex = this.trackIndexSelected;
-			}
-
-			var inputSequenceName = document.getElementById("inputSequenceName");
-			inputSequenceName.value = this.name;
-
-			var inputTicksPerSecond = document.getElementById("inputTicksPerSecond");
-			inputTicksPerSecond.value = this.ticksPerSecond;
-
-			var inputDurationInTicks = document.getElementById("inputDurationInTicks");
-			inputDurationInTicks.value = this.durationInTicks;
-
-			this.uiUpdate_Tracks(song);
+			var track = this.tracks[i];
+			var trackAsSelectOption = d.createElement("option");
+			trackAsSelectOption.innerText = "" + i;
+			selectTrack.appendChild(trackAsSelectOption);
 		}
+		selectTrack.selectedIndex = this.trackIndexSelected;
+
+		this.inputSequenceName.value = this.name;
+		this.inputTicksPerSecond.value = this.ticksPerSecond;
+		this.inputDurationInTicks.value = this.durationInTicks;
+
+		this.uiUpdate_Tracks(song);
 
 		return divSequence;
 	}
 
 	Sequence.prototype.uiUpdate_Tracks = function(song)
 	{
-		var divTracks = document.getElementById("divTracks");
-		if (divTracks == null)
+		var d = document;
+
+		if (this.divTracks == null)
 		{
 			var sequence = this;
 
-			var divTracks = document.createElement("div");
-			divTracks.id = "divTracks";
+			var divTracks = d.createElement("div");
 			divTracks.style.border = "1px solid";
+			this.divTracks = divTracks;
 
-			var labelTrackSelected = document.createElement("label");
+			var labelTrackSelected = d.createElement("label");
 			labelTrackSelected.innerText = "Track Selected:";
 			divTracks.appendChild(labelTrackSelected);
 
-			var selectTrack = document.createElement("select");
-			selectTrack.id = "selectTrack";
+			var selectTrack = d.createElement("select");
 			selectTrack.onchange = function(event)
 			{
-				var selectTrack = event.target;
-				sequence.trackIndexSelected = selectTrack.value;
+				sequence.trackIndexSelected = parseInt(selectTrack.value);
 				sequence.uiUpdate(song);
 			}
 			divTracks.appendChild(selectTrack);
+			this.selectTrack = selectTrack;
 
-			var buttonTrackSelectedDelete = document.createElement("button");
+			var buttonTrackSelectedDelete = d.createElement("button");
 			buttonTrackSelectedDelete.innerText = "Delete";
 			buttonTrackSelectedDelete.onclick = function()
 			{
-				var trackSelected = sequence.trackSelected();
-				sequence.tracks.remove(trackSelected);
-				sequence.uiUpdate(song);
+				var tracks = sequence.tracks;
+				if (tracks.length > 1)
+				{
+					var trackSelected = sequence.trackSelected();
+					tracks.remove(trackSelected);
+					sequence.trackIndexSelected = 0;
+					sequence.uiUpdate(song);
+				}
 			}
 			divTracks.appendChild(buttonTrackSelectedDelete);
 
-			var divTrack = document.createElement("div");
+			var divTrack = d.createElement("div");
 
-			var labelInstrument = document.createElement("label");
+			var labelInstrument = d.createElement("label");
 			labelInstrument.innerText = "Instrument:";
 			divTrack.appendChild(labelInstrument);
 
-			var selectInstruments = document.createElement("select");
-			var instruments = song.instruments;
-			for (var i = 0; i < instruments.length; i++)
+			var selectInstrument = d.createElement("select");
+			divTrack.appendChild(selectInstrument);
+			selectInstrument.onchange = function(event)
 			{
-				var instrument = instruments[i];
-				var instrumentAsSelectOption = document.createElement("option");
-				instrumentAsSelectOption.innerText = instrument.name;
-				selectInstruments.appendChild(instrumentAsSelectOption);
+				var trackSelected = sequence.trackSelected();
+				trackSelected.instrumentName = selectInstrument.value;
 			}
-			divTrack.appendChild(selectInstruments);
+			this.selectInstrument = selectInstrument;
 
-			var divTickSelected = document.createElement("div");
+			var divTickSelected = d.createElement("div");
 
-			var labelTickSelected = document.createElement("label");
+			var labelTickSelected = d.createElement("label");
 			labelTickSelected.innerText = "Tick Selected:";
 			divTickSelected.appendChild(labelTickSelected);
 
-			var inputTickSelected = document.createElement("input");
-			inputTickSelected.id = "inputTickSelected";
+			var inputTickSelected = d.createElement("input");
 			inputTickSelected.style.fontFamily = "monospace";
 			inputTickSelected.size = 12;
 			inputTickSelected.onkeypress = function(event)
@@ -308,8 +322,9 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				}
 			}
 			divTickSelected.appendChild(inputTickSelected);
+			this.inputTickSelected = inputTickSelected;
 
-			var buttonTickSelectedApply = document.createElement("button");
+			var buttonTickSelectedApply = d.createElement("button");
 			buttonTickSelectedApply.innerText = "Apply";
 			buttonTickSelectedApply.onclick = function()
 			{
@@ -322,7 +337,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			}
 			divTickSelected.appendChild(buttonTickSelectedApply);
 
-			var labelNoteFormat = document.createElement("label");
+			var labelNoteFormat = d.createElement("label");
 			labelNoteFormat.innerText = "[pitch+octave]-[volume]-[duration], e.g. 'C_3-99-0128'";
 			divTickSelected.appendChild(labelNoteFormat);
 
@@ -330,10 +345,9 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 			divTracks.appendChild(divTrack);
 
-			divTracks.appendChild(document.createElement("br"));
+			divTracks.appendChild(d.createElement("br"));
 
-			var selectTicks = document.createElement("select");
-			selectTicks.id = "selectTicks";
+			var selectTicks = d.createElement("select");
 			selectTicks.size = 16;
 			selectTicks.style.fontFamily = "monospace";
 			selectTicks.onchange = function(event)
@@ -345,64 +359,79 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				inputTickSelected.value = tickAsString;
 			}
 			divTracks.appendChild(selectTicks);
+			this.selectTicks = selectTicks;
 		}
-		else
+
+		this.selectInstrument.innerHTML = "";
+		var instruments = song.instruments;
+		for (var i = 0; i < instruments.length; i++)
 		{
-			var sequenceTicksAsStrings = [];
-			var ticksForTracks = [];
-			var noteBlank = Note.Blank;
+			var instrument = instruments[i];
+			var instrumentAsSelectOption = d.createElement("option");
+			instrumentAsSelectOption.innerText = instrument.name;
+			this.selectInstrument.appendChild(instrumentAsSelectOption);
+		}
+		var trackSelected = this.trackSelected();
+		if (trackSelected.instrumentName == null)
+		{
+			trackSelected.instrumentName = song.instruments[0].name;
+		}
+		this.selectInstrument.value = trackSelected.instrumentName;
 
-			for (var t = 0; t < this.tracks.length; t++)
-			{
-				var track = this.tracks[t];
-				var ticksForTrack = [];
+		var sequenceTicksAsStrings = [];
+		var ticksForTracks = [];
+		var noteBlank = Note.Blank;
 
-				for (var i = 0; i < this.durationInTicks; i++)
-				{
-					ticksForTrack.push(noteBlank);
-				}
-
-				var notes = track.notes;
-				for (var i = 0; i < notes.length; i++)
-				{
-					var note = notes[i];
-					var noteAsString = note.toString();
-					ticksForTrack[note.timeStartInTicks] = noteAsString;
-				}
-
-				ticksForTracks.push(ticksForTrack);
-			}
-
-			var selectTicks = document.getElementById("selectTicks");
-			selectTicks.innerHTML = "";
+		for (var t = 0; t < this.tracks.length; t++)
+		{
+			var track = this.tracks[t];
+			var ticksForTrack = [];
 
 			for (var i = 0; i < this.durationInTicks; i++)
 			{
-				var ticksForTracksToJoin = [];
-
-				for (var t = 0; t < this.tracks.length; t++)
-				{
-					var tickForTrack = ticksForTracks[t][i];
-					ticksForTracksToJoin.push(tickForTrack);
-				}
-
-				var tickIndex = ("" + i).padLeft(5, "0");
-				ticksForTracksToJoin.insertElementAt(tickIndex, 0);
-
-				var tickAsString = ticksForTracksToJoin.join(" | ");
-				var tickAsSelectOption = document.createElement("option");
-				tickAsSelectOption.innerText = tickAsString;
-				selectTicks.appendChild(tickAsSelectOption);
+				ticksForTrack.push(noteBlank);
 			}
 
-			selectTicks.selectedIndex = this.tickIndexSelected;
-
-			var inputTickSelected = document.getElementById("inputTickSelected");
-			if (inputTickSelected != null)
+			var notes = track.notes;
+			for (var i = 0; i < notes.length; i++)
 			{
-				var tickAsString = this.tickSelectedAsString();
-				inputTickSelected.value = tickAsString;
+				var note = notes[i];
+				var noteAsString = note.toString();
+				ticksForTrack[note.timeStartInTicks] = noteAsString;
 			}
+
+			ticksForTracks.push(ticksForTrack);
+		}
+
+		var selectTicks = this.selectTicks;
+		selectTicks.innerHTML = "";
+
+		for (var i = 0; i < this.durationInTicks; i++)
+		{
+			var ticksForTracksToJoin = [];
+
+			for (var t = 0; t < this.tracks.length; t++)
+			{
+				var tickForTrack = ticksForTracks[t][i];
+				ticksForTracksToJoin.push(tickForTrack);
+			}
+
+			var tickIndex = ("" + i).padLeft(5, "0");
+			ticksForTracksToJoin.insertElementAt(tickIndex, 0);
+
+			var tickAsString = ticksForTracksToJoin.join(" | ");
+			var tickAsSelectOption = d.createElement("option");
+			tickAsSelectOption.innerText = tickAsString;
+			selectTicks.appendChild(tickAsSelectOption);
+		}
+
+		selectTicks.selectedIndex = this.tickIndexSelected;
+
+		var inputTickSelected = this.inputTickSelected;
+		if (inputTickSelected != null)
+		{
+			var tickAsString = this.tickSelectedAsString();
+			inputTickSelected.value = tickAsString;
 		}
 
 		return divTracks;

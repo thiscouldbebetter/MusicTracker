@@ -1,32 +1,30 @@
-
-function Instrument(name, sampleForFrequencyAndTime)
+function Instrument(name, soundSource)
 {
 	this.name = name;
-	this.sampleForFrequencyAndTime = sampleForFrequencyAndTime;
+	this.soundSource = soundSource;
 }
 
 {
-	Instrument.RadiansPerCycle = Math.PI * 2;
-
-	Instrument.Instances = new Instrument_Instances();
-
-	function Instrument_Instances()
+	Instrument.new = function(name)
 	{
-		this.Sine = new Instrument
+		var returnValue = new Instrument
 		(
-			"Sine",
-			function sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
-			{
-				var secondsPerCycle = 1 / frequencyInHertz;
-				var secondsSinceCycleStarted = timeInSeconds % secondsPerCycle;
-				var fractionOfCycleComplete =
-					secondsSinceCycleStarted / secondsPerCycle;
-				var radiansSinceCycleStarted =
-					Instrument.RadiansPerCycle * fractionOfCycleComplete;
-				var sample = Math.sin(radiansSinceCycleStarted);
-				return sample;
-			}
+			name,
+			new SoundSource
+			(
+				new SoundSource_Sine()
+			)
 		);
+		return returnValue;
+	}
+
+	Instrument.prototype.sampleForFrequencyAndTime = function(frequencyInHertz, timeInSeconds)
+	{
+		var returnValue = this.soundSource.sampleForFrequencyAndTime
+		(
+			frequencyInHertz, timeInSeconds
+		);
+		return returnValue;
 	}
 
 	Instrument.prototype.samplesForNote = function
@@ -48,5 +46,96 @@ function Instrument(name, sampleForFrequencyAndTime)
 		}
 
 		return noteAsSamples;
+	}
+
+	// string
+
+	Instrument.objectPrototypesSet = function(object)
+	{
+		object.__proto__ = Instrument.prototype;
+		SoundSource.objectPrototypesSet(object.soundSource);
+	}
+
+	Instrument.fromStringJSON = function(instrumentAsJSON)
+	{
+		var returnValue = JSON.parse(instrumentAsJSON);
+		Instrument.objectPrototypesSet(returnValue);
+		return returnValue;
+	}
+
+	Instrument.prototype.toStringJSON = function()
+	{
+		var returnValue = JSON.stringify(this);
+		return returnValue;
+	}
+
+	// ui
+
+	Instrument.prototype.uiClear = function()
+	{
+		if (this.divInstrument != null)
+		{
+			var parentElement = this.divInstrument.parentElement;
+			if (parentElement != null)
+			{
+				parentElement.removeChild(this.divInstrument);
+			}
+			delete this.divInstrument;
+			delete this.inputName;
+		}
+		this.soundSource.uiClear();
+	}
+
+	Instrument.prototype.uiUpdate = function()
+	{
+		var instrument = this;
+		var d = document;
+
+		if (this.divInstrument == null)
+		{
+			divInstrument = d.createElement("div");
+
+			var labelName = d.createElement("label");
+			labelName.innerText = "Name:";
+			divInstrument.appendChild(labelName);
+
+			inputName = d.createElement("input");
+			inputName.value = this.name;
+			inputName.onchange = function(event)
+			{
+				instrument.name = inputName.value;
+				instrument.uiClear();
+				instrument.uiUpdate();
+			}
+			divInstrument.appendChild(inputName);
+			this.inputName = inputName;
+
+			var buttonSave = d.createElement("button");
+			buttonSave.innerText = "Save";
+			buttonSave.onclick = function()
+			{
+				instrument.uiClear();
+				var instrumentAsJSON = instrument.toStringJSON();
+				instrument.uiUpdate();
+				FileHelper.saveTextAsFile(instrumentAsJSON, "Instrument.json");
+			}
+			divInstrument.appendChild(buttonSave);
+
+			divInstrument.appendChild(d.createElement("br"));
+
+			var labelSoundSource = d.createElement("label");
+			labelSoundSource.innerText = "Sound Source:";
+			divInstrument.appendChild(labelSoundSource);
+
+			var divForSoundSource = this.soundSource.uiUpdate();
+			divInstrument.appendChild(divForSoundSource);
+
+			this.divInstrument = divInstrument;
+		}
+
+		this.inputName.value = this.name;
+		this.soundSource.uiUpdate();
+
+		return this.divInstrument;
 	}
 }

@@ -8,8 +8,8 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 	this.sequences = sequences.addLookups("name");
 
 	this.sequenceNamesToPlayInOrder = sequenceNamesToPlayInOrder;
-	this.sequenceNameCurrent = this.sequences[0].name;
-	this.instrumentNameCurrent = this.instruments[0].name;
+	this.sequenceNameSelected = this.sequences[0].name;
+	this.instrumentNameSelected = this.instruments[0].name;
 }
 
 {
@@ -20,13 +20,15 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		song.__proto__ = Song.prototype;
 
 		var instruments = song.instruments;
+		instruments.addLookups("name");
 		for (var i = 0; i < instruments.length; i++)
 		{
 			var instrument = instruments[i];
-			instrument.__proto__ = Instrument.prototype;
+			Instrument.objectPrototypesSet(instrument);
 		}
 
 		var sequences = song.sequences;
+		sequences.addLookups("name");
 		for (var i = 0; i < sequences.length; i++)
 		{
 			var sequence = sequences[i];
@@ -52,7 +54,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 	Song.new = function()
 	{
-		var sequence0 = Sequence.new(0);
+		var sequence0 = Sequence.new(null, 0);
 
 		var returnValue = new Song
 		(
@@ -60,7 +62,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			8000, // samplesPerSecond
 			8, // bitsPerSample
 			[
-				Instrument.Instances.Sine
+				Instrument.new("Instrument0")
 			],
 			// sequences
 			[
@@ -76,22 +78,18 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return returnValue;
 	}
 
-	Song.prototype.instrumentCurrent = function()
+	Song.prototype.instrumentSelected = function(value)
 	{
-		return this.instruments[this.instrumentNameCurrent];
+		if (value != null)
+		{
+			this.instrumentNameSelected = value.name;
+		}
+		return this.instruments[this.instrumentNameSelected];
 	}
 
-	Song.prototype.sequenceCurrent = function()
+	Song.prototype.sequenceSelected = function()
 	{
-		return (this.sequenceNameCurrent == null ? null : this.sequences[this.sequenceNameCurrent]);
-	}
-
-	Song.prototype.sequenceNew = function()
-	{
-		var sequenceNew = Sequence.new(this.sequences.length);
-		this.sequences.push(sequenceNew);
-		this.sequences[sequenceNew.name] = sequenceNew;
-		this.sequenceSelectByName(sequenceNew.name);
+		return (this.sequenceNameSelected == null ? null : this.sequences[this.sequenceNameSelected]);
 	}
 
 	Song.prototype.sequenceRename = function(sequenceNameOld, sequenceNameNew)
@@ -100,7 +98,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		delete this.sequences[sequenceNameOld];
 		sequence.name = sequenceNameNew;
 		this.sequences[sequenceNameNew] = sequence;
-		this.sequenceNameCurrent = sequence.name;
+		this.sequenceNameSelected = sequence.name;
 
 		for (var i = 0; i < this.sequenceNamesToPlayInOrder.length; i++)
 		{
@@ -114,7 +112,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 	Song.prototype.sequenceSelectByName = function(sequenceNameToSelect)
 	{
-		this.sequenceNameCurrent = sequenceNameToSelect;
+		this.sequenceNameSelected = sequenceNameToSelect;
 		this.uiUpdate();
 	}
 
@@ -133,45 +131,77 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return songAsSamples;
 	}
 
+	// ui
+
+	Song.prototype.uiClear = function()
+	{
+		if (this.divSong != null)
+		{
+			this.divSong.parentElement.removeChild(this.divSong);
+			delete this.divSong;
+			delete this.divInstrument;
+			delete this.inputName;
+			delete this.inputSamplesPerSecond;
+			delete this.selectBitsPerSample;
+			delete this.selectInstrument;
+			delete this.inputSequenceNamesToPlayInOrder;
+			delete this.selectSequence;
+			delete this.divSequenceSelected;
+			for (var i = 0; i < this.instruments.length; i++)
+			{
+				this.instruments[i].uiClear();
+			}
+			for (var i = 0; i < this.sequences.length; i++)
+			{
+				this.sequences[i].uiClear();
+			}
+		}
+	}
+
 	Song.prototype.uiUpdate = function()
 	{
-		var divSong = document.getElementById("divSong");
-		if (divSong == null)
+		var d = document;
+
+		if (this.divSong == null)
 		{
 			var song = this;
 
-			var divSong = document.createElement("div");
-			divSong.id = "divSong";
+			var divSong = d.createElement("div");
+			this.divSong = divSong;
 
-			var labelName = document.createElement("label");
+			var labelName = d.createElement("label");
 			labelName.innerText = "Song Name:";
 			divSong.appendChild(labelName);
 
-			var inputName = document.createElement("input");
-			inputName.id = "inputName";
+			var inputName = d.createElement("input");
 			divSong.appendChild(inputName);
+			this.inputName = inputName;
 
-			var buttonSave = document.createElement("button");
+			var buttonSave = d.createElement("button");
 			buttonSave.innerText = "Save";
 			buttonSave.onclick = function()
 			{
+				var parentElement = song.divSong.parentElement;
+				song.uiClear();
 				var songAsJSON = JSON.stringify(song, null, 4);
 
 				var songAsBlob = new Blob([songAsJSON], {type:"text/plain"});
 				var songAsObjectURL = window.URL.createObjectURL(songAsBlob);
 
-				var aDownload = document.createElement("a");
+				var aDownload = d.createElement("a");
 				aDownload.href = songAsObjectURL;
 				aDownload.download = song.name + ".json";
 				aDownload.click();
+
+				parentElement.appendChild(song.uiUpdate());
 			}
 			divSong.appendChild(buttonSave);
 
-			var labelLoad = document.createElement("label");
+			var labelLoad = d.createElement("label");
 			labelLoad.innerText = "Load:";
 			divSong.appendChild(labelLoad);
 
-			var inputFileToLoad = document.createElement("input");
+			var inputFileToLoad = d.createElement("input");
 			inputFileToLoad.type = "file";
 			inputFileToLoad.onchange = function(event)
 			{
@@ -183,22 +213,23 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 					{
 						var songAsJSON = event2.target.result;
 						var song = Song.fromJSON(songAsJSON);
-						Tracker.Instance.songCurrent = song;
-						Tracker.Instance.uiUpdate();
+						var tracker = Tracker.Instance;
+						tracker.songCurrent = song;
+						tracker.uiClear();
+						tracker.uiUpdate();
 					}
 					fileReader.readAsText(file);
 				}
 			}
 			divSong.appendChild(inputFileToLoad);
 
-			divSong.appendChild(document.createElement("br"));
+			divSong.appendChild(d.createElement("br"));
 
-			var labelSamplesPerSecond = document.createElement("label");
+			var labelSamplesPerSecond = d.createElement("label");
 			labelSamplesPerSecond.innerText = "Samples per Second:";
 			divSong.appendChild(labelSamplesPerSecond);
 
-			var inputSamplesPerSecond = document.createElement("input");
-			inputSamplesPerSecond.id = "inputSamplesPerSecond";
+			var inputSamplesPerSecond = d.createElement("input");
 			inputSamplesPerSecond.type = "number";
 			inputSamplesPerSecond.style.width = "64px";
 			inputSamplesPerSecond.onchange = function(event)
@@ -209,19 +240,19 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				song.samplesPerSecond = samplesPerSecond;
 			}
 			divSong.appendChild(inputSamplesPerSecond);
+			this.inputSamplesPerSecond = inputSamplesPerSecond;
 
-			var labelBitsPerSample = document.createElement("label");
+			var labelBitsPerSample = d.createElement("label");
 			labelBitsPerSample.innerText = "Bits per Sample:";
 			divSong.appendChild(labelBitsPerSample);
 
-			var selectBitsPerSample = document.createElement("select");
-			selectBitsPerSample.id = "selectBitsPerSample";
+			var selectBitsPerSample = d.createElement("select");
 			selectBitsPerSample.style.width = "48px";
 			var bitsPerSampleAllowed = [ 8, 16, 32 ];
 			for (var i = 0; i < bitsPerSampleAllowed.length; i++)
 			{
 				var bitsPerSample = bitsPerSampleAllowed[i];
-				var bitsPerSampleAsOption = document.createElement("option");
+				var bitsPerSampleAsOption = d.createElement("option");
 				bitsPerSampleAsOption.text = bitsPerSample;
 				selectBitsPerSample.appendChild(bitsPerSampleAsOption);
 			}
@@ -233,8 +264,44 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				song.bitsPerSample = bitsPerSample;
 			}
 			divSong.appendChild(selectBitsPerSample);
+			this.selectBitsPerSample = selectBitsPerSample;
 
-			var buttonExport = document.createElement("button");
+			var buttonPlay = d.createElement("button");
+			buttonPlay.innerText = "Play";
+			buttonPlay.onclick = function()
+			{
+				var songAsSamples = song.toSamples();
+				var songAsWavFileSamples = [];
+				for (var s = 0; s < songAsSamples.length; s++)
+				{
+					var sample = songAsSamples[s];
+					var sampleRectified = (sample + 1) / 2;
+					var bitsPerSample = song.bitsPerSample;
+					var sampleMultiplier = Math.pow(2, bitsPerSample) - 1;
+					var sampleScaled =
+						Math.round(sampleRectified * sampleMultiplier);
+					// todo - Little-Endian?
+					songAsWavFileSamples.push(sampleScaled);
+				}
+				var songFilePath = song.name + ".wav";
+				var songAsWavFile = new WavFile
+				(
+					songFilePath,
+					new WavFileSamplingInfo
+					(
+						1, // formatCode
+						1, // numberOfChannels
+						song.samplesPerSecond,
+						song.bitsPerSample
+					),
+					[ songAsWavFileSamples ] // samplesForChannels
+				);
+				var songAsSound = new Sound("", songAsWavFile);
+				songAsSound.play();
+			}
+			divSong.appendChild(buttonPlay);
+
+			var buttonExport = d.createElement("button");
 			buttonExport.innerText = "Export to WAV";
 			buttonExport.onclick = function()
 			{
@@ -269,33 +336,114 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			}
 			divSong.appendChild(buttonExport);
 
-			divSong.appendChild(document.createElement("br"));
+			divSong.appendChild(d.createElement("br"));
 
-			var labelInstruments = document.createElement("label");
+			var labelInstruments = d.createElement("label");
 			labelInstruments.innerText = "Instruments:";
 			divSong.appendChild(labelInstruments);
 
-			selectInstruments = document.createElement("select");
-			selectInstruments.id = "selectInstruments";
-			divSong.appendChild(selectInstruments);
-			divSong.appendChild(document.createElement("br"));
+			var selectInstrument = d.createElement("select");
+			divSong.appendChild(selectInstrument);
+			for (var i = 0; i < this.instruments.length; i++)
+			{
+				var instrument = this.instruments[i];
+				var instrumentAsSelectOption = d.createElement("option");
+				instrumentAsSelectOption.innerText = instrument.name;
+				selectInstrument.appendChild(instrumentAsSelectOption);
+			}
+			selectInstrument.onchange = function(event)
+			{
+				var instrumentName = selectInstrument.value;
+				var instrument = song.instruments[instrumentName];
+				song.instrumentSelected(instrument);
+				song.divInstrument.innerHTML = "";
+				song.divInstrument.appendChild(instrument.uiUpdate());
+			}
+			this.selectInstrument = selectInstrument;
 
-			var labelSequencesToPlay = document.createElement("label");
+			var buttonInstrumentNew = d.createElement("button");
+			buttonInstrumentNew.innerText = "New";
+			buttonInstrumentNew.onclick = function()
+			{
+				var now = new Date();
+				var nowAsString =
+					("" + now.getHours()).padLeft(2, "0")
+					+ ("" + now.getMinutes()).padLeft(2, "0")
+					+ ("" + now.getSeconds()).padLeft(2, "0");
+				var instrumentName = "Instrument" + nowAsString;
+				var instrument = Instrument.new(instrumentName);
+				instrumentAsOption = d.createElement("option");
+				instrumentAsOption.innerText = instrument.name;
+				selectInstrument.appendChild(instrumentAsOption);
+				selectInstrument.value = instrument.name;
+				song.instruments.push(instrument);
+				song.instruments[instrument.name] = instrument;
+				song.instrumentSelected(instrument);
+				song.divInstrument.innerHTML = "";
+				song.divInstrument.appendChild(instrument.uiUpdate());
+				song.uiUpdate();
+			}
+			divSong.appendChild(buttonInstrumentNew);
+
+			var labelLoad = d.createElement("label");
+			labelLoad.innerText = "Load:";
+			divSong.appendChild(labelLoad);
+
+			var inputFileToLoad = d.createElement("input");
+			inputFileToLoad.type = "file";
+			inputFileToLoad.onchange = function(event)
+			{
+				var file = event.target.files[0];
+				if (file != null)
+				{
+					FileHelper.loadFileAsText
+					(
+						file,
+						function callback(file, instrumentAsJSON)
+						{
+							var instrument = Instrument.fromStringJSON(instrumentAsJSON);
+							session.instrumentAdd(instrument);
+							session.instrumentSelected(instrument);
+							session.uiClear();
+							session.uiUpdate();
+						}
+					);
+				}
+			}
+			divSong.appendChild(inputFileToLoad);
+
+			var divInstrument = d.createElement("div");
+			divInstrument.style.border = "1px solid";
+			var instrumentSelected = this.instrumentSelected();
+			divInstrument.appendChild(instrumentSelected.uiUpdate());
+			divSong.appendChild(divInstrument);
+			this.divInstrument = divInstrument;
+
+			divSong.appendChild(d.createElement("br"));
+
+			var labelSequencesToPlay = d.createElement("label");
 			labelSequencesToPlay.innerText = "Sequences to Play:"
 			divSong.appendChild(labelSequencesToPlay);
-			divSong.appendChild(document.createElement("br"));
+			divSong.appendChild(d.createElement("br"));
 
-			var inputSequenceNamesToPlayInOrder = document.createElement("input");
-			inputSequenceNamesToPlayInOrder.id = "inputSequenceNamesToPlayInOrder";
+			var inputSequenceNamesToPlayInOrder = d.createElement("input");
 			divSong.appendChild(inputSequenceNamesToPlayInOrder);
-			divSong.appendChild(document.createElement("br"));
+			this.inputSequenceNamesToPlayInOrder = inputSequenceNamesToPlayInOrder;
 
-			var labelSequence = document.createElement("label");
+			divSong.appendChild(d.createElement("br"));
+
+			var labelSequence = d.createElement("label");
 			labelSequence.innerText = "Sequence Selected:";
 			divSong.appendChild(labelSequence);
 
-			var selectSequence = document.createElement("select");
-			selectSequence.id = "selectSequence";
+			var selectSequence = d.createElement("select");
+			for (var i = 0; i < this.sequences.length; i++)
+			{
+				var sequence = this.sequences[i];
+				var sequenceAsSelectOption = d.createElement("option");
+				sequenceAsSelectOption.innerText = sequence.name;
+				selectSequence.appendChild(sequenceAsSelectOption);
+			}
 			selectSequence.onchange = function(event)
 			{
 				var selectSequence = event.target;
@@ -304,63 +452,49 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				song.sequenceSelectByName(sequenceToSelect.name);
 			}
 			divSong.appendChild(selectSequence);
+			this.selectSequence = selectSequence;
 
-			var buttonSequenceNew = document.createElement("button");
+			var buttonSequenceNew = d.createElement("button");
 			buttonSequenceNew.innerText = "New";
-			buttonSequenceNew.onclick = this.sequenceNew.bind(this);
+			buttonSequenceNew.onclick = function()
+			{
+				var sequences = song.sequences;
+				var sequenceNew = Sequence.new(song.instruments[0].name, sequences.length);
+				sequences.push(sequenceNew);
+				sequences[sequenceNew.name] = sequenceNew;
+				var sequenceNewAsOption = d.createElement("option");
+				sequenceNewAsOption.innerText = sequenceNew.name;
+				selectSequence.appendChild(sequenceNewAsOption);
+				song.sequenceSelectByName(sequenceNew.name);
+			}
 			divSong.appendChild(buttonSequenceNew);
-			divSong.appendChild(document.createElement("br"));
+			divSong.appendChild(d.createElement("br"));
 
-			var divSequenceCurrent = document.createElement("div");
-			divSequenceCurrent.id = "divSequenceCurrent";
-			divSong.appendChild(divSequenceCurrent);
+			var divSequenceSelected = d.createElement("div");
+			divSong.appendChild(divSequenceSelected);
+			this.divSequenceSelected = divSequenceSelected;
 		}
-		else
+
+		this.inputName.value = this.name;
+		this.inputSamplesPerSecond.value = this.samplesPerSecond;
+		this.selectBitsPerSample.value = this.bitsPerSample;
+		this.selectInstrument.value = this.instrumentNameSelected;
+		this.selectSequence.value = this.sequenceNameSelected;
+
+		var sequenceNamesAsLines = this.sequenceNamesToPlayInOrder.join(";");
+		this.inputSequenceNamesToPlayInOrder.value = sequenceNamesAsLines;
+
+		this.divSequenceSelected.innerHTML = "";
+		var sequenceSelected = this.sequenceSelected();
+		if (sequenceSelected != null)
 		{
-
-			var inputName = document.getElementById("inputName");
-			inputName.value = this.name;
-
-			var inputSamplesPerSecond = document.getElementById("inputSamplesPerSecond");
-			inputSamplesPerSecond.value = this.samplesPerSecond;
-
-			var selectBitsPerSample = document.getElementById("selectBitsPerSample");
-			selectBitsPerSample.value = this.bitsPerSample;
-
-			var selectInstruments = document.getElementById("selectInstruments");
-			selectInstruments.innerHTML = "";
-			for (var i = 0; i < this.instruments.length; i++)
-			{
-				var instrument = this.instruments[i];
-				var instrumentAsSelectOption = document.createElement("option");
-				instrumentAsSelectOption.innerText = instrument.name;
-				selectInstruments.appendChild(instrumentAsSelectOption);
-			}
-
-			var selectSequence = document.getElementById("selectSequence");
-			selectSequence.innerHTML = "";
-			for (var i = 0; i < this.sequences.length; i++)
-			{
-				var sequence = this.sequences[i];
-				var sequenceAsSelectOption = document.createElement("option");
-				sequenceAsSelectOption.innerText = sequence.name;
-				selectSequence.appendChild(sequenceAsSelectOption);
-			}
-
-			var sequenceNamesAsLines = this.sequenceNamesToPlayInOrder.join(";");
-			var inputSequenceNamesToPlayInOrder = document.getElementById("inputSequenceNamesToPlayInOrder");
-			inputSequenceNamesToPlayInOrder.value = sequenceNamesAsLines;
-
-			var sequenceCurrent = this.sequenceCurrent();
-			if (sequenceCurrent != null)
-			{
-				selectSequence.value = sequenceCurrent.name;
-				var sequenceAsDOMElement = sequenceCurrent.uiUpdate(this);
-				var divSequenceCurrent = document.getElementById("divSequenceCurrent");
-				divSequenceCurrent.appendChild(sequenceAsDOMElement);
-			}
+			this.selectSequence.value = sequenceSelected.name;
+			var sequenceAsDOMElement = sequenceSelected.uiUpdate(this);
+			this.divSequenceSelected.appendChild(sequenceAsDOMElement);
 		}
 
-		return divSong;
+		this.instrumentSelected().uiUpdate();
+
+		return this.divSong;
 	}
 }

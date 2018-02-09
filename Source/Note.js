@@ -69,7 +69,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		var frequencyInHertz = this.frequencyInHertz();
 		var volumeAsFraction = this.volumeAsFraction();
 
-		var noteAsSamples = this.instrument.samplesForNote
+		var noteAsSamples = instrument.samplesForNote
 		(
 			samplesPerSecond, durationInSamples, frequencyInHertz, volumeAsFraction
 		);
