@@ -93,6 +93,41 @@ function SoundSource_WavFile(wavFile)
 				new Sound("", soundSource.wavFile).play();
 			}
 			this.divSoundSource.appendChild(buttonPlay);
+
+			/*
+			var buttonPlay2 = d.createElement("button");
+			buttonPlay2.innerText = "Play2";
+			buttonPlay2.onclick = function()
+			{
+				var wavFileSource = soundSource.wavFile;
+				var samplesDenormalized = wavFileSource.samplesForChannels[0];
+				var samplingInfo = wavFileSource.samplingInfo;
+				var samplesNormalized =
+					samplingInfo.samplesNormalize(samplesDenormalized);
+				var samplesAnalyzed = FrequencyAnalysis.fromSamples
+				(
+					256, // numberOfOscillators,
+					20, // frequencyLowestInCyclesPerSecond,
+					samplingInfo.samplesPerSecond,
+					samplesNormalized
+				);
+				var samplesSynthesized = samplesAnalyzed.toSamples
+				(
+					samplingInfo.samplesPerSecond,
+					20, // freqencyFundamentalInCyclesPerSecond,
+					2 // durationInSeconds
+				);
+				var samplesSynthesizedAndDenormalized =
+					samplingInfo.samplesDenormalize(samplesSynthesized);
+				var wavFileTransformed = new WavFile
+				(
+					"", samplingInfo, samplesSynthesizedAndDenormalized
+				);
+				new Sound("", wavFileTransformed).play();
+			}
+			this.divSoundSource.appendChild(buttonPlay2);
+			*/
+
 		}
 
 		return this.divSoundSource;

@@ -39,7 +39,7 @@ function ByteStreamLittleEndian(bytes)
 
 	ByteStreamLittleEndian.prototype.readByte = function()
 	{
-		var returnValue = this.bytes.charCodeAt(this.byteIndexCurrent);
+		var returnValue = this.bytes[this.byteIndexCurrent];
 
 		this.byteIndexCurrent++;
 

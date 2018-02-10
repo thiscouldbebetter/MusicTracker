@@ -83,6 +83,19 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 			}
 		);
 
+		this.Noise = new SoundSourceType
+		(
+			"Noise",
+			function create()
+			{
+				return new SoundSource_Noise();
+			},
+			function objectPrototypesSet(object)
+			{
+				object.__proto__ = SoundSource_Noise.prototype;
+			}
+		);
+
 		this.PitchChange = new SoundSourceType
 		(
 			"PitchChange",
@@ -187,6 +200,7 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 			this.Envelope,
 			this.Harmonics,
 			this.Mix,
+			this.Noise,
 			this.PitchChange,
 			this.Sawtooth,
 			this.Scale,

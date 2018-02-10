@@ -21,7 +21,10 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		var noteOctaveIndexLow = noteOctaveIndex - 1;
 		var noteDurationLong = noteDuration * 2;
 
-		var sequenceName = "Sequence" + sequencesSoFar;
+		var sequenceName = String.fromCharCode
+		(
+			"A".charCodeAt(0) + sequencesSoFar
+		);
 
 		var returnValue = new Sequence
 		(

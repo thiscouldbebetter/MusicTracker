@@ -286,10 +286,11 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			buttonExport.innerText = "Export to WAV";
 			buttonExport.onclick = function()
 			{
+				var songFilePath = song.name + ".wav";
 				var songAsSamples = song.toSamples();
 				var songAsWavFile = Tracker.samplesToWavFile
 				(
-					song.name + ".wav", song.samplesPerSecond, song.bitsPerSample, songAsSamples
+					songFilePath, song.samplesPerSecond, song.bitsPerSample, songAsSamples
 				);
 				var songAsWavFileBytes = songAsWavFile.toBytes();
 				FileHelper.saveBytesToFile(songAsWavFileBytes, songFilePath);

@@ -525,4 +525,66 @@ function WavFileSamplingInfo
 	{
 		return WavFileSamplingInfo.ChunkSizeInBytesMin + this.extraBytes.length;
 	}
+
+	WavFileSamplingInfo.prototype.samplesDenormalize = function(samplesToDenormalize)
+	{
+		var sampleDenormalizedMax = Math.pow(2, this.bitsPerSample) - 1;
+		var samplesDenormalizedWriter = new ByteStreamLittleEndian([]);
+		var bytesPerSample = this.bytesPerSample();
+		var sampleDenormalizedWrite;
+		if (bytesPerSample == 1)
+		{
+			sampleDenormalizedWrite =
+				samplesDenormalizedWriter.writeByte.bind(samplesDenormalizedWriter);
+		}
+		else if (bytesPerSample == 2)
+		{
+			sampleDenormalizedWrite =
+				samplesDenormalizedWriter.writeShort.bind(samplesDenormalizedWriter)
+		}
+		else
+		{
+			throw "Not implemented!";
+		}
+		for (var i = 0; i < samplesToDenormalize.length; i++)
+		{
+			var sampleToDenormalize = samplesToDenormalize[i];
+			var sampleDenormalized = Math.round
+			(
+				(sampleToDenormalize + 1) / 2 * sampleDenormalizedMax
+			);
+			sampleDenormalizedWrite(sampleDenormalized);
+		}
+		var samplesDenormalized = samplesDenormalizedWriter.bytes;
+		return samplesDenormalized;
+	}
+
+	WavFileSamplingInfo.prototype.samplesNormalize = function(samplesToNormalize)
+	{
+		var sampleDenormalizedMax = Math.pow(2, this.bitsPerSample) - 1;
+		var samplesDenormalizedReader = new ByteStreamLittleEndian(samplesToNormalize);
+		var bytesPerSample = this.bytesPerSample();
+		if (bytesPerSample == 1)
+		{
+			sampleDenormalizedRead =
+				samplesDenormalizedReader.readByte.bind(samplesDenormalizedReader);
+		}
+		else if (bytesPerSample == 2)
+		{
+			sampleDenormalizedRead =
+				samplesDenormalizedReader.readShort.bind(samplesDenormalizedReader);
+		}
+		else
+		{
+			throw "Not implemented!";
+		}
+		var samplesNormalized = [];
+		while (samplesDenormalizedReader.hasMoreBytes() == true)
+		{
+			var sampleToNormalize = sampleDenormalizedRead();
+			var sampleNormalized = (sampleToNormalize / sampleDenormalizedMax) * 2 - 1;
+			samplesNormalized.push(sampleNormalized);
+		}
+		return samplesNormalized;
+	}
 }
