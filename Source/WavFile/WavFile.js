@@ -241,7 +241,7 @@ function WavFile
 					b++;
 				}
 
-				var sampleValueAsInteger = byteConverter.bytesToInteger
+				var sampleValueAsInteger = byteConverter.bytesToIntegerUnsignedLE
 				(
 					sampleValueAsBytes
 				);
@@ -377,7 +377,7 @@ function WavFile
 			{
 				var sampleAsInteger = samplesForChannelsToConvert[c][s];
 
-				var sampleAsBytes = byteConverter.integerToBytes
+				var sampleAsBytes = byteConverter.integerToBytesLE
 				(
 					sampleAsInteger
 				);
@@ -529,23 +529,7 @@ function WavFileSamplingInfo
 	WavFileSamplingInfo.prototype.samplesDenormalize = function(samplesToDenormalize)
 	{
 		var sampleDenormalizedMax = Math.pow(2, this.bitsPerSample) - 1;
-		var samplesDenormalizedWriter = new ByteStreamLittleEndian([]);
-		var bytesPerSample = this.bytesPerSample();
-		var sampleDenormalizedWrite;
-		if (bytesPerSample == 1)
-		{
-			sampleDenormalizedWrite =
-				samplesDenormalizedWriter.writeByte.bind(samplesDenormalizedWriter);
-		}
-		else if (bytesPerSample == 2)
-		{
-			sampleDenormalizedWrite =
-				samplesDenormalizedWriter.writeShort.bind(samplesDenormalizedWriter)
-		}
-		else
-		{
-			throw "Not implemented!";
-		}
+		var samplesDenormalized = [];
 		for (var i = 0; i < samplesToDenormalize.length; i++)
 		{
 			var sampleToDenormalize = samplesToDenormalize[i];
@@ -553,35 +537,43 @@ function WavFileSamplingInfo
 			(
 				(sampleToDenormalize + 1) / 2 * sampleDenormalizedMax
 			);
-			sampleDenormalizedWrite(sampleDenormalized);
+			samplesDenormalized.push(sampleDenormalized);
 		}
-		var samplesDenormalized = samplesDenormalizedWriter.bytes;
+
+		if (this.bitsPerSample > 8)
+		{
+			samplesToDenormalize = samplesDenormalized;
+			var sampleDenormalizedMaxHalf = Math.pow(2, this.bitsPerSample - 1);
+			for (var i = 0; i < samplesToDenormalize.length; i++)
+			{
+				samplesToDenormalize[i] -= sampleDenormalizedMaxHalf;
+			}
+		}
+
 		return samplesDenormalized;
 	}
 
 	WavFileSamplingInfo.prototype.samplesNormalize = function(samplesToNormalize)
 	{
 		var sampleDenormalizedMax = Math.pow(2, this.bitsPerSample) - 1;
-		var samplesDenormalizedReader = new ByteStreamLittleEndian(samplesToNormalize);
-		var bytesPerSample = this.bytesPerSample();
-		if (bytesPerSample == 1)
-		{
-			sampleDenormalizedRead =
-				samplesDenormalizedReader.readByte.bind(samplesDenormalizedReader);
-		}
-		else if (bytesPerSample == 2)
-		{
-			sampleDenormalizedRead =
-				samplesDenormalizedReader.readShort.bind(samplesDenormalizedReader);
-		}
-		else
-		{
-			throw "Not implemented!";
-		}
 		var samplesNormalized = [];
-		while (samplesDenormalizedReader.hasMoreBytes() == true)
+
+		if (this.bitsPerSample > 8)
 		{
-			var sampleToNormalize = sampleDenormalizedRead();
+			var sampleDenormalizedMaxHalf = Math.pow(2, this.bitsPerSample - 1);
+			for (var i = 0; i < samplesToNormalize.length; i++)
+			{
+				var sampleToNormalize = samplesToNormalize[i];
+				sampleToNormalize += sampleDenormalizedMaxHalf;
+				samplesNormalized.push(sampleToNormalize);
+			}
+			samplesToNormalize = samplesNormalized;
+			samplesNormalized = [];
+		}
+
+		for (var i = 0; i < samplesToNormalize.length; i++)
+		{
+			var sampleToNormalize = samplesToNormalize[i];
 			var sampleNormalized = (sampleToNormalize / sampleDenormalizedMax) * 2 - 1;
 			samplesNormalized.push(sampleNormalized);
 		}

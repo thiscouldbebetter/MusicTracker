@@ -22,8 +22,32 @@ function ByteConverter(numberOfBits)
 		return returnValue;
 	}
 
-	ByteConverter.prototype.bytesToInteger = function(bytes)
+	ByteConverter.prototype.bytesToIntegerSignedBE = function(bytes)
 	{
+		// Big-endian.
+
+		var returnValue = 0;
+
+		var numberOfBytes = bytes.length;
+
+		for (var i = 0; i < numberOfBytes; i++)
+		{
+			var byte = bytes[numberOfBytes - i - 1];
+			returnValue |= byte << (i * Constants.BitsPerByte);
+		}
+
+		if (returnValue > this.maxValueSigned)
+		{
+			returnValue -= this.maxValueUnsigned;
+		}
+
+		return returnValue;
+	}
+
+	ByteConverter.prototype.bytesToIntegerSignedLE = function(bytes)
+	{
+		// Little-endian.
+
 		var returnValue = 0;
 
 		var numberOfBytes = bytes.length;
@@ -41,18 +65,66 @@ function ByteConverter(numberOfBits)
 		return returnValue;
 	}
 
+	ByteConverter.prototype.bytesToIntegerUnsignedBE = function(bytes)
+	{
+		// Big-endian.
+
+		var returnValue = 0;
+
+		var numberOfBytes = bytes.length;
+
+		for (var i = 0; i < numberOfBytes; i++)
+		{
+			var byte = bytes[numberOfBytes - i - 1];
+			returnValue |= byte << (i * Constants.BitsPerByte);
+		}
+
+		return returnValue;
+	}
+
+	ByteConverter.prototype.bytesToIntegerUnsignedLE = function(bytes)
+	{
+		// Little-endian.
+
+		var returnValue = 0;
+
+		var numberOfBytes = bytes.length;
+
+		for (var i = 0; i < numberOfBytes; i++)
+		{
+			returnValue |= bytes[i] << (i * Constants.BitsPerByte);
+		}
+
+		return returnValue;
+	}
+
 	ByteConverter.prototype.floatToInteger = function(float)
 	{
 		return float * this.maxValueSigned;
 	}
 
-	ByteConverter.prototype.integerToBytes = function(integer)
+	ByteConverter.prototype.integerToBytesBE = function(integer)
 	{
+		// Big-endian.
 		var returnValues = [];
 
 		for (var i = 0; i < this.numberOfBytes; i++)
 		{
-			var byteValue = (integer >> (8 * i)) & 0xFF;
+			var byteValue = (integer >> (Constants.BitsPerByte * i)) & 0xFF;
+			returnValues.splice(0, 0, byteValue);
+		}
+
+		return returnValues;
+	}
+
+	ByteConverter.prototype.integerToBytesLE = function(integer)
+	{
+		// Little-endian.
+		var returnValues = [];
+
+		for (var i = 0; i < this.numberOfBytes; i++)
+		{
+			var byteValue = (integer >> (Constants.BitsPerByte * i)) & 0xFF;
 			returnValues.push(byteValue);
 		}
 

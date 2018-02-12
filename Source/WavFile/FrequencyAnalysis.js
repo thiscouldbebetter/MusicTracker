@@ -1,6 +1,7 @@
-function FrequencyAnalysis(oscillatorAmplitudes)
+function FrequencyAnalysis(sineAmplitudes, cosineAmplitudes)
 {
-	this.oscillatorAmplitudes = oscillatorAmplitudes;
+	this.sineAmplitudes = sineAmplitudes;
+	this.cosineAmplitudes = cosineAmplitudes;
 }
 {
 	FrequencyAnalysis.fromSamples = function
@@ -8,7 +9,8 @@ function FrequencyAnalysis(oscillatorAmplitudes)
 		numberOfOscillators, frequencyLowestInCyclesPerSecond, samplesPerSecond, samples
 	)
 	{
-		var oscillatorAmplitudes = [];
+		var sineAmplitudes = [];
+		var cosineAmplitudes = [];
 
 		var radiansPerCycle = 2 * Math.PI;
 		var numberOfSamples = samples.length;
@@ -16,36 +18,47 @@ function FrequencyAnalysis(oscillatorAmplitudes)
 
 		for (var i = 0; i < numberOfOscillators; i++)
 		{
-			var oscillatorFrequencyInCyclesPerSecond = 
-				frequencyLowestInCyclesPerSecond + i;
+			var oscillatorFrequencyInCyclesPerSecond =
+				frequencyLowestInCyclesPerSecond * i;
 
 			var sumOfSamplesTimesSines = 0;
+			var sumOfSamplesTimesCosines = 0;
 
 			for (var s = 0; s < numberOfSamples; s++)
 			{
 				var sample = samples[s];
 
 				var timeInSeconds = s / samplesPerSecond;
-				var timeInCycles = 
+				var timeInCycles =
 					timeInSeconds * oscillatorFrequencyInCyclesPerSecond;
 				var timeInRadians = timeInCycles * radiansPerCycle;
 
-				var sine = Math.sin(timeInRadians); 
+				var sine = Math.sin(timeInRadians);
+				var cosine = Math.cos(timeInRadians);
 
 				var sampleTimesSine = sample * sine;
+				var sampleTimesCosine = sample * cosine;
 
 				sumOfSamplesTimesSines += sampleTimesSine;
+				sumOfSamplesTimesCosines += sampleTimesCosine;
 			}
 
-			var oscillatorAmplitude = sumOfSamplesTimesSines / numberOfSamples;
-			if (oscillatorAmplitude < epsilon)
+			var sineAmplitude = sumOfSamplesTimesSines / numberOfSamples;
+			if (Math.abs(sineAmplitude) < epsilon)
 			{
-				oscillatorAmplitude = 0;
+				sineAmplitude = 0;
 			}
-			oscillatorAmplitudes.push(oscillatorAmplitude);
+			sineAmplitudes.push(sineAmplitude);
+
+			var cosineAmplitude = sumOfSamplesTimesCosines / numberOfSamples;
+			if (Math.abs(cosineAmplitude) < epsilon)
+			{
+				cosineAmplitude = 0;
+			}
+			cosineAmplitudes.push(cosineAmplitude);
 		}
 
-		var returnValue = new FrequencyAnalysis(oscillatorAmplitudes);
+		var returnValue = new FrequencyAnalysis(sineAmplitudes, cosineAmplitudes);
 		return returnValue;
 	}
 
@@ -65,24 +78,33 @@ function FrequencyAnalysis(oscillatorAmplitudes)
 
 		var radiansPerCycle = 2 * Math.PI;
 
-		for (var i = 0; i < this.oscillatorAmplitudes.length; i++)
+		for (var i = 0; i < this.sineAmplitudes.length; i++)
 		{
-			var oscillatorAmplitude = this.oscillatorAmplitudes[i];
-			var oscillatorFrequencyInCyclesPerSecond = 
-				frequencyFundamentalInCyclesPerSecond + i;
+			var sineAmplitude = this.sineAmplitudes[i];
+			var cosineAmplitude = this.cosineAmplitudes[i];
 
-			if (oscillatorAmplitude > 0)
+			if (sineAmplitude != 0 || cosineAmplitude != 0)
 			{
+				var oscillatorFrequencyInCyclesPerSecond =
+					frequencyFundamentalInCyclesPerSecond * i;
+
 				for (var s = 0; s < durationInSamples; s++)
 				{
 					var timeInSeconds = s / samplesPerSecond;
-					var timeInCycles = 
+					var timeInCycles =
 						timeInSeconds * oscillatorFrequencyInCyclesPerSecond;
 					var timeInRadians = timeInCycles * radiansPerCycle;
+
 					var sine = Math.sin(timeInRadians);
-					var sineTimesOscillatorAmplitude = 
-						sine * oscillatorAmplitude;
-					samples[s] += sineTimesOscillatorAmplitude;
+					var cosine = Math.cos(timeInRadians);
+
+					var sineTimesSineAmplitude =
+						sine * sineAmplitude;
+					var cosineTimesCosineAmplitude =
+						cosine * cosineAmplitude;
+
+					samples[s] += sineTimesSineAmplitude;
+					samples[s] += cosineTimesCosineAmplitude;
 				}
 			}
 		}

@@ -177,6 +177,10 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 			var inputName = d.createElement("input");
 			divSong.appendChild(inputName);
+			inputName.onchange = function(event)
+			{
+				song.name = inputName.value;
+			}
 			this.inputName = inputName;
 
 			var buttonSave = d.createElement("button");
@@ -262,7 +266,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			{
 				var selectBitsPerSample = event.target;
 				var bitsPerSampleAsString = selectBitsPerSample.value;
-				var bitsPerSample = parseInt(bitsPerSample);
+				var bitsPerSample = parseInt(bitsPerSampleAsString);
 				song.bitsPerSample = bitsPerSample;
 			}
 			divSong.appendChild(selectBitsPerSample);
@@ -388,6 +392,11 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			divSong.appendChild(d.createElement("br"));
 
 			var inputSequenceNamesToPlayInOrder = d.createElement("input");
+			inputSequenceNamesToPlayInOrder.onchange = function(event)
+			{
+				song.sequenceNamesToPlayInOrder =
+					inputSequenceNamesToPlayInOrder.value.split(";");
+			}
 			divSong.appendChild(inputSequenceNamesToPlayInOrder);
 			this.inputSequenceNamesToPlayInOrder = inputSequenceNamesToPlayInOrder;
 

@@ -101,28 +101,39 @@ function SoundSource_WavFile(wavFile)
 			{
 				var wavFileSource = soundSource.wavFile;
 				var samplesDenormalized = wavFileSource.samplesForChannels[0];
-				var samplingInfo = wavFileSource.samplingInfo;
+				var samplingInfoIn = wavFileSource.samplingInfo;
 				var samplesNormalized =
-					samplingInfo.samplesNormalize(samplesDenormalized);
+					samplingInfoIn.samplesNormalize(samplesDenormalized);
+				var frequencyFundamental = 1;
 				var samplesAnalyzed = FrequencyAnalysis.fromSamples
 				(
-					256, // numberOfOscillators,
-					20, // frequencyLowestInCyclesPerSecond,
-					samplingInfo.samplesPerSecond,
+					1024, // numberOfOscillators,
+					frequencyFundamental,
+					samplingInfoIn.samplesPerSecond,
 					samplesNormalized
 				);
+				var samplingInfoOut = new WavFileSamplingInfo(1, 1, 8000, 8); // todo
 				var samplesSynthesized = samplesAnalyzed.toSamples
 				(
-					samplingInfo.samplesPerSecond,
-					20, // freqencyFundamentalInCyclesPerSecond,
-					2 // durationInSeconds
+					samplingInfoOut.samplesPerSecond,
+					frequencyFundamental,
+					1 // durationInSeconds
 				);
 				var samplesSynthesizedAndDenormalized =
-					samplingInfo.samplesDenormalize(samplesSynthesized);
+					samplingInfoOut.samplesDenormalize(samplesSynthesized);
 				var wavFileTransformed = new WavFile
 				(
-					"", samplingInfo, samplesSynthesizedAndDenormalized
+					"analysis.wav",
+					samplingInfoOut,
+					[ samplesSynthesizedAndDenormalized ]
 				);
+				var wavFileTransformedAsBytes =
+					wavFileTransformed.toBytes();
+				FileHelper.saveBytesToFile
+				(
+					wavFileTransformedAsBytes,
+					wavFileTransformed.filePath
+				)
 				new Sound("", wavFileTransformed).play();
 			}
 			this.divSoundSource.appendChild(buttonPlay2);

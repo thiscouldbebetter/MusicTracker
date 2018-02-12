@@ -15,28 +15,21 @@ function Tracker(songCurrent)
 
 	Tracker.samplesToWavFile = function(fileName, samplesPerSecond, bitsPerSample, samplesToConvert)
 	{
-		var samplesForWavFile = [];
-		for (var s = 0; s < samplesToConvert.length; s++)
-		{
-			var sample = samplesToConvert[s];
-			var sampleRectified = (sample + 1) / 2;
-			var sampleMultiplier = Math.pow(2, bitsPerSample) - 1;
-			var sampleScaled =
-				Math.round(sampleRectified * sampleMultiplier);
-			// todo - Little-Endian?
-			samplesForWavFile.push(sampleScaled);
+		var samplingInfo = new WavFileSamplingInfo
+		(
+			1, // formatCode
+			1, // numberOfChannels
+			samplesPerSecond,
+			bitsPerSample
+		);
 
-		}
+		var samplesForWavFile =
+			samplingInfo.samplesDenormalize(samplesToConvert);
+
 		var samplesAsWavFile = new WavFile
 		(
-			fileName, 
-			new WavFileSamplingInfo
-			(
-				1, // formatCode
-				1, // numberOfChannels
-				samplesPerSecond,
-				bitsPerSample
-			),
+			fileName,
+			samplingInfo,
 			[ samplesForWavFile ] // samplesForChannels
 		);
 
