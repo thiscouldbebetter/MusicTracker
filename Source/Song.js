@@ -443,6 +443,24 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				song.sequenceSelectByName(sequenceNew.name);
 			}
 			divSong.appendChild(buttonSequenceNew);
+
+			var buttonSequenceClone = d.createElement("button");
+			buttonSequenceClone.innerText = "Clone";
+			buttonSequenceClone.onclick = function()
+			{
+				var sequences = song.sequences;
+				var sequenceNameNext = String.fromCharCode("A".charCodeAt(0) + sequences.length);
+				var sequenceCloned = sequence.clone();
+				sequenceCloned.name = sequenceNameNext;
+				sequences.splice(song.sequenceIndexSelected, 0, sequenceCloned);
+				sequences[sequenceCloned.name] = sequenceCloned;
+				var sequenceClonedAsOption = d.createElement("option");
+				sequenceClonedAsOption.innerText = sequenceCloned.name;
+				selectSequence.appendChild(sequenceClonedAsOption);
+				song.sequenceSelectByName(sequenceCloned.name);
+			}
+			divSong.appendChild(buttonSequenceClone);
+
 			divSong.appendChild(d.createElement("br"));
 
 			var divSequenceSelected = d.createElement("div");

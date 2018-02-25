@@ -131,6 +131,19 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return this.tracks[this.trackIndexSelected];
 	}
 
+	// cloneable
+
+	Sequence.prototype.clone = function()
+	{
+		return new Sequence
+		(
+			this.name + "_Cloned",
+			this.ticksPerSecond,
+			this.durationInTicks,
+			this.tracks.clone()
+		);
+	}
+
 	// samples
 
 	Sequence.prototype.toSamples = function(song)
