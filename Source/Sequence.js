@@ -114,6 +114,17 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return this.durationInTicks / this.ticksPerSecond;
 	}
 
+	Sequence.prototype.play = function(song)
+	{
+		var samples = this.toSamples(song);
+		var wavFile = Tracker.samplesToWavFile
+		(
+			"", song.samplesPerSecond, song.bitsPerSample, samples
+		);
+		var sound = new Sound("", wavFile);
+		sound.play();
+	}
+
 	Sequence.prototype.tickSelectedAsString = function()
 	{
 		var trackSelected = this.trackSelected();
@@ -228,13 +239,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			buttonSequenceSelectedPlay.innerText = "Play";
 			buttonSequenceSelectedPlay.onclick = function()
 			{
-				var sequenceAsSamples = sequence.toSamples(song, sequence);
-				var sequenceAsWavFile = Tracker.samplesToWavFile
-				(
-					"", song.samplesPerSecond, song.bitsPerSample, sequenceAsSamples
-				);
-				var sequenceAsSound = new Sound("", sequenceAsWavFile);
-				sequenceAsSound.play();
+				sequence.play(song);
 			}
 			divSequence.appendChild(buttonSequenceSelectedPlay);
 
@@ -355,13 +360,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			buttonTrackSelectedPlay.onclick = function()
 			{
 				var trackSelected = sequence.trackSelected();
-				var trackAsSamples = trackSelected.toSamples(song, sequence);
-				var trackAsWavFile = Tracker.samplesToWavFile
-				(
-					"", song.samplesPerSecond, song.bitsPerSample, trackAsSamples
-				);
-				var trackAsSound = new Sound("", trackAsWavFile);
-				trackAsSound.play();
+				trackSelected.play(song, sequence);
 			}
 			divTracks.appendChild(buttonTrackSelectedPlay);
 
@@ -418,7 +417,8 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			inputTickSelected.size = 12;
 			inputTickSelected.onkeypress = function(event)
 			{
-				if (event.key == "Enter")
+				var keyPressed = event.key;
+				if (keyPressed == "Enter")
 				{
 					var tickIndex = sequence.tickIndexSelected;
 					var inputTickSelected = event.target;
@@ -444,6 +444,17 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				sequence.uiUpdate_Tracks(song);
 			}
 			divTickSelected.appendChild(buttonTickSelectedApply);
+
+			var buttonTickSelectedPlay = d.createElement("button");
+			buttonTickSelectedPlay.innerText = "Play";
+			buttonTickSelectedPlay.onclick = function()
+			{
+				var tickIndex = sequence.tickIndexSelected;
+				var tickAsString = inputTickSelected.value;
+				var tickAsNote = Note.fromString(tickAsString, tickIndex);
+				tickAsNote.play(song, sequence, track);
+			}
+			divTickSelected.appendChild(buttonTickSelectedPlay);
 
 			var labelNoteFormat = d.createElement("label");
 			labelNoteFormat.innerText = "[pitch+octave]-[volume]-[duration], e.g. 'C_3-99-0128'";

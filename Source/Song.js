@@ -78,6 +78,17 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return this.instruments[this.instrumentNameSelected];
 	}
 
+	Song.prototype.play = function()
+	{
+		var samples = this.toSamples();
+		var wavFile = Tracker.samplesToWavFile
+		(
+			"", this.samplesPerSecond, this.bitsPerSample, samples
+		);
+		var sound = new Sound("", wavFile);
+		sound.play();
+	}
+
 	Song.prototype.sequenceSelected = function()
 	{
 		return (this.sequenceNameSelected == null ? null : this.sequences[this.sequenceNameSelected]);
@@ -281,13 +292,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			buttonPlay.innerText = "Play";
 			buttonPlay.onclick = function()
 			{
-				var songAsSamples = song.toSamples();
-				var songAsWavFile = Tracker.samplesToWavFile
-				(
-					"", song.samplesPerSecond, song.bitsPerSample, songAsSamples
-				);
-				var songAsSound = new Sound("", songAsWavFile);
-				songAsSound.play();
+				song.play();
 			}
 			divSong.appendChild(buttonPlay);
 
@@ -452,7 +457,9 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				var sequenceNameNext = String.fromCharCode("A".charCodeAt(0) + sequences.length);
 				var sequenceCloned = sequence.clone();
 				sequenceCloned.name = sequenceNameNext;
-				sequences.splice(song.sequenceIndexSelected, 0, sequenceCloned);
+				var sequenceSelected = song.sequenceSelected();
+				var sequenceIndexSelected = sequences.indexOf(sequenceSelected);
+				sequences.splice(sequenceIndexSelected, 0, sequenceCloned);
 				sequences[sequenceCloned.name] = sequenceCloned;
 				var sequenceClonedAsOption = d.createElement("option");
 				sequenceClonedAsOption.innerText = sequenceCloned.name;
@@ -460,6 +467,20 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				song.sequenceSelectByName(sequenceCloned.name);
 			}
 			divSong.appendChild(buttonSequenceClone);
+
+			var buttonSequenceDelete = d.createElement("button");
+			buttonSequenceDelete.innerText = "Delete";
+			buttonSequenceDelete.onclick = function()
+			{
+				var sequenceSelected = song.sequenceSelected();
+				var sequences = song.sequences;
+				var sequenceIndexSelected = sequences.indexOf(sequenceSelected);
+				sequences.splice(sequenceIndexSelected, 1);
+				sequences[sequenceSelected.name] = null;
+				song.sequenceSelectByName(sequences[0].name);
+				song.uiUpdate();
+			}
+			divSong.appendChild(buttonSequenceDelete);
 
 			divSong.appendChild(d.createElement("br"));
 

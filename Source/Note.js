@@ -57,6 +57,17 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return this;
 	}
 
+	Note.prototype.play = function(song, sequence, track)
+	{
+		var samples = this.toSamples(song, sequence, track);
+		var wavFile = Tracker.samplesToWavFile
+		(
+			"", song.samplesPerSecond, song.bitsPerSample, samples
+		);
+		var sound = new Sound("", wavFile);
+		sound.play();
+	}
+
 	Note.prototype.pitch = function()
 	{
 		return Pitch.Instances._All[this.pitchCode];
@@ -80,7 +91,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		var durationInSamples = this.durationInSamples(song, sequence);
 		var frequencyInHertz = this.frequencyInHertz();
 		var volumeAsFraction = this.volumeAsFraction();
-
+		var instrument = track.instrument(song);
 		var noteAsSamples = instrument.samplesForNote
 		(
 			samplesPerSecond, durationInSamples, frequencyInHertz, volumeAsFraction

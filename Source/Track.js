@@ -79,6 +79,16 @@ function Track(instrumentName, notes)
 		return returnValue;
 	}
 
+	Track.prototype.play = function(song, sequence)
+	{
+		var samples = this.toSamples(song, sequence);
+		var wavFile = Tracker.samplesToWavFile
+		(
+			"", song.samplesPerSecond, song.bitsPerSample, samples
+		);
+		var sound = new Sound("", wavFile);
+		sound.play();
+	}
 
 	// samples
 
