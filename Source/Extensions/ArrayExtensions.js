@@ -18,6 +18,18 @@ function ArrayExtensions()
 		return this;
 	}
 
+	Array.prototype.clone = function()
+	{
+		var returnValues = [];
+		for (var i = 0; i < this.length; i++)
+		{
+			var elementToClone = this[i];
+			var elementCloned = elementToClone.clone();
+			returnValues.push(elementCloned);
+		}
+		return returnValues;
+	}
+
 	Array.prototype.contains = function(element)
 	{
 		return (this.indexOf(element) >= 0);
