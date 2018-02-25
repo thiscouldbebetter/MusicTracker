@@ -11,6 +11,18 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 {
 	Note.Blank = "-----------"; // "pitch-volume-duration";
 
+	Note.prototype.clone = function()
+	{
+		return new Note
+		(
+			this.timeStartInTicks,
+			this.octaveIndex,
+			this.pitchCode,
+			this.volumeAsPercentage,
+			this.durationInTicks
+		);
+	}
+
 	Note.prototype.durationInSamples = function(song, sequence)
 	{
 		var returnValue =

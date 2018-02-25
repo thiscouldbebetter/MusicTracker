@@ -16,14 +16,14 @@ function Pitch(name, code, frequencyMultiplier)
 		this.C = new Pitch("C", "C_", 1);
 		this.CSharp = new Pitch("C Sharp", "C#", twelvthRootOfTwo);
 		this.D = new Pitch("D", "D_", Math.pow(twelvthRootOfTwo, 2));
-		this.DSharp = new Pitch("D Sharp", "D#", twelvthRootOfTwo, 3);
+		this.DSharp = new Pitch("D Sharp", "D#", Math.pow(twelvthRootOfTwo, 3));
 		this.E = new Pitch("E", "E_", Math.pow(twelvthRootOfTwo, 4));
 		this.F = new Pitch("F", "F_", Math.pow(twelvthRootOfTwo, 5));
-		this.FSharp = new Pitch("F Sharp", "F#", twelvthRootOfTwo, 6);
+		this.FSharp = new Pitch("F Sharp", "F#", Math.pow(twelvthRootOfTwo, 6));
 		this.G = new Pitch("G", "G_", Math.pow(twelvthRootOfTwo, 7));
-		this.GSharp = new Pitch("G Sharp", "G#", twelvthRootOfTwo, 8);
+		this.GSharp = new Pitch("G Sharp", "G#", Math.pow(twelvthRootOfTwo, 8));
 		this.A = new Pitch("A", "A_", Math.pow(twelvthRootOfTwo, 9));
-		this.ASharp = new Pitch("A Sharp", "A#", twelvthRootOfTwo, 10);
+		this.ASharp = new Pitch("A Sharp", "A#", Math.pow(twelvthRootOfTwo, 10));
 		this.B = new Pitch("B", "B_", Math.pow(twelvthRootOfTwo, 11));
 
 		this._All =

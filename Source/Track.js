@@ -6,6 +6,11 @@ function Track(instrumentName, notes)
 }
 
 {
+	Track.prototype.clone = function()
+	{
+		return new Track(this.instrumentName, this.notes.clone());
+	}
+
 	Track.prototype.instrument = function(song)
 	{
 		return song.instruments[this.instrumentName];

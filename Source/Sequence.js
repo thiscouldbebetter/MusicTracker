@@ -239,6 +239,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				var ticksPerSecondAsString = inputTicksPerSecond.value;
 				var ticksPerSecond = parseInt(ticksPerSecondAsString);
 				sequence.ticksPerSecond = ticksPerSecond;
+				sequence.uiUpdate(song);
 			}
 			divSequence.appendChild(inputTicksPerSecond);
 			this.inputTicksPerSecond = inputTicksPerSecond;
@@ -257,6 +258,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				var durationInTicksAsString = inputDurationInTicks.value;
 				var durationInTicks = parseInt(durationInTicksAsString);
 				sequence.durationInTicks = durationInTicks;
+				sequence.uiUpdate(song);
 			}
 			divSequence.appendChild(inputDurationInTicks);
 			this.inputDurationInTicks = inputDurationInTicks;
@@ -266,18 +268,6 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			var labelTracks = d.createElement("label");
 			labelTracks.innerText = "Tracks:";
 			divSequence.appendChild(labelTracks);
-
-			var buttonTrackNew = d.createElement("button");
-			buttonTrackNew.innerText = "New";
-			buttonTrackNew.onclick = function()
-			{
-				var instrument = song.instruments[0];
-				var track = new Track(instrument.name, []);
-				sequence.tracks.push(track);
-				sequence.trackSelected(track);
-				sequence.uiUpdate(song);
-			}
-			divSequence.appendChild(buttonTrackNew);
 
 			divSequence.appendChild(d.createElement("br"));
 
@@ -318,9 +308,25 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			divTracks.style.border = "1px solid";
 			this.divTracks = divTracks;
 
-			var labelTrackSelected = d.createElement("label");
-			labelTrackSelected.innerText = "Track Selected:";
-			divTracks.appendChild(labelTrackSelected);
+			var labelTrack = d.createElement("label");
+			labelTrack.innerText = "Track:";
+			divTracks.appendChild(labelTrack);
+
+			var buttonTrackNew = d.createElement("button");
+			buttonTrackNew.innerText = "New";
+			buttonTrackNew.onclick = function()
+			{
+				var instrument = song.instruments[0];
+				var track = new Track(instrument.name, []);
+				sequence.tracks.push(track);
+				sequence.trackSelected(track);
+				sequence.uiUpdate(song);
+			}
+			divTracks.appendChild(buttonTrackNew);
+
+			var labelSelected = d.createElement("label");
+			labelSelected.innerText = "Selected:";
+			divTracks.appendChild(labelSelected);
 
 			var selectTrack = d.createElement("select");
 			selectTrack.onchange = function(event)
@@ -345,6 +351,18 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				trackAsSound.play();
 			}
 			divTracks.appendChild(buttonTrackSelectedPlay);
+
+			var buttonTrackClone = d.createElement("button");
+			buttonTrackClone.innerText = "Clone";
+			buttonTrackClone.onclick = function()
+			{
+				var trackToClone = sequence.trackSelected();
+				var trackCloned = trackToClone.clone();
+				sequence.tracks.splice(sequence.trackIndexSelected, 0, trackCloned);
+				sequence.trackSelected(trackCloned);
+				sequence.uiUpdate(song);
+			}
+			divTracks.appendChild(buttonTrackClone);
 
 			var buttonTrackSelectedDelete = d.createElement("button");
 			buttonTrackSelectedDelete.innerText = "Delete";
