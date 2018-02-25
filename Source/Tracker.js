@@ -6,7 +6,7 @@ function Tracker(songCurrent)
 {
 	Tracker.new = function()
 	{
-		var song = Song.new();
+		var song = Song.demo();
 		var returnValue = new Tracker(song);
 		return returnValue;
 	}

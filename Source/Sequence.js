@@ -11,7 +11,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 }
 
 {
-	Sequence.new = function(instrumentName, sequencesSoFar)
+	Sequence.demo = function(instrumentName, sequencesSoFar)
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
@@ -71,7 +71,33 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 						new Note(7 * noteDurationLong, noteOctaveIndexLow + 1, "C_", noteVolume, noteDurationLong),
 					]
 				)
+			]
+		);
 
+		return returnValue;
+	}
+
+	Sequence.new = function(instrumentName, sequencesSoFar)
+	{
+		var ticksPerSecond = 8;
+		var sequenceDurationInSeconds = 8;
+
+		var sequenceName = String.fromCharCode
+		(
+			"A".charCodeAt(0) + sequencesSoFar
+		);
+
+		var returnValue = new Sequence
+		(
+			sequenceName,
+			ticksPerSecond, // ticksPerSecond
+			sequenceDurationInSeconds * ticksPerSecond, // durationInTicks
+			[
+				new Track
+				(
+					instrumentName,
+					[] // notes
+				)
 			]
 		);
 

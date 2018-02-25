@@ -13,43 +13,32 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 }
 
 {
-	Song.fromJSON = function(songAsJSON)
+	Song.demo = function()
 	{
-		var song = JSON.parse(songAsJSON);
+		var instrument0 = Instrument.new("Instrument0");
 
-		song.__proto__ = Song.prototype;
+		var sequence0 = Sequence.demo(instrument0.name, 0);
 
-		var instruments = song.instruments;
-		instruments.addLookups("name");
-		for (var i = 0; i < instruments.length; i++)
-		{
-			var instrument = instruments[i];
-			Instrument.objectPrototypesSet(instrument);
-		}
+		var returnValue = new Song
+		(
+			"Scale",
+			8000, // samplesPerSecond
+			8, // bitsPerSample
+			[
+				instrument0
+			],
+			// sequences
+			[
+				sequence0
+			],
+			// sequenceNamesToPlayInOrder
+			[
+				sequence0.name,
+				sequence0.name
+			]
+		);
 
-		var sequences = song.sequences;
-		sequences.addLookups("name");
-		for (var i = 0; i < sequences.length; i++)
-		{
-			var sequence = sequences[i];
-			sequence.__proto__ = Sequence.prototype;
-
-			var tracks = sequence.tracks;
-			for (var t = 0; t < tracks.length; t++)
-			{
-				var track = tracks[t];
-				track.__proto__ = Track.prototype;
-
-				var notes = track.notes;
-				for (var n = 0; n < notes.length; n++)
-				{
-					var note = notes[n];
-					note.__proto__ = Note.prototype;
-				}
-			}
-		}
-
-		return song;
+		return returnValue;
 	}
 
 	Song.new = function()
@@ -60,7 +49,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var returnValue = new Song
 		(
-			"Scale",
+			"[untitled]",
 			8000, // samplesPerSecond
 			8, // bitsPerSample
 			[
@@ -171,8 +160,24 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			var divSong = d.createElement("div");
 			this.divSong = divSong;
 
+			var labelSong = d.createElement("label");
+			labelSong.innerText = "Song:";
+			divSong.appendChild(labelSong);
+
+			var buttonNew = d.createElement("button");
+			buttonNew.innerText = "New";
+			buttonNew.onclick = function()
+			{
+				var song = Song.new();
+				var tracker = Tracker.Instance;
+				tracker.songCurrent = song;
+				tracker.uiClear();
+				tracker.uiUpdate();
+			}
+			divSong.appendChild(buttonNew);
+
 			var labelName = d.createElement("label");
-			labelName.innerText = "Song Name:";
+			labelName.innerText = "Name:";
 			divSong.appendChild(labelName);
 
 			var inputName = d.createElement("input");
@@ -466,5 +471,46 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		this.instrumentSelected().uiUpdate();
 
 		return this.divSong;
+	}
+
+	// json
+
+	Song.fromJSON = function(songAsJSON)
+	{
+		var song = JSON.parse(songAsJSON);
+
+		song.__proto__ = Song.prototype;
+
+		var instruments = song.instruments;
+		instruments.addLookups("name");
+		for (var i = 0; i < instruments.length; i++)
+		{
+			var instrument = instruments[i];
+			Instrument.objectPrototypesSet(instrument);
+		}
+
+		var sequences = song.sequences;
+		sequences.addLookups("name");
+		for (var i = 0; i < sequences.length; i++)
+		{
+			var sequence = sequences[i];
+			sequence.__proto__ = Sequence.prototype;
+
+			var tracks = sequence.tracks;
+			for (var t = 0; t < tracks.length; t++)
+			{
+				var track = tracks[t];
+				track.__proto__ = Track.prototype;
+
+				var notes = track.notes;
+				for (var n = 0; n < notes.length; n++)
+				{
+					var note = notes[n];
+					note.__proto__ = Note.prototype;
+				}
+			}
+		}
+
+		return song;
 	}
 }
