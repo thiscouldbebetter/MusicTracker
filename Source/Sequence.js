@@ -456,7 +456,6 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			var inputTickSelected = d.createElement("input");
 			inputTickSelected.style.fontFamily = "monospace";
 			inputTickSelected.size = 12;
-			inputTickSelected.readOnly = true;
 			inputTickSelected.onkeypress = function(event)
 			{
 				var keyPressed = event.key;
@@ -485,7 +484,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				trackSelected.noteAtTick_Set(tickIndex, tickAsNote);
 				sequence.uiUpdate_Tracks(song);
 			}
-			//divTickSelected.appendChild(buttonTickSelectedApply);
+			divTickSelected.appendChild(buttonTickSelectedApply);
 
 			var buttonTickSelectedPlay = d.createElement("button");
 			buttonTickSelectedPlay.innerText = "Play";
@@ -506,9 +505,18 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 			divTickSelected.appendChild(d.createElement("br"));
 
-			var labelCommands = d.createElement("label");
-			labelCommands.innerText = "Commands: Up, Down, Left, Right, Enter, Delete, a-g, A-G, 0-9, +, -";
-			divTickSelected.appendChild(labelCommands);
+			var checkboxKeyboardCommands = d.createElement("input");
+			checkboxKeyboardCommands.type = "checkbox";
+			checkboxKeyboardCommands.value = "Keyboard Commands";
+			checkboxKeyboardCommands.onchange = function(event)
+			{
+				Tracker.Instance.useKeyboardCommands = event.checked;
+			}
+			divTickSelected.appendChild(checkboxKeyboardCommands);
+	
+			var labelKeyboardCommands = d.createElement("label");
+			labelKeyboardCommands.innerText = "Commands: Up, Down, Left, Right, Enter, Delete, a-g, A-G, 0-9, +, -";
+			divTickSelected.appendChild(labelKeyboardCommands);
 
 			divTrack.appendChild(divTickSelected);
 

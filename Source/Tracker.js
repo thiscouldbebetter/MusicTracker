@@ -2,6 +2,7 @@
 function Tracker(songCurrent)
 {
 	this.songCurrent = songCurrent;
+	this.useKeyboardCommands = false;
 }
 {
 	Tracker.new = function()
@@ -69,12 +70,18 @@ function Tracker(songCurrent)
 
 	Tracker.prototype.handleEventKeyDown = function(event)
 	{
+		if (this.useKeyboardCommands == false)
+		{
+			return;
+		}
+
+		event.preventDefault();
+
 		var song = this.songCurrent;
 		var sequence = song.sequenceSelected();
 		var track = sequence.trackSelected();
 
 		var key = event.key;
-		var wasKeyHandled = true;
 		if (key.startsWith("Arrow") == true)
 		{			
 			if (key.endsWith("Left") == true)
@@ -168,14 +175,17 @@ function Tracker(songCurrent)
 			track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
 			sequence.uiUpdate_Tracks(song);			
 		}
-		else
+		else if (key == ".")
 		{
-			wasKeyHandled = false;
+			sequence.noteAtTickCurrent().play();
 		}
-
-		if (wasKeyHandled == true)
+		else if (key == "/")
 		{
-			event.preventDefault();
+			sequence.trackCurrent().play();
+		}
+		else if (key == " ")
+		{
+			sequence.play();
 		}
 	}
 }
