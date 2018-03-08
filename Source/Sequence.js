@@ -114,6 +114,20 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return this.durationInTicks / this.ticksPerSecond;
 	}
 
+	Sequence.prototype.noteAtTickCurrent = function()
+	{
+		var trackSelected = this.trackSelected();
+		var noteAtTick = trackSelected.noteAtTick(this.tickIndexSelected);
+		return noteAtTick;
+	}
+
+	Sequence.prototype.notePrecedingTickCurrent = function()
+	{
+		var trackSelected = this.trackSelected();
+		var noteAtTick = trackSelected.notePrecedingTick(this.tickIndexSelected);
+		return noteAtTick;
+	}
+
 	Sequence.prototype.play = function(song)
 	{
 		var samples = this.toSamples(song);
@@ -125,12 +139,39 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		sound.play();
 	}
 
+	Sequence.prototype.tickSelectNextInDirection = function(direction)
+	{
+		this.tickIndexSelected += direction;
+		if (this.tickIndexSelected < 0)
+		{
+			this.tickIndexSelected = 0;
+		}
+		else if (this.tickIndexSelected >= this.durationInTicks)
+		{
+			this.tickIndexSelected = this.durationInTicks - 1;
+		}
+	}
+
 	Sequence.prototype.tickSelectedAsString = function()
 	{
-		var trackSelected = this.trackSelected();
-		var noteAtTick = trackSelected.noteAtTick(this.tickIndexSelected);
+		var noteAtTick = this.noteAtTickCurrent();
 		var tickAsString = (noteAtTick == null ? Note.Blank : noteAtTick.toString());
 		return tickAsString;
+	}
+
+	Sequence.prototype.trackSelectNextInDirection = function(direction)
+	{
+		var trackIndex = this.trackIndexSelected;
+		trackIndex += direction;
+		if (trackIndex >= this.tracks.length)
+		{
+			trackIndex = 0;
+		}
+		else if (trackIndex < 0)
+		{
+			trackIndex = this.tracks.length - 1;
+		}
+		this.trackIndexSelected = trackIndex;
 	}
 
 	Sequence.prototype.trackSelected = function(value)
@@ -415,6 +456,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			var inputTickSelected = d.createElement("input");
 			inputTickSelected.style.fontFamily = "monospace";
 			inputTickSelected.size = 12;
+			inputTickSelected.readOnly = true;
 			inputTickSelected.onkeypress = function(event)
 			{
 				var keyPressed = event.key;
@@ -443,7 +485,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				trackSelected.noteAtTick_Set(tickIndex, tickAsNote);
 				sequence.uiUpdate_Tracks(song);
 			}
-			divTickSelected.appendChild(buttonTickSelectedApply);
+			//divTickSelected.appendChild(buttonTickSelectedApply);
 
 			var buttonTickSelectedPlay = d.createElement("button");
 			buttonTickSelectedPlay.innerText = "Play";
@@ -456,9 +498,17 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			}
 			divTickSelected.appendChild(buttonTickSelectedPlay);
 
+			divTickSelected.appendChild(d.createElement("br"));
+			
 			var labelNoteFormat = d.createElement("label");
-			labelNoteFormat.innerText = "[pitch+octave]-[volume]-[duration], e.g. 'C_3-99-0128'";
+			labelNoteFormat.innerText = "Note Format: [pitch+octave]-[volume]-[duration], e.g. 'C_3-99-0128'";
 			divTickSelected.appendChild(labelNoteFormat);
+
+			divTickSelected.appendChild(d.createElement("br"));
+
+			var labelCommands = d.createElement("label");
+			labelCommands.innerText = "Commands: Up, Down, Left, Right, Enter, Delete, a-g, A-G, 0-9, +, -";
+			divTickSelected.appendChild(labelCommands);
 
 			divTrack.appendChild(divTickSelected);
 

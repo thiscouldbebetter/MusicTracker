@@ -61,6 +61,7 @@ function Track(instrumentName, notes)
 		{
 			if (valueToSet != null)
 			{
+				valueToSet.timeStartInTicks = tickIndexToSearch;
 				this.notes.insertElementAt(valueToSet, n);
 			}
 		}
@@ -72,8 +73,27 @@ function Track(instrumentName, notes)
 			}
 			else
 			{
+				valueToSet.timeStartInTicks = tickIndexToSearch;
 				note.overwriteWith(valueToSet);
 			}
+		}
+
+		return returnValue;
+	}
+
+	Track.prototype.notePrecedingTick = function(tickIndexToSearch)
+	{
+		var returnValue = null;
+
+		for (var i = 0; i < this.notes.length; i++)
+		{
+			var note = this.notes[i];
+			var noteTickIndex = note.timeStartInTicks;
+			if (noteTickIndex >= tickIndexToSearch)
+			{
+				break;
+			}
+			returnValue = note;
 		}
 
 		return returnValue;
