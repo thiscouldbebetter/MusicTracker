@@ -69,6 +69,12 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return returnValue;
 	}
 
+	Song.prototype.instrumentAdd = function(instrument)
+	{
+		this.instruments.push(instrument);
+		this.instruments[instrument.name] = instrument;
+	}
+
 	Song.prototype.instrumentSelected = function(value)
 	{
 		if (value != null)
@@ -351,8 +357,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				instrumentAsOption.innerText = instrument.name;
 				selectInstrument.appendChild(instrumentAsOption);
 				selectInstrument.value = instrument.name;
-				song.instruments.push(instrument);
-				song.instruments[instrument.name] = instrument;
+				song.instrumentAdd(instrument);
 				song.instrumentSelected(instrument);
 				song.divInstrument.innerHTML = "";
 				song.divInstrument.appendChild(instrument.uiUpdate());

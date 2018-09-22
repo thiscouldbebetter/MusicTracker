@@ -498,7 +498,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			divTickSelected.appendChild(buttonTickSelectedPlay);
 
 			divTickSelected.appendChild(d.createElement("br"));
-			
+
 			var labelNoteFormat = d.createElement("label");
 			labelNoteFormat.innerText = "Note Format: [pitch+octave]-[volume]-[duration], e.g. 'C_3-99-0128'";
 			divTickSelected.appendChild(labelNoteFormat);
@@ -513,7 +513,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				Tracker.Instance.useKeyboardCommands = event.checked;
 			}
 			divTickSelected.appendChild(checkboxKeyboardCommands);
-	
+
 			var labelKeyboardCommands = d.createElement("label");
 			labelKeyboardCommands.innerText = "Commands: Up, Down, Left, Right, Enter, Delete, a-g, A-G, 0-9, +, -";
 			divTickSelected.appendChild(labelKeyboardCommands);

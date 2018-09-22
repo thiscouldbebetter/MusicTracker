@@ -1,7 +1,8 @@
 
-function SoundSource_WavFile(wavFile)
+function SoundSource_WavFile(frequencyBase, wavFile)
 {
 	this.typeName = SoundSourceType.Instances().WavFile.name;
+	this.frequencyBase = frequencyBase;
 	this.wavFile = wavFile;
 }
 {
@@ -10,9 +11,13 @@ function SoundSource_WavFile(wavFile)
 		frequencyInHertz, timeInSeconds
 	)
 	{
+		var samplesPerSecond = this.samplesPerSecond();
 		var sampleIndex = Math.floor
 		(
-			timeInSeconds * this.samplesPerSecond()
+			timeInSeconds
+			* frequencyInHertz
+			/ this.frequencyBase
+			* samplesPerSecond
 		);
 		var returnValue = this.samplesNormalized()[sampleIndex];
 
@@ -85,6 +90,19 @@ function SoundSource_WavFile(wavFile)
 				}
 			}
 			this.divSoundSource.appendChild(inputWavFile);
+
+			var labelFrequencyBase = d.createElement("label");
+			labelFrequencyBase.innerHTML = "Frequency:";
+			this.divSoundSource.appendChild(labelFrequencyBase);
+
+			var inputFrequencyBase = d.createElement("input");
+			inputFrequencyBase.type = "number";
+			inputFrequencyBase.onchange = function(event)
+			{
+				soundSource.frequencyBase = parseInt(event.target.value);
+			}
+			inputFrequencyBase.value = 60;
+			this.divSoundSource.appendChild(inputFrequencyBase);
 
 			var buttonPlay = d.createElement("button");
 			buttonPlay.innerText = "Play";

@@ -83,7 +83,7 @@ function Tracker(songCurrent)
 
 		var key = event.key;
 		if (key.startsWith("Arrow") == true)
-		{			
+		{
 			if (key.endsWith("Left") == true)
 			{
 				sequence.trackSelectNextInDirection(-1);
@@ -105,7 +105,7 @@ function Tracker(songCurrent)
 		else if (key == "Delete")
 		{
 			track.noteAtTick_Set(sequence.tickIndexSelected, null);
-			sequence.uiUpdate_Tracks(song);			
+			sequence.uiUpdate_Tracks(song);
 		}
 		else if (key == "Enter")
 		{
@@ -113,7 +113,7 @@ function Tracker(songCurrent)
 			var noteToClone = (notePrev == null ? new Note("C3-25-0001") : notePrev);
 			var noteNew = noteToClone.clone();
 			track.noteAtTick_Set(sequence.tickIndexSelected, noteNew);
-			sequence.uiUpdate_Tracks(song);			
+			sequence.uiUpdate_Tracks(song);
 		}
 		else if (key.length == 1 && key >= "a" && key <= "g")
 		{
@@ -159,7 +159,7 @@ function Tracker(songCurrent)
 			var tickAsNote = sequence.noteAtTickCurrent();
 			tickAsNote.volumePercentage = volumePercentageToSet;
 			track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
-			sequence.uiUpdate_Tracks(song);			
+			sequence.uiUpdate_Tracks(song);
 		}
 		else if (key == "-" || key == "+")
 		{
@@ -173,7 +173,7 @@ function Tracker(songCurrent)
 			}
 			tickAsNote.durationInTicks = durationInTicks;
 			track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
-			sequence.uiUpdate_Tracks(song);			
+			sequence.uiUpdate_Tracks(song);
 		}
 		else if (key == ".")
 		{
