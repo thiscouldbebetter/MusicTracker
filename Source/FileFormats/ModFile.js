@@ -1,17 +1,27 @@
 
-function ModFile()
-{}
+function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequences)
 {
-	ModFile.fromBytes = function(bytes)
+	this.name = name;
+	this.title = title;
+	this.instruments = instruments;
+	this.sequenceIndicesToPlayInOrder = sequenceIndicesToPlayInOrder;
+	this.sequences = sequences;
+}
+{
+	ModFile.fromBytes = function(name, bytes)
 	{
-		// Based on a description of the MOD file format
-		// found at the URL "https://www.aes.id.au/modformat.html".
+		// Based on descriptions of the MOD file format found at the URLs:
+		// "https://www.aes.id.au/modformat.html"
+		// and
+		// "https://www.ocf.berkeley.edu/~eek/index.html/tiny_examples/ptmod/ap12.html".
 
 		var reader = new ByteStreamBigEndian(bytes);
 
 		var title = reader.readString(20).trim();
 
-		var numberOfInstruments = 32; // Or maybe 16?
+		var instruments = [];
+
+		var numberOfInstruments = 31; // Or maybe 15?
 		for (var i = 0; i < numberOfInstruments; i++)
 		{
 			var instrumentName = reader.readString(22);
@@ -29,14 +39,36 @@ function ModFile()
 
 			var repeatOffsetInWords = reader.readShort();
 			var repeatLengthInWords = reader.readShort();
+
+			var instrument = new ModFileInstrument
+			(
+				instrumentName,
+				numberOfSamplesInInstrumentPlusOne,
+				pitchShiftInSixteenthTones,
+				volume,
+				repeatOffsetInWords,
+				repeatLengthInWords
+			);
+			instruments.push(instrument);
 		}
 
-		var numberOfSequences = reader.readByte(); // 1 to 128.
+		var numberOfSequencesToPlay = reader.readByte(); // 1 to 128.
 		var reserved = reader.readByte(); // Should be 127.
 		var sequenceIndicesToPlay = reader.readBytes(128); // Each 0 - 63.
 
-		var signatureOrSequenceDataStart = reader.readString(4);
-		var signatureFor32InstrumentMode = "M.K.";
+		var sequenceIndexHighestSoFar = -1;
+		for (var i = 0; i < sequenceIndicesToPlay.length; i++)
+		{
+			var sequenceIndex = sequenceIndicesToPlay[i];
+			if (sequenceIndex > sequenceIndexHighestSoFar)
+			{
+				sequenceIndexHighestSoFar = sequenceIndex;
+			}
+		}
+		var numberOfSequenceDefns = sequenceIndexHighestSoFar + 1;
+
+		var signatureOrSequenceDefnsStart = reader.readString(4);
+		var signatureFor32InstrumentMode = "M.K."; // "Mahoney and Kaktus"
 
 		if (signatureOrSequenceDefnsStart == signatureFor32InstrumentMode)
 		{
@@ -53,10 +85,16 @@ function ModFile()
 		var numberOfChannels = 4; // 1 and 4 on left, 2 and 3 on right.
 		var bytesPerSamplePerChannel = 4;
 
-		for (var s = 0; s < numberOfSequences; s++)
+		var sequences = [];
+
+		for (var s = 0; s < numberOfSequenceDefns; s++)
 		{
+			var divisionsInSequence = [];
+
 			for (var d = 0; d < samplesPerSequence; d++)
 			{
+				var notesForChannelsInDivision = [];
+
 				for (var c = 0; c < numberOfChannels; c++)
 				{
 					var bytesForSampleAndChannel =
@@ -65,7 +103,7 @@ function ModFile()
 					var instrumentIndex =
 						(
 							(bytesForSampleAndChannel[0] & 0xF0)
-							| ( (bytesForSampleAndChannel[2] >> 4) & 0xF )
+							| ( (bytesForSampleAndChannel[2] >> 4) & 0xF)
 						);
 
 					var pitchCodeOrEffectParameter =
@@ -73,6 +111,13 @@ function ModFile()
 							( (bytesForSampleAndChannel[0] & 0xF) << 8)
 							| bytes[1]
 						);
+
+					// Pitch codes:
+					// From https://www.ocf.berkeley.edu/~eek/index.html/tiny_examples/ptmod/ap12.html:
+					// "Periodtable for Tuning 0, Normal
+					// C-1 to B-1 : 856,808,762,720,678,640,604,570,538,508,480,453
+					// C-2 to B-2 : 428,404,381,360,339,320,302,285,269,254,240,226
+					// C-3 to B-3 : 214,202,190,180,170,160,151,143,135,127,120,113"
 
 					// Effects
 					// 0 - Arpeggio
@@ -107,15 +152,83 @@ function ModFile()
 						// 15 - Invert Loop
 					// 15 - Set Speed
 
-					var effect =
+					var effectDefnID =
 						(
 							( (bytesForSampleAndChannel[2] & 0xF) << 8)
 							| bytes[3]
 						);
 
-				}
-			}
+					var note = new ModFileNote
+					(
+						pitchCodeOrEffectParameter, effectDefnID
+					);
+
+					notesForChannelsInDivision.push(note);
+
+				} // end for c
+
+				var division = new ModFileDivision(notesForChannelsInDivision);
+				divisionsInSequence.push(division);
+
+			} // end for d
+
+			var sequence = new ModFileSequence(divisionsInSequence);
+			sequences.push(sequence);
+
+		} // end for s
+
+		for (var i = 0; i < instruments.length; i++)
+		{
+			var instrument = instruments[i];
+			var instrumentSamples = reader.readBytes(instrument.numberOfSamplesPlusOne * 2);
+			instrument.samples = instrumentSamples;
 		}
 
-	}
+		var returnValue = new ModFile
+		(
+			name,
+			title,
+			instruments,
+			sequenceIndicesToPlay,
+			sequences
+		);
+
+		return returnValue;
+
+	} // end function
+
+} // end class ModFile
+
+function ModFileDivision(notesForChannels)
+{
+	this.notesForChannels = notesForChannels;
+}
+
+function ModFileInstrument
+(
+	instrumentName,
+	numberOfSamplesPlusOne,
+	pitchShiftInSixteenthTones,
+	volume,
+	repeatOffsetInWords,
+	repeatLengthInWords
+)
+{
+	this.instrumentName = instrumentName;
+	this.numberOfSamplesPlusOne = numberOfSamplesPlusOne;
+	this.pitchShiftInSixteenthTones = pitchShiftInSixteenthTones;
+	this.volume = volume;
+	this.repeatOffsetInWords = repeatOffsetInWords;
+	this.repeatLengthInWords = repeatLengthInWords;
+}
+
+function ModFileNote(pitchCode, effect)
+{
+	this.pitchCode = pitchCode;
+	this.effect = effect;
+}
+
+function ModFileSequence(samplesForChannels)
+{
+	this.samplesForChannels = samplesForChannels;
 }

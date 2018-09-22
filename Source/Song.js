@@ -232,17 +232,36 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				var file = event.target.files[0];
 				if (file != null)
 				{
-					var fileReader = new FileReader();
-					fileReader.onload = function(event2)
+					var fileName = file.name;
+					if (fileName.endsWith(".mod"))
 					{
-						var songAsJSON = event2.target.result;
-						var song = Song.fromJSON(songAsJSON);
-						var tracker = Tracker.Instance;
-						tracker.songCurrent = song;
-						tracker.uiClear();
-						tracker.uiUpdate();
+						FileHelper.loadFileAsBytes
+						(
+							file,
+							function callback(file, fileAsBytes)
+							{
+								var modFile = ModFile.fromBytes
+								(
+									file.name, fileAsBytes
+								);
+								alert("todo");
+							}
+						);
 					}
-					fileReader.readAsText(file);
+					else // Assume JSON.
+					{
+						var fileReader = new FileReader();
+						fileReader.onload = function(event2)
+						{
+							var songAsJSON = event2.target.result;
+							var song = Song.fromJSON(songAsJSON);
+							var tracker = Tracker.Instance;
+							tracker.songCurrent = song;
+							tracker.uiClear();
+							tracker.uiUpdate();
+						}
+						fileReader.readAsText(file);
+					}
 				}
 			}
 			divSong.appendChild(inputFileToLoad);
