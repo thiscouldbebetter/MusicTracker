@@ -564,7 +564,16 @@ function WavFileSamplingInfo
 			for (var i = 0; i < samplesToNormalize.length; i++)
 			{
 				var sampleToNormalize = samplesToNormalize[i];
-				sampleToNormalize += sampleDenormalizedMaxHalf;
+				if (sampleToNormalize < sampleDenormalizedMaxHalf)
+				{
+					sampleToNormalize += sampleDenormalizedMaxHalf;
+				}
+				else
+				{
+					// Negative number.
+					// todo - Two's complement?
+					sampleToNormalize -= sampleDenormalizedMaxHalf;
+				}
 				samplesNormalized.push(sampleToNormalize);
 			}
 			samplesToNormalize = samplesNormalized;

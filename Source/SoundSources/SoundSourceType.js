@@ -184,7 +184,7 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.WavFile = new SoundSourceType
 		(
 			"WavFile",
-			function create() { return new SoundSource_WavFile(); },
+			function create() { return new SoundSource_WavFile("C_4"); },
 			function objectPrototypesSet(object)
 			{
 				object.__proto__ = SoundSource_WavFile.prototype;

@@ -13,8 +13,11 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 }
 
 {
-	Song.demo = function()
+	Song.demo = function(samplesPerSecond, bitsPerSample)
 	{
+		samplesPerSecond = (samplesPerSecond == null ? 8000 : samplesPerSecond);
+		bitsPerSample = (bitsPerSample == null ? 8 : bitsPerSample);
+
 		var instrument0 = Instrument.new("Instrument0");
 
 		var sequence0 = Sequence.demo(instrument0.name, 0);
@@ -22,15 +25,10 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		var returnValue = new Song
 		(
 			"Scale",
-			8000, // samplesPerSecond
-			8, // bitsPerSample
-			[
-				instrument0
-			],
-			// sequences
-			[
-				sequence0
-			],
+			samplesPerSecond,
+			bitsPerSample,
+			[ instrument0 ],
+			[ sequence0 ],
 			// sequenceNamesToPlayInOrder
 			[
 				sequence0.name,
@@ -41,8 +39,11 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return returnValue;
 	}
 
-	Song.new = function()
+	Song.new = function(samplesPerSecond, bitsPerSample)
 	{
+		samplesPerSecond = (samplesPerSecond == null ? 8000 : samplesPerSecond);
+		bitsPerSample = (bitsPerSample == null ? 8 : bitsPerSample);
+
 		var instrument0 = Instrument.new("Instrument0");
 
 		var sequence0 = Sequence.new(instrument0.name, 0);
@@ -50,15 +51,10 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		var returnValue = new Song
 		(
 			"[untitled]",
-			8000, // samplesPerSecond
-			8, // bitsPerSample
-			[
-				instrument0
-			],
-			// sequences
-			[
-				sequence0
-			],
+			samplesPerSecond,
+			bitsPerSample,
+			[ instrument0 ],
+			[ sequence0 ],
 			// sequenceNamesToPlayInOrder
 			[
 				sequence0.name,

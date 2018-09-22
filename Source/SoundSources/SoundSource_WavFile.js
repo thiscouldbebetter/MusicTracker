@@ -1,11 +1,24 @@
 
-function SoundSource_WavFile(frequencyBase, wavFile)
+function SoundSource_WavFile(pitchBase, wavFile)
 {
 	this.typeName = SoundSourceType.Instances().WavFile.name;
-	this.frequencyBase = frequencyBase;
+	this.pitchBase = pitchBase;
 	this.wavFile = wavFile;
+
+	this._frequencyBase = null;
 }
 {
+	SoundSource_WavFile.prototype.frequencyBase = function()
+	{
+		if (this._frequencyBase == null)
+		{
+			var note = Note.fromString(this.pitchBase + "-00-0000")
+			this._frequencyBase = note.frequencyInHertz();
+		}
+
+		return this._frequencyBase;
+	}
+
 	SoundSource_WavFile.prototype.sampleForFrequencyAndTime = function
 	(
 		frequencyInHertz, timeInSeconds
@@ -16,7 +29,7 @@ function SoundSource_WavFile(frequencyBase, wavFile)
 		(
 			timeInSeconds
 			* frequencyInHertz
-			/ this.frequencyBase
+			/ this.frequencyBase()
 			* samplesPerSecond
 		);
 		var returnValue = this.samplesNormalized()[sampleIndex];
@@ -91,18 +104,18 @@ function SoundSource_WavFile(frequencyBase, wavFile)
 			}
 			this.divSoundSource.appendChild(inputWavFile);
 
-			var labelFrequencyBase = d.createElement("label");
-			labelFrequencyBase.innerHTML = "Frequency:";
-			this.divSoundSource.appendChild(labelFrequencyBase);
+			var labelPitchBase = d.createElement("label");
+			labelPitchBase.innerHTML = "Pitch:";
+			this.divSoundSource.appendChild(labelPitchBase);
 
-			var inputFrequencyBase = d.createElement("input");
-			inputFrequencyBase.type = "number";
-			inputFrequencyBase.onchange = function(event)
+			var inputPitchBase = d.createElement("input");
+			inputPitchBase.onchange = function(event)
 			{
-				soundSource.frequencyBase = parseInt(event.target.value);
+				soundSource.pitchBase = event.target.value;
+				soundSource._frequencyBase = null;
 			}
-			inputFrequencyBase.value = 261.63; // C4
-			this.divSoundSource.appendChild(inputFrequencyBase);
+			inputPitchBase.value = this.pitchBase;
+			this.divSoundSource.appendChild(inputPitchBase);
 
 			var buttonPlay = d.createElement("button");
 			buttonPlay.innerText = "Play";
@@ -111,52 +124,6 @@ function SoundSource_WavFile(frequencyBase, wavFile)
 				new Sound("", soundSource.wavFile).play();
 			}
 			this.divSoundSource.appendChild(buttonPlay);
-
-			/*
-			var buttonPlay2 = d.createElement("button");
-			buttonPlay2.innerText = "Play2";
-			buttonPlay2.onclick = function()
-			{
-				var wavFileSource = soundSource.wavFile;
-				var samplesDenormalized = wavFileSource.samplesForChannels[0];
-				var samplingInfoIn = wavFileSource.samplingInfo;
-				var samplesNormalized =
-					samplingInfoIn.samplesNormalize(samplesDenormalized);
-				var frequencyFundamental = 1;
-				var samplesAnalyzed = FrequencyAnalysis.fromSamples
-				(
-					1024, // numberOfOscillators,
-					frequencyFundamental,
-					samplingInfoIn.samplesPerSecond,
-					samplesNormalized
-				);
-				var samplingInfoOut = new WavFileSamplingInfo(1, 1, 8000, 8); // todo
-				var samplesSynthesized = samplesAnalyzed.toSamples
-				(
-					samplingInfoOut.samplesPerSecond,
-					frequencyFundamental,
-					1 // durationInSeconds
-				);
-				var samplesSynthesizedAndDenormalized =
-					samplingInfoOut.samplesDenormalize(samplesSynthesized);
-				var wavFileTransformed = new WavFile
-				(
-					"analysis.wav",
-					samplingInfoOut,
-					[ samplesSynthesizedAndDenormalized ]
-				);
-				var wavFileTransformedAsBytes =
-					wavFileTransformed.toBytes();
-				FileHelper.saveBytesToFile
-				(
-					wavFileTransformedAsBytes,
-					wavFileTransformed.filePath
-				)
-				new Sound("", wavFileTransformed).play();
-			}
-			this.divSoundSource.appendChild(buttonPlay2);
-			*/
-
 		}
 
 		return this.divSoundSource;
