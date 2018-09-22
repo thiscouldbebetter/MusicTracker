@@ -16,7 +16,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
 		var noteVolume = 25;
-		var noteOctaveIndex = 3;
+		var noteOctaveIndex = 4;
 		var noteDuration = Math.floor(ticksPerSecond / 2);
 		var noteOctaveIndexLow = noteOctaveIndex - 1;
 		var noteDurationLong = noteDuration * 2;

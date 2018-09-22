@@ -101,7 +101,7 @@ function SoundSource_WavFile(frequencyBase, wavFile)
 			{
 				soundSource.frequencyBase = parseInt(event.target.value);
 			}
-			inputFrequencyBase.value = 60;
+			inputFrequencyBase.value = 261.63; // C4
 			this.divSoundSource.appendChild(inputFrequencyBase);
 
 			var buttonPlay = d.createElement("button");

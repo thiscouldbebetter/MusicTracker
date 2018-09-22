@@ -9,19 +9,25 @@ function Octave(frequencyInHertzOfC)
 
 	function Octave_Instances()
 	{
-		this.Lower = new Octave(65.5);
-		this.Low = new Octave(131);
-		this.Middle = new Octave(262);
-		this.High = new Octave(524);
-		this.Higher = new Octave(1048);
+		this.Zero = new Octave(16.352);
+		this.One = new Octave(32.703);
+		this.Two = new Octave(65.406);
+		this.Three = new Octave(130.81);
+		this.Four = new Octave(261.63);
+		this.Five = new Octave(523.25);
+		this.Six = new Octave(1046.5);
+		this.Seven = new Octave(2093);
 
 		this._All =
 		[
-			this.Lower,
-			this.Low,
-			this.Middle,
-			this.High,
-			this.Higher,
+			this.Zero,
+			this.One,
+			this.Two,
+			this.Three,
+			this.Four,
+			this.Five,
+			this.Six,
+			this.Seven
 		];
 	}
 }
