@@ -138,4 +138,45 @@ function Instrument(name, soundSource)
 
 		return this.divInstrument;
 	}
+
+	// ModFile
+
+	Instrument.fromModFileInstrument = function(instrumentFromModFile)
+	{
+		var returnValue = null;
+
+		var samplesFromModFile = instrumentFromModFile.samples;
+		if (samplesFromModFile != null)
+		{
+			var bytesPerSample = 2;
+
+			var samplesForChannel = [];
+			for (var s = 0; s < samplesFromModFile.length; s += bytesPerSample)
+			{
+				var sampleFromModFile =
+					(samplesFromModFile[s] << 8)
+					| samplesFromModFile[s + 1];
+				var sampleConverted = sampleFromModFile; // todo
+				samplesForChannel.push(sampleConverted);
+			}
+			var samplesForChannels = [ samplesForChannel ];
+			var instrumentAsWavFile = new WavFile
+			(
+				"", // filePath,
+				new WavFileSamplingInfo
+				(
+					1, // formatCode
+					1, // numberOfChannels
+					ModFile.SamplesPerSecond,
+					ModFile.BitsPerSample
+				),
+				samplesForChannels
+			);
+			var soundSourceWavFile = new SoundSource_WavFile("C_3", instrumentAsWavFile);
+			var soundSourceWrapper = new SoundSource(soundSourceWavFile);
+			var instrument = new Instrument(instrumentFromModFile.name, soundSourceWrapper);
+		}
+
+		return instrument;
+	}
 }

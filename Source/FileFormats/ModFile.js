@@ -8,6 +8,9 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 	this.sequences = sequences;
 }
 {
+	ModFile.SamplesPerSecond = 8287;
+	ModFile.BitsPerSample = 16;
+
 	ModFile.fromBytes = function(name, bytes)
 	{
 		// Based on descriptions of the MOD file format found at the URLs:
@@ -251,11 +254,17 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 		var lookup = ModFile.pitchNameToPitchCodeLookup;
 		for (var pitchName in lookup)
 		{
-			var pitchCode = lookup[pitchName];
-			if (pitchCode < pitchCodeToFind)
+			var pitchCodeFromLookup = lookup[pitchName];
+			if (pitchCodeFromLookup <= pitchCodeToFind)
 			{
 				returnValue = pitchName;
+				break;
 			}
+		}
+
+		if (returnValue == null)
+		{
+			throw "Unrecognized pitch code.";
 		}
 
 		return returnValue;
@@ -272,7 +281,13 @@ function ModFileDivisionCell(instrumentIndex, pitchCodeOrEffectParameter, effect
 {
 	ModFileDivisionCell.prototype.toString = function()
 	{
-		return JSON.stringify(this);
+		var returnValue =
+		(
+			this.instrumentIndex
+			+ "-" + this.pitchCodeOrEffectParameter
+			+ "-" + this.effectDefnID
+		);
+		return returnValue;
 	}
 }
 

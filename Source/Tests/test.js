@@ -2,6 +2,7 @@ function test()
 {
 	var tests = new Tests();
 	//tests.wavFilePlay();
+	//tests.modFileInstrumentPlay();
 	tests.modFilePlay();
 	//tests.instrumentWavFile();
 }
@@ -15,6 +16,14 @@ function Tests()
 }
 {
 	// helpers
+
+	Tests.infoDialogShow = function()
+	{
+		var message =
+			"A sound should be heard after this dialog is dismissed."
+			+ "  May not work if the debugging pane is active.";
+		alert(message);
+	}
 
 	Tests.prototype.fileAtPathLoad = function(filePath, callback)
 	{
@@ -66,7 +75,28 @@ function Tests()
 				var noteHigher = noteBase;
 				noteHigher.octaveIndex += 1;
 				noteHigher.play(this.song, this.sequence, this.track);
-				alert("You should hear a sound when you dismiss this dialog.");
+				Tests.infoDialogShow();
+			}
+		);
+	}
+
+	Tests.prototype.modFileInstrumentPlay = function()
+	{
+		var modFilePath = "../../Media/Test.mod";
+
+		this.fileAtPathLoad
+		(
+			modFilePath,
+			function(file, fileAsBytes)
+			{
+				var modFile = ModFile.fromBytes(file.name, fileAsBytes);
+				var modFileInstrument0 = modFile.instruments[0];
+				var instrumentConverted =
+					Instrument.fromModFileInstrument(modFileInstrument0);
+				var wavFile = instrumentConverted.soundSource.child.wavFile;
+				var sound = new Sound("", wavFile);
+				sound.play();
+				Tests.infoDialogShow();
 			}
 		);
 	}
@@ -82,8 +112,13 @@ function Tests()
 			{
 				var modFile = ModFile.fromBytes(file.name, fileAsBytes);
 				var modFileAsSong = Song.fromModFile(modFile);
+				//var sequenceName0 = modFileAsSong.sequenceNamesToPlayInOrder[0];
+				//var sequence0 = modFileAsSong.sequences[sequenceName0];
+				//modFileAsSong.sequences = [ sequence0 ].addLookups("name");
+				//modFileAsSong.sequenceNamesToPlayInOrder = [ sequence0.name ];
+				alert("About to convert a MOD sequence to audio.  May take a while.");
 				modFileAsSong.play();
-				alert("You should hear a song when you dismiss this dialog.");
+				Tests.infoDialogShow();
 			}
 		);
 	}
@@ -98,7 +133,7 @@ function Tests()
 				var wavFile = WavFile.fromBytes(file.name, fileAsBytes);
 				var sound = new Sound("", wavFile);
 				sound.play();
-				alert("You should hear a sound when you dismiss this dialog.");
+				Tests.infoDialogShow();
 			}
 		);
 	}
