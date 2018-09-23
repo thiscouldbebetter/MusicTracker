@@ -32,7 +32,8 @@ function SoundSource_WavFile(pitchBase, wavFile)
 			/ this.frequencyBase()
 			* samplesPerSecond
 		);
-		var returnValue = this.samplesNormalized()[sampleIndex];
+		var samples = this.samplesNormalized();
+		var returnValue = (sampleIndex >= samples.length ? 0 : samples[sampleIndex]);
 
 		return returnValue;
 	}

@@ -187,16 +187,23 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 	{
 		var sequences = [];
 		var sequencesFromModFile = modFile.sequences;
-		for (var i = 0; i < sequencesFromModFile.length; i++)
+		for (var s = 0; s < sequencesFromModFile.length; s++)
 		{
-			var sequenceFromModFile = sequencesFromModFile[i];
+			var sequenceFromModFile = sequencesFromModFile[s];
 			var divisionCellsForChannels = sequenceFromModFile.divisionCellsForChannels;
-			var tracks = [];
+
+			var tracksForInstruments = [];
+			for (var i = 0; i < instruments.length; i++)
+			{
+				var instrument = instruments[i];
+				var instrumentName = instrument.name;
+				var trackForInstrument = new Track(instrumentName, []);
+				tracksForInstruments.push(trackForInstrument);
+			}
 
 			for (var t = 0; t < divisionCellsForChannels.length; t++)
 			{
 				var divisionCellsForChannel = divisionCellsForChannels[t];
-				var notesForTrack = [];
 
 				for (var c = 0; c < divisionCellsForChannel.length; c++)
 				{
@@ -212,24 +219,21 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 							c, // timeStartInTicks
 							octaveIndex,
 							pitchName.substr(0, 2),
-							99, // volumeAsPercentage
-							8, // durationInTicks
+							99, // volumeAsPercentage - todo
+							8, // durationInTicks - todo
 						);
-						notesForTrack.push(note);
+						var trackForInstrument = tracksForInstruments[instrumentIndex - 1];
+						trackForInstrument.notes.push(note);
 					}
 				}
-
-				var instrumentName = instruments[0].name; // todo
-				var track = new Track(instrumentName, notesForTrack);
-				tracks.push(track);
 			}
 
 			var sequence = new Sequence
 			(
-				"_" + i,
+				"_" + s,
 				8, // ticksPerSecond
 				64, // durationInTicks
-				tracks
+				tracksForInstruments
 			);
 			sequences.push(sequence);
 		}

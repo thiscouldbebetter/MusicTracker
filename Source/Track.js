@@ -146,6 +146,10 @@ function Track(instrumentName, notes)
 			}
 		}
 
+		trackAsSamples.length = durationInSamples; // hack
+
+		//Tracker.samplesValidate(trackAsSamples);
+
 		return trackAsSamples;
 	}
 }

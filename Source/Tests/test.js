@@ -111,13 +111,15 @@ function Tests()
 			function(file, fileAsBytes)
 			{
 				var modFile = ModFile.fromBytes(file.name, fileAsBytes);
-				var modFileAsSong = Song.fromModFile(modFile);
-				//var sequenceName0 = modFileAsSong.sequenceNamesToPlayInOrder[0];
-				//var sequence0 = modFileAsSong.sequences[sequenceName0];
-				//modFileAsSong.sequences = [ sequence0 ].addLookups("name");
-				//modFileAsSong.sequenceNamesToPlayInOrder = [ sequence0.name ];
+				var song = Song.fromModFile(modFile);
+				//var sequenceIndex = 1;
+				//var sequenceName = song.sequenceNamesToPlayInOrder[sequenceIndex];
+				//var sequence = song.sequences[sequenceName];
+				//sequence.tracks.length = 2; // The second track mangles the first?
+				//song.sequences = [ sequence ].addLookups("name");
+				//song.sequenceNamesToPlayInOrder = [ sequence.name ];
 				alert("About to convert a MOD sequence to audio.  May take a while.");
-				modFileAsSong.play();
+				song.play();
 				Tests.infoDialogShow();
 			}
 		);

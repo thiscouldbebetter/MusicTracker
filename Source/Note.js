@@ -96,7 +96,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		(
 			samplesPerSecond, durationInSamples, frequencyInHertz, volumeAsFraction
 		);
-
+		//Tracker.samplesValidate(noteAsSamples);
 		return noteAsSamples;
 	}
 

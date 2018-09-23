@@ -217,20 +217,25 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 			for (var s = 0; s < trackAsSamples.length; s++)
 			{
-				var sampleMixed = sequenceAsSamples[s];
-				var sampleFromTrack = trackAsSamples[s];
-				sampleMixed += sampleFromTrack;
-				if (sampleMixed < -1)
-				{
-					sampleMixed = -1;
-				}
-				else if (sampleMixed > 1)
-				{
-					sampleMixed = 1;
-				}
-				sequenceAsSamples[s] = sampleMixed;
+				sequenceAsSamples[s] += trackAsSamples[s];
 			}
 		}
+
+		for (var s = 0; s < sequenceAsSamples.length; s++)
+		{
+			var sample = sequenceAsSamples[s];
+			if (sample > 1)
+			{
+				sample = 1;
+			}
+			else if (sample < -1)
+			{
+				sample = -1;
+			}
+			sequenceAsSamples[s] = sample;
+		}
+
+		//Tracker.samplesValidate(sequenceAsSamples);
 
 		return sequenceAsSamples;
 	}

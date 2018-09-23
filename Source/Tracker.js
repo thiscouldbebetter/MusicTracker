@@ -37,6 +37,17 @@ function Tracker(songCurrent)
 		return samplesAsWavFile;
 	}
 
+	Tracker.samplesValidate = function(samples)
+	{
+		for (var i = 0; i < samples.length; i++)
+		{
+			if (isNaN(samples[i]))
+			{
+				throw "Invalid sample.";
+			}
+		}
+	}
+
 	// ui
 
 	Tracker.prototype.uiClear = function()
