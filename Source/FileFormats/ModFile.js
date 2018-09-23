@@ -17,14 +17,14 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 
 		var reader = new ByteStreamBigEndian(bytes);
 
-		var title = reader.readString(20).trim();
+		var title = reader.readString(20).replace(/\0/g, "").trim();
 
 		var instruments = [];
 
 		var numberOfInstruments = 31; // Or maybe 15?
 		for (var i = 0; i < numberOfInstruments; i++)
 		{
-			var instrumentName = reader.readString(22);
+			var instrumentName = reader.readString(22).replace(/\0/g, "").trim();
 
 			// In "words". 2 bytes/word
 			var numberOfSamplesInInstrumentPlusOne = reader.readShort();
@@ -55,6 +55,7 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 		var numberOfSequencesToPlay = reader.readByte(); // 1 to 128.
 		var reserved = reader.readByte(); // Should be 127.
 		var sequenceIndicesToPlay = reader.readBytes(128); // Each 0 - 63.
+		sequenceIndicesToPlay.length = numberOfSequencesToPlay;
 
 		var sequenceIndexHighestSoFar = -1;
 		for (var i = 0; i < sequenceIndicesToPlay.length; i++)
@@ -89,12 +90,14 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 
 		for (var s = 0; s < numberOfSequenceDefns; s++)
 		{
-			var divisionsInSequence = [];
+			var divisionCellsForChannels = [];
+			for (var c = 0; c < numberOfChannels; c++)
+			{
+				divisionCellsForChannels[c] = [];
+			}
 
 			for (var d = 0; d < samplesPerSequence; d++)
 			{
-				var notesForChannelsInDivision = [];
-
 				for (var c = 0; c < numberOfChannels; c++)
 				{
 					var bytesForSampleAndChannel =
@@ -109,15 +112,8 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 					var pitchCodeOrEffectParameter =
 						(
 							( (bytesForSampleAndChannel[0] & 0xF) << 8)
-							| bytes[1]
+							| bytesForSampleAndChannel[1]
 						);
-
-					// Pitch codes:
-					// From https://www.ocf.berkeley.edu/~eek/index.html/tiny_examples/ptmod/ap12.html:
-					// "Periodtable for Tuning 0, Normal
-					// C-1 to B-1 : 856,808,762,720,678,640,604,570,538,508,480,453
-					// C-2 to B-2 : 428,404,381,360,339,320,302,285,269,254,240,226
-					// C-3 to B-3 : 214,202,190,180,170,160,151,143,135,127,120,113"
 
 					// Effects
 					// 0 - Arpeggio
@@ -155,24 +151,21 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 					var effectDefnID =
 						(
 							( (bytesForSampleAndChannel[2] & 0xF) << 8)
-							| bytes[3]
+							| bytesForSampleAndChannel[3]
 						);
 
-					var note = new ModFileNote
+					var cell = new ModFileDivisionCell
 					(
-						pitchCodeOrEffectParameter, effectDefnID
+						instrumentIndex, pitchCodeOrEffectParameter, effectDefnID
 					);
 
-					notesForChannelsInDivision.push(note);
+					divisionCellsForChannels[c].push(cell);
 
 				} // end for c
 
-				var division = new ModFileDivision(notesForChannelsInDivision);
-				divisionsInSequence.push(division);
-
 			} // end for d
 
-			var sequence = new ModFileSequence(divisionsInSequence);
+			var sequence = new ModFileSequence(divisionCellsForChannels);
 			sequences.push(sequence);
 
 		} // end for s
@@ -180,6 +173,14 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 		for (var i = 0; i < instruments.length; i++)
 		{
 			var instrument = instruments[i];
+
+			if (instrument.name == "")
+			{
+				// The rest of the instrument slots
+				// are used to store other data, or blank.
+				break;
+			}
+
 			var instrumentSamples = reader.readBytes(instrument.numberOfSamplesPlusOne * 2);
 			instrument.samples = instrumentSamples;
 		}
@@ -197,16 +198,87 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 
 	} // end function
 
+	ModFile.pitchNameToPitchCodeLookup =
+	{
+		// Pitch codes:
+		// From https://www.ocf.berkeley.edu/~eek/index.html/tiny_examples/ptmod/ap12.html:
+		// "Periodtable for Tuning 0, Normal
+
+		"C_1": 856,
+		"C#1": 808,
+		"D_1": 762,
+		"D#1": 720,
+		"E_1": 678,
+		"F_1": 640,
+		"F#1": 604,
+		"G_1": 570,
+		"G#1": 538,
+		"A_1": 508,
+		"A#1": 480,
+		"B_1": 453,
+
+		"C_2": 428,
+		"C#2": 404,
+		"D_2": 381,
+		"D#2": 360,
+		"E_2": 339,
+		"F_2": 320,
+		"F#2": 302,
+		"G_2": 285,
+		"G#2": 269,
+		"A_2": 254,
+		"A#2": 240,
+		"B_2": 226,
+
+		"C_3": 214,
+		"C#3": 202,
+		"D_3": 190,
+		"D#3": 180,
+		"E_3": 170,
+		"F_3": 160,
+		"F#3": 151,
+		"G_3": 143,
+		"G#3": 135,
+		"A_3": 127,
+		"A#3": 120,
+		"B_3": 113,
+	};
+
+	ModFile.pitchNameForPitchCode = function(pitchCodeToFind)
+	{
+		var returnValue = null;
+
+		var lookup = ModFile.pitchNameToPitchCodeLookup;
+		for (var pitchName in lookup)
+		{
+			var pitchCode = lookup[pitchName];
+			if (pitchCode < pitchCodeToFind)
+			{
+				returnValue = pitchName;
+			}
+		}
+
+		return returnValue;
+	}
+
 } // end class ModFile
 
-function ModFileDivision(notesForChannels)
+function ModFileDivisionCell(instrumentIndex, pitchCodeOrEffectParameter, effectDefnID)
 {
-	this.notesForChannels = notesForChannels;
+	this.instrumentIndex = instrumentIndex;
+	this.pitchCodeOrEffectParameter = pitchCodeOrEffectParameter;
+	this.effectDefnID = effectDefnID;
+}
+{
+	ModFileDivisionCell.prototype.toString = function()
+	{
+		return JSON.stringify(this);
+	}
 }
 
 function ModFileInstrument
 (
-	instrumentName,
+	name,
 	numberOfSamplesPlusOne,
 	pitchShiftInSixteenthTones,
 	volume,
@@ -214,21 +286,17 @@ function ModFileInstrument
 	repeatLengthInWords
 )
 {
-	this.instrumentName = instrumentName;
+	this.name = name;
 	this.numberOfSamplesPlusOne = numberOfSamplesPlusOne;
 	this.pitchShiftInSixteenthTones = pitchShiftInSixteenthTones;
 	this.volume = volume;
 	this.repeatOffsetInWords = repeatOffsetInWords;
 	this.repeatLengthInWords = repeatLengthInWords;
+
+	this.samples = null;
 }
 
-function ModFileNote(pitchCode, effect)
+function ModFileSequence(divisionCellsForChannels)
 {
-	this.pitchCode = pitchCode;
-	this.effect = effect;
-}
-
-function ModFileSequence(samplesForChannels)
-{
-	this.samplesForChannels = samplesForChannels;
+	this.divisionCellsForChannels = divisionCellsForChannels;
 }

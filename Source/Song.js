@@ -135,6 +135,122 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return songAsSamples;
 	}
 
+	// mod
+
+	Song.fromModFile = function(modFile)
+	{
+		var bytesPerSample = 2;
+
+		var instruments = [];
+		var instrumentsFromModFile = modFile.instruments;
+		for (var i = 0; i < instrumentsFromModFile.length; i++)
+		{
+			var instrumentFromModFile = instrumentsFromModFile[i];
+			var samplesFromModFile = instrumentFromModFile.samples;
+			if (samplesFromModFile != null)
+			{
+				var samplesForChannel = [];
+				for (var s = 0; s < samplesFromModFile.length; s += bytesPerSample)
+				{
+					var sampleFromModFile =
+						(samplesFromModFile[s] << 8)
+						| samplesFromModFile[s + 1];
+					var sampleConverted = sampleFromModFile; // todo
+					samplesForChannel.push(sampleConverted);
+				}
+				var samplesForChannels = [ samplesForChannel ];
+				var instrumentAsWavFile = new WavFile
+				(
+					"", // filePath,
+					new WavFileSamplingInfo
+					(
+						1, // formatCode
+						1, // numberOfChannels
+						44100, // samplesPerSecond
+						16 // bitsPerSample
+					),
+					samplesForChannels
+				);
+				var soundSourceWavFile = new SoundSource_WavFile("C_4", instrumentAsWavFile);
+				var soundSourceWrapper = new SoundSource(soundSourceWavFile);
+				var instrument = new Instrument(instrumentFromModFile.name, soundSourceWrapper);
+				instruments.push(instrument);
+			}
+		}
+
+		var sequences = [];
+		var sequencesFromModFile = modFile.sequences;
+		for (var i = 0; i < sequencesFromModFile.length; i++)
+		{
+			var sequenceFromModFile = sequencesFromModFile[i];
+			var divisionCellsForChannels = sequenceFromModFile.divisionCellsForChannels;
+			var tracks = [];
+
+			for (var t = 0; t < divisionCellsForChannels.length; t++)
+			{
+				var divisionCellsForChannel = divisionCellsForChannels[t];
+				var notesForTrack = [];
+
+				for (var c = 0; c < divisionCellsForChannel.length; c++)
+				{
+					var divisionCellToConvert = divisionCellsForChannel[t];
+					var instrumentIndex = divisionCellToConvert.instrumentIndex;
+					if (instrumentIndex != 0)
+					{
+						var pitchCode = divisionCellToConvert.pitchCodeOrEffectParameter;
+						var pitchName = ModFile.pitchNameForPitchCode(pitchCode);
+						var octaveIndex = parseInt(pitchName.substr(2));
+						var note = new Note
+						(
+							c, // timeStartInTicks
+							octaveIndex,
+							pitchName.substr(0, 2),
+							99, // volumeAsPercentage
+							8, // durationInTicks
+						);
+						notesForTrack.push(note);
+					}
+				}
+
+				var instrumentName = instruments[0].name; // todo
+				var track = new Track(instrumentName, notesForTrack);
+				tracks.push(track);
+			}
+
+			var sequence = new Sequence
+			(
+				"_" + i,
+				8, // ticksPerSecond
+				64, // durationInTicks,
+				tracks
+			); // todo
+			sequences.push(sequence);
+		}
+		sequences.addLookups("name");
+
+		var sequenceNamesToPlayInOrder = [];
+		var sequenceIndicesFromModFile = modFile.sequenceIndicesToPlayInOrder;
+		for (var i = 0; i < sequenceIndicesFromModFile.length; i++)
+		{
+			var sequenceIndex = sequenceIndicesFromModFile[i];
+			var sequence = sequences[sequenceIndex];
+			var sequenceName = sequence.name;
+			sequenceNamesToPlayInOrder.push(sequenceName);
+		}
+
+		var song = new Song
+		(
+			this.name,
+			44100, // samplesPerSecond,
+			16, // bitsPerSample,
+			instruments,
+			sequences,
+			sequenceNamesToPlayInOrder
+		);
+
+		return song;
+	}
+
 	// ui
 
 	Song.prototype.uiClear = function()

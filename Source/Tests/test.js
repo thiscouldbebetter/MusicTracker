@@ -2,7 +2,8 @@ function test()
 {
 	var tests = new Tests();
 	//tests.wavFilePlay();
-	tests.instrumentWavFile();
+	tests.modFilePlay();
+	//tests.instrumentWavFile();
 }
 
 function Tests()
@@ -15,17 +16,17 @@ function Tests()
 {
 	// helpers
 
-	Tests.prototype.wavFileAtPathLoad = function(wavFilePath, callback)
+	Tests.prototype.fileAtPathLoad = function(filePath, callback)
 	{
 		var xmlHttpRequest = new XMLHttpRequest();
-		xmlHttpRequest.open("GET", wavFilePath, true);
+		xmlHttpRequest.open("GET", filePath, true);
 		xmlHttpRequest.responseType = "blob";
 		xmlHttpRequest.onreadystatechange =
-			this.wavFileAtPathLoad_FileReadyStateChanged.bind(this, callback);
+			this.fileAtPathLoad_FileReadyStateChanged.bind(this, callback);
 		xmlHttpRequest.send();
 	}
 
-	Tests.prototype.wavFileAtPathLoad_FileReadyStateChanged = function(callback, event)
+	Tests.prototype.fileAtPathLoad_FileReadyStateChanged = function(callback, event)
 	{
 		var request = event.target;
 		if (request.readyState == 4)
@@ -33,26 +34,24 @@ function Tests()
 			var responseAsBlob = request.response;
 			FileHelper.loadFileAsBytes
 			(
-				responseAsBlob, this.wavFileAtPathLoad_FileLoaded.bind(this, callback)
+				responseAsBlob,
+				//this.fileAtPathLoad_FileLoaded.bind(this, callback)
+				callback.bind(this)
 			);
 		}
-	}
-
-	Tests.prototype.wavFileAtPathLoad_FileLoaded = function(callback, file, fileAsBytes)
-	{
-		var wavFile = WavFile.fromBytes("", fileAsBytes);
-		callback.call(this, wavFile);
 	}
 
 	// tests
 
 	Tests.prototype.instrumentWavFile = function()
 	{
-		this.wavFileAtPathLoad
+		this.fileAtPathLoad
 		(
 			this.wavFilePath,
-			function(wavFile)
+			function(file, fileAsBytes)
 			{
+				var wavFile = WavFile.fromBytes(file.name, fileAsBytes);
+
 				var noteBasePitch = "C_3";
 				var noteBaseAsString = noteBasePitch + "-99-0008";
 				var noteBase = Note.fromString(noteBaseAsString, 0);
@@ -70,16 +69,33 @@ function Tests()
 				alert("You should hear a sound when you dismiss this dialog.");
 			}
 		);
+	}
 
+	Tests.prototype.modFilePlay = function()
+	{
+		var modFilePath = "../../Media/Test.mod";
+
+		this.fileAtPathLoad
+		(
+			modFilePath,
+			function(file, fileAsBytes)
+			{
+				var modFile = ModFile.fromBytes(file.name, fileAsBytes);
+				var modFileAsSong = Song.fromModFile(modFile);
+				modFileAsSong.play();
+				alert("You should hear a song when you dismiss this dialog.");
+			}
+		);
 	}
 
 	Tests.prototype.wavFilePlay = function()
 	{
-		this.wavFileAtPathLoad
+		this.fileAtPathLoad
 		(
 			this.wavFilePath,
-			function(wavFile)
+			function(file, fileAsBytes)
 			{
+				var wavFile = WavFile.fromBytes(file.name, fileAsBytes);
 				var sound = new Sound("", wavFile);
 				sound.play();
 				alert("You should hear a sound when you dismiss this dialog.");
