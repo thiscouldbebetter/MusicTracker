@@ -99,6 +99,27 @@ function Track(instrumentName, notes)
 		return returnValue;
 	}
 
+	Track.prototype.notesSustainAll = function(sequence)
+	{
+		// For MOD file conversion.
+		// All notes last until the next note starts.
+
+		for (var i = 1; i < this.notes.length - 1; i++)
+		{
+			var note = this.notes[i];
+			var noteNext = this.notes[i + 1];
+			note.durationInTicks =
+				noteNext.timeStartInTicks - note.timeStartInTicks;
+		}
+
+		if (this.notes.length > 0)
+		{
+			var noteFinal = this.notes[this.notes.length - 1];
+			noteFinal.durationInTicks =
+				sequence.durationInTicks - noteFinal.timeStartInTicks;
+		}
+	}
+
 	Track.prototype.play = function(song, sequence)
 	{
 		var samples = this.toSamples(song, sequence);

@@ -128,6 +128,15 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return noteAtTick;
 	}
 
+	Sequence.prototype.notesSustainAll = function()
+	{
+		for (var t = 0; t < this.tracks.length; t++)
+		{
+			var track = this.tracks[t];
+			track.notesSustainAll(this);
+		}
+	}
+
 	Sequence.prototype.play = function(song)
 	{
 		var samples = this.toSamples(song);

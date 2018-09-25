@@ -192,14 +192,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			var sequenceFromModFile = sequencesFromModFile[s];
 			var divisionCellsForChannels = sequenceFromModFile.divisionCellsForChannels;
 
-			var tracksForInstruments = [];
-			for (var i = 0; i < instruments.length; i++)
-			{
-				var instrument = instruments[i];
-				var instrumentName = instrument.name;
-				var trackForInstrument = new Track(instrumentName, []);
-				tracksForInstruments.push(trackForInstrument);
-			}
+			var tracksConverted = [];
 
 			for (var t = 0; t < divisionCellsForChannels.length; t++)
 			{
@@ -220,10 +213,19 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 							octaveIndex,
 							pitchName.substr(0, 2),
 							99, // volumeAsPercentage - todo
-							8, // durationInTicks - todo
+							8 // durationInTicks - Will be set later.
+							// hack - Setting durationInTicks to 0 causes trouble.
 						);
-						var trackForInstrument = tracksForInstruments[instrumentIndex - 1];
-						trackForInstrument.notes.push(note);
+						var instrumentPlusChannel = instrumentIndex + "_" + t;
+						var track = tracksConverted[instrumentPlusChannel];
+						if (track == null)
+						{
+							var instrument = instruments[instrumentIndex - 1];
+							track = new Track(instrument.name, []);
+							tracksConverted.push(track);
+							tracksConverted[instrumentPlusChannel] = track;
+						}
+						track.notes.push(note);
 					}
 				}
 			}
@@ -233,8 +235,11 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				"_" + s,
 				8, // ticksPerSecond
 				64, // durationInTicks
-				tracksForInstruments
+				tracksConverted
 			);
+
+			sequence.notesSustainAll();
+
 			sequences.push(sequence);
 		}
 		sequences.addLookups("name");

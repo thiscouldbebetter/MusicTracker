@@ -20,14 +20,15 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 
 		var reader = new ByteStreamBigEndian(bytes);
 
-		var title = reader.readString(20).replace(/\0/g, "").trim();
+		var title = reader.readString(20).replaceAll("\0", "").trim();
 
 		var instruments = [];
 
 		var numberOfInstruments = 31; // Or maybe 15?
 		for (var i = 0; i < numberOfInstruments; i++)
 		{
-			var instrumentName = reader.readString(22).replace(/\0/g, "").trim();
+			var instrumentName =
+				reader.readString(22).replaceAll("\0", "").trim();//.makeIdentifier().trim();
 
 			// In "words". 2 bytes/word
 			var numberOfSamplesInInstrumentPlusOne = reader.readShort();
@@ -129,11 +130,11 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 					// 7 - Tremolo
 					// 8 - Set Panning Position
 					// 9 - Set Sample Offset
-					// 10 - Volume Slide
-					// 11 - Position Jump
-					// 12 - Set Volume
-					// 13 - Pattern Break
-					// 14 - Extended
+					// A - Volume Slide
+					// B - Position Jump
+					// C - Set Volume
+					// D - Pattern Break
+					// E - Extended
 						// 1 - Fineslide Up
 						// 2 - Fineslide Down
 						// 3 - Toggle Glissando
@@ -143,13 +144,13 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 						// 7 - Set Tremolo Waveform
 						// 8 - Reserved
 						// 9 - Retrigger Sample
-						// 10 - Fine Volume Slide Up
-						// 11 - Fine Volume Slide Down
-						// 12 - Cut Sample
-						// 13 - Delay Sample
-						// 14 - Delay Pattern
-						// 15 - Invert Loop
-					// 15 - Set Speed
+						// A - Fine Volume Slide Up
+						// B - Fine Volume Slide Down
+						// C - Cut Sample
+						// D - Delay Sample
+						// E - Delay Pattern
+						// F - Invert Loop
+					// F - Set Speed
 
 					var effectDefnID =
 						(
@@ -176,16 +177,12 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 		for (var i = 0; i < instruments.length; i++)
 		{
 			var instrument = instruments[i];
-
-			if (instrument.name == "")
+			if (instrument.name == "_")
 			{
-				// The rest of the instrument slots
-				// are used to store other data, or blank.
-				break;
+				instrument.name = "_" + i;
 			}
-
-			var instrumentSamples = reader.readBytes(instrument.numberOfSamplesPlusOne * 2);
-			instrument.samples = instrumentSamples;
+			var numberOfSamplesPlusOne = instrument.numberOfSamplesPlusOne;
+			instrument.samples = reader.readBytes(numberOfSamplesPlusOne * 2);
 		}
 
 		var returnValue = new ModFile

@@ -90,9 +90,10 @@ function Tests()
 			function(file, fileAsBytes)
 			{
 				var modFile = ModFile.fromBytes(file.name, fileAsBytes);
-				var modFileInstrument0 = modFile.instruments[0];
+				var instrumentIndex = 0;
+				var modFileInstrument = modFile.instruments[instrumentIndex];
 				var instrumentConverted =
-					Instrument.fromModFileInstrument(modFileInstrument0);
+					Instrument.fromModFileInstrument(modFileInstrument);
 				var wavFile = instrumentConverted.soundSource.child.wavFile;
 				var sound = new Sound("", wavFile);
 				sound.play();
@@ -112,10 +113,10 @@ function Tests()
 			{
 				var modFile = ModFile.fromBytes(file.name, fileAsBytes);
 				var song = Song.fromModFile(modFile);
-				//var sequenceIndex = 1;
+				//var sequenceIndex = 7;
 				//var sequenceName = song.sequenceNamesToPlayInOrder[sequenceIndex];
 				//var sequence = song.sequences[sequenceName];
-				//sequence.tracks.length = 2; // The second track mangles the first?
+				//sequence.tracks.length = 1;
 				//song.sequences = [ sequence ].addLookups("name");
 				//song.sequenceNamesToPlayInOrder = [ sequence.name ];
 				alert("About to convert a MOD sequence to audio.  May take a while.");
