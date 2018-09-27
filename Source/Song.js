@@ -185,6 +185,9 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 	Song.fromModFile_Sequences = function(modFile, instruments)
 	{
+		var ticksPerSecond = 8;
+		var volumeCurrentByChannel = [99, 99, 99, 99];
+
 		var sequences = [];
 		var sequencesFromModFile = modFile.sequences;
 		for (var s = 0; s < sequencesFromModFile.length; s++)
@@ -198,12 +201,24 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			{
 				var divisionCellsForChannel = divisionCellsForChannels[t];
 
+				var volumeCurrentForChannel = volumeCurrentByChannel[t];
+
 				for (var c = 0; c < divisionCellsForChannel.length; c++)
 				{
 					var divisionCellToConvert = divisionCellsForChannel[c];
 					var instrumentIndex = divisionCellToConvert.instrumentIndex;
 					if (instrumentIndex != 0)
 					{
+						var effect = divisionCellToConvert.effect;
+						if (effect != null)
+						{
+							var effectDefnID = effect.defnID;
+							if (effectDefnID == 0xF) // speed
+							{
+								var effectArg = 16 * effect.arg0 + effect.arg1;
+								ticksPerSecond = (effectArg == 3 ? 16 : 8); // hack
+							}
+						}
 						var pitchCode = divisionCellToConvert.pitchCodeOrEffectParameter;
 						var pitchName = ModFile.pitchNameForPitchCode(pitchCode);
 						var octaveIndex = parseInt(pitchName.substr(2));
@@ -212,7 +227,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 							c, // timeStartInTicks
 							octaveIndex,
 							pitchName.substr(0, 2),
-							99, // volumeAsPercentage - todo
+							volumeCurrentForChannel,
 							8 // durationInTicks - Will be set later.
 							// hack - Setting durationInTicks to 0 causes trouble.
 						);
@@ -233,7 +248,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			var sequence = new Sequence
 			(
 				"_" + s,
-				8, // ticksPerSecond
+				ticksPerSecond,
 				64, // durationInTicks
 				tracksConverted
 			);

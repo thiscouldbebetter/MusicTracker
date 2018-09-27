@@ -113,10 +113,11 @@ function Tests()
 			{
 				var modFile = ModFile.fromBytes(file.name, fileAsBytes);
 				var song = Song.fromModFile(modFile);
-				//var sequenceIndex = 7;
-				//var sequenceName = song.sequenceNamesToPlayInOrder[sequenceIndex];
-				//var sequence = song.sequences[sequenceName];
-				//sequence.tracks.length = 1;
+				var sequenceIndex = 2;
+				var sequenceName = song.sequenceNamesToPlayInOrder[sequenceIndex];
+				var sequence = song.sequences[sequenceName];
+				var track = sequence.tracks[0];
+				//sequence.tracks = [ track ];
 				//song.sequences = [ sequence ].addLookups("name");
 				//song.sequenceNamesToPlayInOrder = [ sequence.name ];
 				alert("About to convert a MOD sequence to audio.  May take a while.");

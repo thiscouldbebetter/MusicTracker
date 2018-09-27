@@ -28,7 +28,7 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 		for (var i = 0; i < numberOfInstruments; i++)
 		{
 			var instrumentName =
-				reader.readString(22).replaceAll("\0", "").trim();//.makeIdentifier().trim();
+				reader.readString(22).replaceAll("\0", "").trim().makeIdentifier().trim();
 
 			// In "words". 2 bytes/word
 			var numberOfSamplesInInstrumentPlusOne = reader.readShort();
@@ -119,48 +119,20 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 							| bytesForSampleAndChannel[1]
 						);
 
-					// Effects
-					// 0 - Arpeggio
-					// 1 - Slide Up
-					// 2 - Slide Down
-					// 3 - Slide to Note
-					// 4 - Vibrato
-					// 5 - Continue Slide to Note with Volume Slide
-					// 6 - Continue Vibrato with Volume Slide
-					// 7 - Tremolo
-					// 8 - Set Panning Position
-					// 9 - Set Sample Offset
-					// A - Volume Slide
-					// B - Position Jump
-					// C - Set Volume
-					// D - Pattern Break
-					// E - Extended
-						// 1 - Fineslide Up
-						// 2 - Fineslide Down
-						// 3 - Toggle Glissando
-						// 4 - Set Vibrato Waveform
-						// 5 - Set Finetune Value
-						// 6 - Loop Pattern
-						// 7 - Set Tremolo Waveform
-						// 8 - Reserved
-						// 9 - Retrigger Sample
-						// A - Fine Volume Slide Up
-						// B - Fine Volume Slide Down
-						// C - Cut Sample
-						// D - Delay Sample
-						// E - Delay Pattern
-						// F - Invert Loop
-					// F - Set Speed
-
-					var effectDefnID =
-						(
-							( (bytesForSampleAndChannel[2] & 0xF) << 8)
-							| bytesForSampleAndChannel[3]
-						);
+					var effectDefnID = bytesForSampleAndChannel[2] & 0xF;
+					var effectArgsAsByte = bytesForSampleAndChannel[3];
+					var effectAsNumber = (effectDefnID << 8) | effectArgsAsByte;
+					var effect = null;
+					if (effectAsNumber != 0)
+					{
+						var effectArg0 = effectArgsAsByte >> 4;
+						var effectArg1 = effectArgsAsByte & 0xF;
+						effect = new ModFileEffect(effectDefnID, effectArg0, effectArg1);
+					}
 
 					var cell = new ModFileDivisionCell
 					(
-						instrumentIndex, pitchCodeOrEffectParameter, effectDefnID
+						instrumentIndex, pitchCodeOrEffectParameter, effect
 					);
 
 					divisionCellsForChannels[c].push(cell);
@@ -269,11 +241,11 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 
 } // end class ModFile
 
-function ModFileDivisionCell(instrumentIndex, pitchCodeOrEffectParameter, effectDefnID)
+function ModFileDivisionCell(instrumentIndex, pitchCodeOrEffectParameter, effect)
 {
 	this.instrumentIndex = instrumentIndex;
 	this.pitchCodeOrEffectParameter = pitchCodeOrEffectParameter;
-	this.effectDefnID = effectDefnID;
+	this.effect = effect;
 }
 {
 	ModFileDivisionCell.prototype.toString = function()
@@ -286,6 +258,47 @@ function ModFileDivisionCell(instrumentIndex, pitchCodeOrEffectParameter, effect
 		);
 		return returnValue;
 	}
+}
+
+function ModFileEffect(defnID, arg0, arg1)
+{
+	this.defnID = defnID;
+	this.arg0 = arg0;
+	this.arg1 = arg1;
+}
+{
+	// Effect Defn IDs
+	// 0 - Arpeggio
+	// 1 - Slide Up
+	// 2 - Slide Down
+	// 3 - Slide to Note
+	// 4 - Vibrato
+	// 5 - Continue Slide to Note with Volume Slide
+	// 6 - Continue Vibrato with Volume Slide
+	// 7 - Tremolo
+	// 8 - Set Panning Position
+	// 9 - Set Sample Offset
+	// A - Volume Slide
+	// B - Position Jump
+	// C - Set Volume
+	// D - Pattern Break
+	// E - Extended
+		// 1 - Fineslide Up
+		// 2 - Fineslide Down
+		// 3 - Toggle Glissando
+		// 4 - Set Vibrato Waveform
+		// 5 - Set Finetune Value
+		// 6 - Loop Pattern
+		// 7 - Set Tremolo Waveform
+		// 8 - Reserved
+		// 9 - Retrigger Sample
+		// A - Fine Volume Slide Up
+		// B - Fine Volume Slide Down
+		// C - Cut Sample
+		// D - Delay Sample
+		// E - Delay Pattern
+		// F - Invert Loop
+	// F - Set Speed
 }
 
 function ModFileInstrument
