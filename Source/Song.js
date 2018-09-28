@@ -219,7 +219,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 								ticksPerSecond = (effectArg == 3 ? 16 : 8); // hack
 							}
 						}
-						var pitchCode = divisionCellToConvert.pitchCodeOrEffectParameter;
+						var pitchCode = divisionCellToConvert.pitchCode;
 						var pitchName = ModFile.pitchNameForPitchCode(pitchCode);
 						var octaveIndex = parseInt(pitchName.substr(2));
 						var note = new Note

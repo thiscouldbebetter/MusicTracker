@@ -113,7 +113,7 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 							| ( (bytesForSampleAndChannel[2] >> 4) & 0xF)
 						);
 
-					var pitchCodeOrEffectParameter =
+					var pitchCode = // Or sometimes effect parameter?
 						(
 							( (bytesForSampleAndChannel[0] & 0xF) << 8)
 							| bytesForSampleAndChannel[1]
@@ -132,7 +132,7 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 
 					var cell = new ModFileDivisionCell
 					(
-						instrumentIndex, pitchCodeOrEffectParameter, effect
+						instrumentIndex, pitchCode, effect
 					);
 
 					divisionCellsForChannels[c].push(cell);
@@ -241,10 +241,10 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 
 } // end class ModFile
 
-function ModFileDivisionCell(instrumentIndex, pitchCodeOrEffectParameter, effect)
+function ModFileDivisionCell(instrumentIndex, pitchCode, effect)
 {
 	this.instrumentIndex = instrumentIndex;
-	this.pitchCodeOrEffectParameter = pitchCodeOrEffectParameter;
+	this.pitchCode = pitchCode;
 	this.effect = effect;
 }
 {
@@ -253,8 +253,8 @@ function ModFileDivisionCell(instrumentIndex, pitchCodeOrEffectParameter, effect
 		var returnValue =
 		(
 			this.instrumentIndex
-			+ "-" + this.pitchCodeOrEffectParameter
-			+ "-" + this.effectDefnID
+			+ "-" + this.pitchCode
+			+ "-" + this.effect.toString()
 		);
 		return returnValue;
 	}
@@ -299,6 +299,17 @@ function ModFileEffect(defnID, arg0, arg1)
 		// E - Delay Pattern
 		// F - Invert Loop
 	// F - Set Speed
+
+	ModFileEffect.prototype.toString = function()
+	{
+		var returnValue =
+		(
+			this.defnID
+			+ "-" + this.arg0
+			+ "-" + this.arg1
+		);
+		return returnValue;
+	}
 }
 
 function ModFileInstrument
