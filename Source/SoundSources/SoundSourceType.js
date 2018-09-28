@@ -181,6 +181,32 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 			}
 		);
 
+		this.Vibrato = new SoundSourceType
+		(
+			"Vibrato",
+			function create()
+			{
+				var pitches = Pitch.Instances;
+				return new SoundSource_Vibrato
+				(
+					16, // pitchChangesPerSecond
+					// pitchMultipliers
+					[
+						1,
+						1.004
+					],
+					true, // areTransitionsSmooth
+					new SoundSource(new SoundSource_Sine()));
+			},
+			function objectPrototypesSet(object)
+			{
+				object.__proto__ = SoundSource_Vibrato.prototype;
+				object.child.__proto__ = SoundSource.prototype;
+				var child = object.child.child;
+				SoundSourceType.Instances()[child.typeName].objectPrototypesSet(child);
+			}
+		);
+
 		this.WavFile = new SoundSourceType
 		(
 			"WavFile",
@@ -207,6 +233,7 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 			this.Sine,
 			this.Square,
 			this.Triangle,
+			this.Vibrato,
 			this.WavFile,
 		];
 	}
