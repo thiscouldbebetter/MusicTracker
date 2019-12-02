@@ -64,8 +64,8 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		(
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
-		var sound = new Sound("", wavFile);
-		sound.play();
+		this.sound = new Sound("", wavFile);
+		this.sound.play();
 	}
 
 	Note.prototype.pitch = function()
@@ -73,9 +73,27 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return Pitch.Instances._All[this.pitchCode];
 	}
 
-	Note.prototype.timeStartInSeconds = function(song)
+	Note.prototype.stop = function()
 	{
-		return this.timeStartInTicks / song.ticksPerSecond;
+		if (this.sound != null)
+		{
+			this.sound.stop();
+		}
+	}
+
+	Note.prototype.timeStartInSamples = function(song, sequence)
+	{
+		var timeStartInSeconds = this.timeStartInSeconds(sequence);
+		var returnValue = Math.round
+		(
+			timeStartInSeconds * song.samplesPerSecond
+		);
+		return returnValue;
+	}
+
+	Note.prototype.timeStartInSeconds = function(sequence)
+	{
+		return this.timeStartInTicks / sequence.ticksPerSecond;
 	}
 
 	Note.prototype.volumeAsFraction = function()

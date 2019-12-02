@@ -127,8 +127,29 @@ function Track(instrumentName, notes)
 		(
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
-		var sound = new Sound("", wavFile);
-		sound.play();
+		this.sound = new Sound("", wavFile);
+		this.sound.play();
+	}
+
+	Track.prototype.playOrStop = function(song, sequence)
+	{
+		if (this.sound == null)
+		{
+			this.play(song, sequence);
+		}
+		else
+		{
+			this.stop();
+		}
+	}
+
+	Track.prototype.stop = function()
+	{
+		if (this.sound != null)
+		{
+			this.sound.stop();
+			this.sound = null;
+		}
 	}
 
 	// samples
@@ -137,39 +158,46 @@ function Track(instrumentName, notes)
 	{
 		var trackAsSamples = [];
 
-		var durationInSamples = sequence.durationInSamples(song);
-		for (var s = 0; s < durationInSamples; s++)
-		{
-			trackAsSamples[s] = 0;
-		}
-
 		var instrument = this.instrument(song);
+
+		var notesAsSampleArrays = [];
+		var sampleIndexMaxSoFar = 0;
 
 		for (var n = 0; n < this.notes.length; n++)
 		{
 			var note = this.notes[n];
+
 			var noteAsSamples =
 				note.toSamples(song, sequence, this, instrument);
+			notesAsSampleArrays.push(noteAsSamples);
 
-			var noteTimeStartInSeconds =
-				note.timeStartInSeconds(sequence);
-			var noteTimeStartInSamples = Math.round
-			(
-				noteTimeStartInSeconds
-				* song.samplesPerSecond
-			);
+			var noteTimeStartInSamples = note.timeStartInSamples(song, sequence);
+
+			var noteTimeEndInSamples = noteTimeStartInSamples + noteAsSamples.length;
+			if (noteTimeEndInSamples > sampleIndexMaxSoFar)
+			{
+				sampleIndexMaxSoFar = noteTimeEndInSamples;
+			}
+		}
+
+		for (var s = 0; s < sampleIndexMaxSoFar; s++)
+		{
+			trackAsSamples[s] = 0;
+		}
+
+		for (var n = 0; n < this.notes.length; n++)
+		{
+			var note = this.notes[n];
+			var noteAsSamples = notesAsSampleArrays[n];
+			var noteTimeStartInSamples = note.timeStartInSamples(song, sequence);
 
 			for (var s = 0; s < noteAsSamples.length; s++)
 			{
 				var sampleFromNote = noteAsSamples[s];
 				var trackSampleIndex = noteTimeStartInSamples + s;
-				trackAsSamples[trackSampleIndex] = sampleFromNote;
+				trackAsSamples[trackSampleIndex] += sampleFromNote;
 			}
 		}
-
-		trackAsSamples.length = durationInSamples; // hack
-
-		//Tracker.samplesValidate(trackAsSamples);
 
 		return trackAsSamples;
 	}

@@ -11,7 +11,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 }
 
 {
-	Sequence.demo = function(instrumentName, sequencesSoFar)
+	Sequence.demo = function(instrumentName, sequenceName)
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
@@ -20,11 +20,6 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		var noteDuration = Math.floor(ticksPerSecond / 2);
 		var noteOctaveIndexLow = noteOctaveIndex - 1;
 		var noteDurationLong = noteDuration * 2;
-
-		var sequenceName = String.fromCharCode
-		(
-			"A".charCodeAt(0) + sequencesSoFar
-		);
 
 		var returnValue = new Sequence
 		(
@@ -53,6 +48,67 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 						new Note(12 * noteDuration, noteOctaveIndex, "E_", noteVolume, noteDuration),
 						new Note(13 * noteDuration, noteOctaveIndex, "D_", noteVolume, noteDuration),
 						new Note(14 * noteDuration, noteOctaveIndex, "C_", noteVolume, noteDuration),
+					]
+				),
+				new Track
+				(
+					instrumentName,
+					[
+						// notes
+						// timeStartInTicks, octaveIndex, pitchCode, volume, durationInTicks
+						new Note(0 * noteDurationLong, noteOctaveIndexLow, "C_", noteVolume, noteDurationLong),
+						new Note(1 * noteDurationLong, noteOctaveIndexLow, "D_", noteVolume, noteDurationLong),
+						new Note(2 * noteDurationLong, noteOctaveIndexLow, "E_", noteVolume, noteDurationLong),
+						new Note(3 * noteDurationLong, noteOctaveIndexLow, "F_", noteVolume, noteDurationLong),
+						new Note(4 * noteDurationLong, noteOctaveIndexLow, "G_", noteVolume, noteDurationLong),
+						new Note(5 * noteDurationLong, noteOctaveIndexLow, "A_", noteVolume, noteDurationLong),
+						new Note(6 * noteDurationLong, noteOctaveIndexLow, "B_", noteVolume, noteDurationLong),
+						new Note(7 * noteDurationLong, noteOctaveIndexLow + 1, "C_", noteVolume, noteDurationLong),
+					]
+				)
+			]
+		);
+
+		return returnValue;
+	}
+
+	Sequence.demo2 = function(instrumentName, sequenceName)
+	{
+		var ticksPerSecond = 8;
+		var sequenceDurationInSeconds = 8;
+		var noteVolume = 25;
+		var noteOctaveIndex = 4;
+		var noteDuration = Math.floor(ticksPerSecond / 2);
+		var noteOctaveIndexLow = noteOctaveIndex - 1;
+		var noteDurationLong = noteDuration * 2;
+
+		var returnValue = new Sequence
+		(
+			sequenceName,
+			ticksPerSecond, // ticksPerSecond
+			sequenceDurationInSeconds * ticksPerSecond, // durationInTicks
+			[
+				new Track
+				(
+					instrumentName,
+					[
+						// notes
+						// timeStartInTicks, octaveIndex, pitchCode, volume, durationInTicks
+						new Note(0 * noteDuration, noteOctaveIndex + 1, "C_", noteVolume, noteDuration),
+						new Note(1 * noteDuration, noteOctaveIndex, "B_", noteVolume, noteDuration),
+						new Note(2 * noteDuration, noteOctaveIndex, "A_", noteVolume, noteDuration),
+						new Note(3 * noteDuration, noteOctaveIndex, "G_", noteVolume, noteDuration),
+						new Note(4 * noteDuration, noteOctaveIndex, "F_", noteVolume, noteDuration),
+						new Note(5 * noteDuration, noteOctaveIndex, "E_", noteVolume, noteDuration),
+						new Note(6 * noteDuration, noteOctaveIndex, "D_", noteVolume, noteDuration),
+						new Note(7 * noteDuration, noteOctaveIndex, "C_", noteVolume, noteDuration),
+						new Note(8 * noteDuration, noteOctaveIndex, "D_", noteVolume, noteDuration),
+						new Note(9 * noteDuration, noteOctaveIndex, "E_", noteVolume, noteDuration),
+						new Note(10 * noteDuration, noteOctaveIndex, "F_", noteVolume, noteDuration),
+						new Note(11 * noteDuration, noteOctaveIndex, "G_", noteVolume, noteDuration),
+						new Note(12 * noteDuration, noteOctaveIndex, "A_", noteVolume, noteDuration),
+						new Note(13 * noteDuration, noteOctaveIndex, "B_", noteVolume, noteDuration),
+						new Note(14 * noteDuration, noteOctaveIndex + 1, "C_", noteVolume, noteDuration),
 					]
 				),
 				new Track
@@ -144,8 +200,29 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		(
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
-		var sound = new Sound("", wavFile);
-		sound.play();
+		this.sound = new Sound("", wavFile);
+		this.sound.play();
+	}
+
+	Sequence.prototype.playOrStop = function(song)
+	{
+		if (this.sound == null)
+		{
+			this.play(song);
+		}
+		else
+		{
+			this.stop();
+		}
+	}
+
+	Sequence.prototype.stop = function()
+	{
+		if (this.sound != null)
+		{
+			this.sound.stop();
+			this.sound = null;
+		}
 	}
 
 	Sequence.prototype.tickSelectNextInDirection = function(direction)
@@ -211,40 +288,38 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 	{
 		var sequenceAsSamples = [];
 
-		var durationInSamples =
-			song.samplesPerSecond * this.durationInSeconds();
-
-		for (var s = 0; s < durationInSamples; s++)
-		{
-			sequenceAsSamples.push(0);
-		}
+		var tracksAsSampleArrays = [];
+		var trackLengthInSamplesMaxSoFar = 0;
 
 		for (var t = 0; t < this.tracks.length; t++)
 		{
 			var track = this.tracks[t];
 			var trackAsSamples = track.toSamples(song, this);
+			tracksAsSampleArrays.push(trackAsSamples);
 
+			var trackLengthInSamples = trackAsSamples.length;
+			if (trackLengthInSamples > trackLengthInSamplesMaxSoFar)
+			{
+				trackLengthInSamplesMaxSoFar = trackLengthInSamples;
+			}
+		}
+
+		var durationInSamples = trackLengthInSamplesMaxSoFar;
+		for (var s = 0; s < durationInSamples; s++)
+		{
+			sequenceAsSamples.push(0);
+		}
+
+		for (var t = 0; t < tracksAsSampleArrays.length; t++)
+		{
+			var trackAsSamples = tracksAsSampleArrays[t];
 			for (var s = 0; s < trackAsSamples.length; s++)
 			{
 				sequenceAsSamples[s] += trackAsSamples[s];
 			}
 		}
 
-		for (var s = 0; s < sequenceAsSamples.length; s++)
-		{
-			var sample = sequenceAsSamples[s];
-			if (sample > 1)
-			{
-				sample = 1;
-			}
-			else if (sample < -1)
-			{
-				sample = -1;
-			}
-			sequenceAsSamples[s] = sample;
-		}
-
-		//Tracker.samplesValidate(sequenceAsSamples);
+		song.trimSamples(sequenceAsSamples);
 
 		return sequenceAsSamples;
 	}
@@ -297,6 +372,14 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				sequence.play(song);
 			}
 			divSequence.appendChild(buttonSequenceSelectedPlay);
+
+			var buttonStop = d.createElement("button");
+			buttonStop.innerText = "Stop";
+			buttonStop.onclick = function()
+			{
+				sequence.stop();
+			}
+			divSequence.appendChild(buttonStop);
 
 			divSequence.appendChild(d.createElement("br"));
 
@@ -419,6 +502,14 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			}
 			divTracks.appendChild(buttonTrackSelectedPlay);
 
+			var buttonStop = d.createElement("button");
+			buttonStop.innerText = "Stop";
+			buttonStop.onclick = function()
+			{
+				sequence.trackSelected().stop();
+			}
+			divTracks.appendChild(buttonStop);
+
 			var buttonTrackClone = d.createElement("button");
 			buttonTrackClone.innerText = "Clone";
 			buttonTrackClone.onclick = function()
@@ -524,12 +615,13 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			checkboxKeyboardCommands.value = "Keyboard Commands";
 			checkboxKeyboardCommands.onchange = function(event)
 			{
-				Tracker.Instance.useKeyboardCommands = event.checked;
+				Tracker.Instance.useKeyboardCommands = event.target.checked;
 			}
 			divTickSelected.appendChild(checkboxKeyboardCommands);
 
 			var labelKeyboardCommands = d.createElement("label");
-			labelKeyboardCommands.innerText = "Commands: Up, Down, Left, Right, Enter, Delete, a-g, A-G, 0-9, +, -";
+			labelKeyboardCommands.innerText =
+				"Keyboard Commands: Up, Down, Left, Right, Enter, Delete, a-g, A-G, 0-9, +, -, [, ]";
 			divTickSelected.appendChild(labelKeyboardCommands);
 
 			divTrack.appendChild(divTickSelected);

@@ -121,7 +121,7 @@ function Tracker(songCurrent)
 		else if (key == "Enter")
 		{
 			var notePrev = sequence.notePrecedingTickCurrent();
-			var noteToClone = (notePrev == null ? new Note("C3-25-0001") : notePrev);
+			var noteToClone = (notePrev == null ? Note.fromString("C_4-25-0004") : notePrev);
 			var noteNew = noteToClone.clone();
 			track.noteAtTick_Set(sequence.tickIndexSelected, noteNew);
 			sequence.uiUpdate_Tracks(song);
@@ -166,9 +166,9 @@ function Tracker(songCurrent)
 			{
 				keyAsInt = 9.9;
 			}
-			var volumePercentageToSet = keyAsInt * 10;
+			var volumeAsPercentageToSet = keyAsInt * 10;
 			var tickAsNote = sequence.noteAtTickCurrent();
-			tickAsNote.volumePercentage = volumePercentageToSet;
+			tickAsNote.volumeAsPercentage = volumeAsPercentageToSet;
 			track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
 			sequence.uiUpdate_Tracks(song);
 		}
@@ -186,17 +186,37 @@ function Tracker(songCurrent)
 			track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
 			sequence.uiUpdate_Tracks(song);
 		}
-		else if (key == ".")
+		else if (key == "[" || key == "]")
 		{
-			sequence.noteAtTickCurrent().play();
+			var tickAsNote = sequence.noteAtTickCurrent();
+			var octaveOffset = (key == "[" ? -1 : 1);
+			tickAsNote.octaveIndex += octaveOffset;
+			if (tickAsNote.octaveIndex <= 0)
+			{
+				tickAsNote.octaveIndex = 0;
+			}
+			else if (tickAsNote.octaveIndex > 9)
+			{
+				tickAsNote.octaveIndex = 9;
+			}
+			track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
+			sequence.uiUpdate_Tracks(song);
 		}
-		else if (key == "/")
+		else if (key.toLowerCase() == "n")
 		{
-			sequence.trackCurrent().play();
+			sequence.noteAtTickCurrent().play(song, sequence, track);
 		}
-		else if (key == " ")
+		else if (key.toLowerCase() == "t")
 		{
-			sequence.play();
+			track.playOrStop(song, sequence);
+		}
+		else if (key.toLowerCase() == "s")
+		{
+			sequence.playOrStop(song);
+		}
+		else if (key.toLowerCase() == "p")
+		{
+			song.playOrStop();
 		}
 	}
 }
