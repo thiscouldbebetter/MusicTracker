@@ -10,6 +10,12 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 
 {
 	Note.Blank = "-----------"; // "pitch-volume-duration";
+	Note.VolumeAsPercentageMax = 99; // Not technically a percentage.
+
+	Note.default = function()
+	{
+		return Note.fromString("C_4-25-0001");
+	}
 
 	Note.prototype.clone = function()
 	{
@@ -21,6 +27,16 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 			this.volumeAsPercentage,
 			this.durationInTicks
 		);
+	}
+
+	Note.prototype.durationInTicksAdd = function(ticksToAdd)
+	{
+		this.durationInTicks += ticksToAdd;
+		if (this.durationInTicks < 1)
+		{
+			this.durationInTicks = 1;
+		}
+		return this;
 	}
 
 	Note.prototype.durationInSamples = function(song, sequence)
@@ -47,6 +63,20 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return Octave.Instances._All[this.octaveIndex];
 	}
 
+	Note.prototype.octaveAdd = function(octaveOffset)
+	{
+		this.octaveIndex += octaveOffset;
+		if (this.octaveIndex < 0)
+		{
+			this.octaveIndex = 0;
+		}
+		else if (this.octaveIndex >= Octave.Instances._All.length)
+		{
+			this.octaveIndex = Octave.Instances._All.length - 1;
+		}
+		return this;
+	}
+
 	Note.prototype.overwriteWith = function(other)
 	{
 		this.timeStartInTicks = other.timeStartInTicks;
@@ -54,6 +84,55 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		this.pitchCode = other.pitchCode;
 		this.volumeAsPercentage = other.volumeAsPercentage;
 		this.durationInTicks = other.durationInTicks;
+		return this;
+	}
+
+	Note.prototype.pitch = function()
+	{
+		return Pitch.Instances._All[this.pitchCode];
+	}
+
+	Note.prototype.pitchAdd = function(pitchOffset)
+	{
+		var pitches = Pitch.Instances._All;
+		var pitchIndex = pitches.indexOf(this.pitch());
+		pitchIndex += pitchOffset;
+		if (pitchIndex < 0)
+		{
+			if (this.octaveIndex <= 0)
+			{
+				pitchIndex -= pitchOffset;
+			}
+			else
+			{
+				this.octaveAdd(-1);
+				pitchIndex = pitches.length - 1;
+			}
+		}
+		else if (pitchIndex >= pitches.length)
+		{
+			if (this.octaveIndex >= Octave.Instances._All.length - 1)
+			{
+				pitchIndex -= pitchOffset;
+			}
+			else
+			{
+				this.octaveAdd(1);
+				pitchIndex = 0;
+			}
+		}
+		this.pitchCode = pitches[pitchIndex].code;
+		return this;
+	}
+
+	Note.prototype.pitchCodeSet = function(value)
+	{
+		var pitches = Pitch.Instances._All;
+		var pitch = pitches[value];
+		if (pitch != null)
+		{
+			this.pitchCode = pitch.code;
+		}
 		return this;
 	}
 
@@ -65,12 +144,8 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
 		this.sound = new Sound("", wavFile);
-		this.sound.play();
-	}
-
-	Note.prototype.pitch = function()
-	{
-		return Pitch.Instances._All[this.pitchCode];
+		var note = this;
+		this.sound.play( () => { note.sound = null; } );
 	}
 
 	Note.prototype.stop = function()
@@ -78,6 +153,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		if (this.sound != null)
 		{
 			this.sound.stop();
+			this.sound = null;
 		}
 	}
 
@@ -98,7 +174,21 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 
 	Note.prototype.volumeAsFraction = function()
 	{
-		return this.volumeAsPercentage / 100;
+		return this.volumeAsPercentage / Note.VolumeAsPercentageMax;
+	}
+
+	Note.prototype.volumeAsPercentageAdd = function(volumeOffset)
+	{
+		this.volumeAsPercentage += volumeOffset;
+		if (this.volumeAsPercentage < 0)
+		{
+			this.volumeAsPercentage = 0;
+		}
+		else if (this.volumeAsPercentage > Note.VolumeAsPercentageMax)
+		{
+			this.volumeAsPercentage = Note.VolumeAsPercentageMax;
+		}
+		return this;
 	}
 
 	// samples

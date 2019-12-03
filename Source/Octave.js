@@ -17,6 +17,7 @@ function Octave(frequencyInHertzOfC)
 		this.Five = new Octave(523.25);
 		this.Six = new Octave(1046.5);
 		this.Seven = new Octave(2093);
+		this.Eight = new Octave(4186);
 
 		this._All =
 		[
@@ -27,7 +28,8 @@ function Octave(frequencyInHertzOfC)
 			this.Four,
 			this.Five,
 			this.Six,
-			this.Seven
+			this.Seven,
+			this.Eight
 		];
 	}
 }

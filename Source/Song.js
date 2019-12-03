@@ -105,7 +105,8 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			"", this.samplesPerSecond, this.bitsPerSample, samples
 		);
 		this.sound = new Sound("", wavFile);
-		this.sound.play();
+		var song = this;
+		this.sound.play( () => { song.sound = null; } );
 	}
 
 	Song.prototype.playOrStop = function()
@@ -564,20 +565,12 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		this.selectBitsPerSample = selectBitsPerSample;
 
 		var buttonPlay = d.createElement("button");
-		buttonPlay.innerText = "Play";
+		buttonPlay.innerText = "Play/Stop (p)";
 		buttonPlay.onclick = function()
 		{
-			song.play();
+			song.playOrStop();
 		}
 		divSong.appendChild(buttonPlay);
-
-		var buttonStop = d.createElement("button");
-		buttonStop.innerText = "Stop";
-		buttonStop.onclick = function()
-		{
-			song.stop();
-		}
-		divSong.appendChild(buttonStop);
 
 		var buttonExport = d.createElement("button");
 		buttonExport.innerText = "Export to WAV";
@@ -593,6 +586,22 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			FileHelper.saveBytesToFile(songAsWavFileBytes, songFilePath);
 		}
 		divSong.appendChild(buttonExport);
+
+		divSong.appendChild(d.createElement("br"));
+
+		var checkboxKeyboardCommands = d.createElement("input");
+		checkboxKeyboardCommands.type = "checkbox";
+		checkboxKeyboardCommands.value = "Keyboard Commands";
+		checkboxKeyboardCommands.checked = Tracker.Instance.useKeyboardCommands;
+		checkboxKeyboardCommands.onchange = function(event)
+		{
+			Tracker.Instance.useKeyboardCommands = event.target.checked;
+		}
+		divSong.appendChild(checkboxKeyboardCommands);
+
+		var labelKeyboardCommands = d.createElement("label");
+		labelKeyboardCommands.innerText = "Enable Keyboard Commands";
+		divSong.appendChild(labelKeyboardCommands);
 
 		divSong.appendChild(d.createElement("br"));
 

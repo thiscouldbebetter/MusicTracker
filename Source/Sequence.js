@@ -177,6 +177,38 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return noteAtTick;
 	}
 
+	Sequence.prototype.noteAtTickCurrentSet = function(value)
+	{
+		var trackSelected = this.trackSelected();
+		var noteAtTick = trackSelected.noteAtTickSet(this.tickIndexSelected, value);
+		return noteAtTick;
+	}
+
+	Sequence.prototype.noteAtTickCurrentTimeStartInTicksAdd = function(ticksToMove)
+	{
+		var track = this.trackSelected();
+
+		var directionToMove = ticksToMove / Math.abs(ticksToMove);
+		var tickIndexNext = this.tickIndexSelected + directionToMove;
+		var noteAtTickNext = track.noteAtTick(tickIndexNext);
+
+		while (noteAtTickNext != null)
+		{
+			tickIndexNext += directionToMove;
+			noteAtTickNext = track.noteAtTick(tickIndexNext);
+		}
+
+		if (tickIndexNext >= 0 && tickIndexNext < this.durationInTicks)
+		{
+			var noteToMove = this.noteAtTickCurrent();
+			noteToMove.timeStartInTicks = tickIndexNext;
+			track.notesReorder();
+			this.tickIndexSelected = tickIndexNext;
+		}
+
+		return this;
+	}
+
 	Sequence.prototype.notePrecedingTickCurrent = function()
 	{
 		var trackSelected = this.trackSelected();
@@ -201,7 +233,8 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
 		this.sound = new Sound("", wavFile);
-		this.sound.play();
+		var sequence = this;
+		this.sound.play( () => { sequence.sound = null; } );
 	}
 
 	Sequence.prototype.playOrStop = function(song)
@@ -222,6 +255,35 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		{
 			this.sound.stop();
 			this.sound = null;
+		}
+	}
+
+	Sequence.prototype.tickInsertAtCursor = function()
+	{
+		var track = this.trackSelected();
+		var notes = track.notes;
+		for (var i = 0; i < notes.length; i++)
+		{
+			var note = notes[i];
+			if (note.timeStartInTicks >= this.tickIndexSelected)
+			{
+				note.timeStartInTicks++;
+			}
+		}
+	}
+
+	Sequence.prototype.tickRemoveAtCursor = function()
+	{
+		this.noteAtTickCurrentSet(null);
+		var track = this.trackSelected();
+		var notes = track.notes;
+		for (var i = 0; i < notes.length; i++)
+		{
+			var note = notes[i];
+			if (note.timeStartInTicks >= this.tickIndexSelected)
+			{
+				note.timeStartInTicks--;
+			}
 		}
 	}
 
@@ -366,20 +428,12 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			this.inputSequenceName = inputSequenceName;
 
 			var buttonSequenceSelectedPlay = d.createElement("button");
-			buttonSequenceSelectedPlay.innerText = "Play";
+			buttonSequenceSelectedPlay.innerText = "Play/Stop (s)";
 			buttonSequenceSelectedPlay.onclick = function()
 			{
-				sequence.play(song);
+				sequence.playOrStop(song);
 			}
 			divSequence.appendChild(buttonSequenceSelectedPlay);
-
-			var buttonStop = d.createElement("button");
-			buttonStop.innerText = "Stop";
-			buttonStop.onclick = function()
-			{
-				sequence.stop();
-			}
-			divSequence.appendChild(buttonStop);
 
 			divSequence.appendChild(d.createElement("br"));
 
@@ -494,21 +548,13 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 			this.selectTrack = selectTrack;
 
 			var buttonTrackSelectedPlay = d.createElement("button");
-			buttonTrackSelectedPlay.innerText = "Play";
+			buttonTrackSelectedPlay.innerText = "Play/Stop (t)";
 			buttonTrackSelectedPlay.onclick = function()
 			{
 				var trackSelected = sequence.trackSelected();
-				trackSelected.play(song, sequence);
+				trackSelected.playOrStop(song, sequence);
 			}
 			divTracks.appendChild(buttonTrackSelectedPlay);
-
-			var buttonStop = d.createElement("button");
-			buttonStop.innerText = "Stop";
-			buttonStop.onclick = function()
-			{
-				sequence.trackSelected().stop();
-			}
-			divTracks.appendChild(buttonStop);
 
 			var buttonTrackClone = d.createElement("button");
 			buttonTrackClone.innerText = "Clone";
@@ -554,9 +600,31 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 			var divTickSelected = d.createElement("div");
 
-			var labelTickSelected = d.createElement("label");
-			labelTickSelected.innerText = "Tick Selected:";
-			divTickSelected.appendChild(labelTickSelected);
+			var label = d.createElement("label");
+			label.innerText = "Tick:";
+			divTickSelected.appendChild(label);
+
+			var button = d.createElement("button");
+			button.innerText = "Insert (Ins)";
+			button.onclick = function()
+			{
+				sequence.tickInsertAtCursor();
+				sequence.uiUpdate(song);
+			}
+			divTickSelected.appendChild(button);
+
+			var button = d.createElement("button");
+			button.innerText = "Remove (Del)";
+			button.onclick = function()
+			{
+				sequence.tickRemoveAtCursor();
+				sequence.uiUpdate(song);
+			}
+			divTickSelected.appendChild(button);
+
+			var label = d.createElement("label");
+			label.innerText = "Selected:";
+			divTickSelected.appendChild(label);
 
 			var inputTickSelected = d.createElement("input");
 			inputTickSelected.style.fontFamily = "monospace";
@@ -570,8 +638,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 					var inputTickSelected = event.target;
 					var tickAsString = inputTickSelected.value;
 					var tickAsNote = Note.fromString(tickAsString, tickIndex);
-					var trackSelected = sequence.trackSelected();
-					trackSelected.noteAtTick_Set(tickIndex, tickAsNote);
+					sequence.noteAtTickCurrentSet(tickAsNote);
 					sequence.uiUpdate_Tracks(song);
 				}
 			}
@@ -585,14 +652,22 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 				var tickIndex = sequence.tickIndexSelected;
 				var tickAsString = inputTickSelected.value;
 				var tickAsNote = Note.fromString(tickAsString, tickIndex);
-				var trackSelected = sequence.trackSelected();
-				trackSelected.noteAtTick_Set(tickIndex, tickAsNote);
+				sequence.noteAtTickCurrentSet(tickAsNote);
 				sequence.uiUpdate_Tracks(song);
 			}
 			divTickSelected.appendChild(buttonTickSelectedApply);
 
+			var button = d.createElement("button");
+			button.innerText = "Clear (Backsp)";
+			button.onclick = function()
+			{
+				sequence.noteAtTickCurrentSet(null);
+				sequence.uiUpdate_Tracks(song);
+			}
+			divTickSelected.appendChild(button);
+
 			var buttonTickSelectedPlay = d.createElement("button");
-			buttonTickSelectedPlay.innerText = "Play";
+			buttonTickSelectedPlay.innerText = "Play (n)";
 			buttonTickSelectedPlay.onclick = function()
 			{
 				var tickIndex = sequence.tickIndexSelected;
@@ -604,25 +679,185 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 			divTickSelected.appendChild(d.createElement("br"));
 
-			var labelNoteFormat = d.createElement("label");
-			labelNoteFormat.innerText = "Note Format: [pitch+octave]-[volume]-[duration], e.g. 'C_3-99-0128'";
-			divTickSelected.appendChild(labelNoteFormat);
+			var label = d.createElement("label");
+			label.innerText = "Shift:";
+			divTickSelected.appendChild(label);
+
+			var button = d.createElement("button");
+			button.innerText = "^ (<)";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentTimeStartInTicksAdd(-1);
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			var button = d.createElement("button");
+			button.innerText = "v (>)";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentTimeStartInTicksAdd(1);
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
 
 			divTickSelected.appendChild(d.createElement("br"));
 
-			var checkboxKeyboardCommands = d.createElement("input");
-			checkboxKeyboardCommands.type = "checkbox";
-			checkboxKeyboardCommands.value = "Keyboard Commands";
-			checkboxKeyboardCommands.onchange = function(event)
-			{
-				Tracker.Instance.useKeyboardCommands = event.target.checked;
-			}
-			divTickSelected.appendChild(checkboxKeyboardCommands);
+			var label = d.createElement("label");
+			label.innerHTML = "Pitch:";
+			divTickSelected.appendChild(label);
 
-			var labelKeyboardCommands = d.createElement("label");
-			labelKeyboardCommands.innerText =
-				"Keyboard Commands: Up, Down, Left, Right, Enter, Delete, a-g, A-G, 0-9, +, -, [, ]";
-			divTickSelected.appendChild(labelKeyboardCommands);
+			var button = d.createElement("button");
+			button.innerText = "-1 (-)";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentSet(note.pitchAdd(-1));
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			var button = d.createElement("button");
+			button.innerText = "+1 (=)";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentSet(note.pitchAdd(1));
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			var label = d.createElement("label");
+			label.innerHTML = "Octave:";
+			divTickSelected.appendChild(label);
+
+			var button = d.createElement("button");
+			button.innerText = "-1 (_)";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentSet(note.octaveAdd(-1));
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			var button = d.createElement("button");
+			button.innerText = "+1 (+)";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentSet(note.octaveAdd(1));
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			var label = d.createElement("label");
+			label.innerHTML = "Volume:";
+			divTickSelected.appendChild(label);
+
+			var button = d.createElement("button");
+			button.innerText = "-10 ({)";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentSet(note.volumeAsPercentageAdd(-10));
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			var button = d.createElement("button");
+			button.innerText = "-1 ([)";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentSet(note.volumeAsPercentageAdd(-1));
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			var button = d.createElement("button");
+			button.innerText = "+1 (])";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentSet(note.volumeAsPercentageAdd(1));
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			var button = d.createElement("button");
+			button.innerText = "+10 (})";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentSet(note.volumeAsPercentageAdd(10));
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			var label = d.createElement("label");
+			label.innerHTML = "Duration:";
+			divTickSelected.appendChild(label);
+
+			var button = d.createElement("button");
+			button.innerText = "-1 (,)";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentSet(note.durationInTicksAdd(-1));
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			var button = d.createElement("button");
+			button.innerText = "+1 (.)";
+			button.onclick = function()
+			{
+				var note = sequence.noteAtTickCurrent();
+				if (note != null)
+				{
+					sequence.noteAtTickCurrentSet(note.durationInTicksAdd(1));
+					sequence.uiUpdate(song);
+				}
+			}
+			divTickSelected.appendChild(button);
+
+			divTickSelected.appendChild(d.createElement("br"));
 
 			divTrack.appendChild(divTickSelected);
 

@@ -2,7 +2,7 @@
 function Tracker(songCurrent)
 {
 	this.songCurrent = songCurrent;
-	this.useKeyboardCommands = false;
+	this.useKeyboardCommands = true;
 }
 {
 	Tracker.new = function()
@@ -111,96 +111,98 @@ function Tracker(songCurrent)
 			{
 				sequence.tickSelectNextInDirection(-1);
 			}
-			sequence.uiUpdate(song);
+		}
+		else if (key == "Backspace")
+		{
+			sequence.noteAtTickCurrentSet(null);
+		}
+		else if (key == "Insert")
+		{
+			sequence.tickInsertAtCursor();
 		}
 		else if (key == "Delete")
 		{
-			track.noteAtTick_Set(sequence.tickIndexSelected, null);
-			sequence.uiUpdate_Tracks(song);
+			sequence.tickRemoveAtCursor();
 		}
 		else if (key == "Enter")
 		{
 			var notePrev = sequence.notePrecedingTickCurrent();
-			var noteToClone = (notePrev == null ? Note.fromString("C_4-25-0004") : notePrev);
+			var noteToClone = (notePrev == null ? Note.default() : notePrev);
 			var noteNew = noteToClone.clone();
-			track.noteAtTick_Set(sequence.tickIndexSelected, noteNew);
-			sequence.uiUpdate_Tracks(song);
+			sequence.noteAtTickCurrentSet(noteNew);
 		}
 		else if (key.length == 1 && key >= "a" && key <= "g")
 		{
-			var tickAsNote = sequence.noteAtTickCurrent();
-			if (tickAsNote != null)
+			var pitchCode = key.toUpperCase() + "_";
+			var note = sequence.noteAtTickCurrent();
+			if (note == null)
 			{
-				tickAsNote.pitchCode = key.toUpperCase() + "_";
-				track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
-				sequence.uiUpdate_Tracks(song);
+				note = Note.default();
 			}
+			sequence.noteAtTickCurrentSet(note.pitchCodeSet(pitchCode));
 		}
 		else if (key.length == 1 && key >= "A" && key <= "G")
 		{
-			var tickAsNote = sequence.noteAtTickCurrent();
-			if (tickAsNote != null)
+			var pitchCode = key.toUpperCase() + "#";
+			if (pitchCode == "B#")
 			{
-				var pitchCode = key.toUpperCase() + "#";
-				if (pitchCode == "B#")
+				pitchCode = "C";
+			}
+			else if (pitchCode == "E#")
+			{
+				pitchCode = "F";
+			} 
+			var note = sequence.noteAtTickCurrent();
+			if (note == null)
+			{
+				note = Note.default();
+			}
+			sequence.noteAtTickCurrentSet(note.pitchCodeSet(pitchCode));
+		}
+		else if ( key == "-" || key == "_" || key == "=" || key == "+" )
+		{
+			var note = sequence.noteAtTickCurrent();
+			if (note != null)
+			{
+				if (key == "-" || key == "=")
 				{
-					pitchCode = "C";
+					var pitchOffset = (key == "-" ? -1 : 1);
+					sequence.noteAtTickCurrentSet(note.pitchAdd(pitchOffset));
 				}
-				else if (pitchCode == "E#")
+				else
 				{
-					pitchCode = "F";
+					var octaveOffset = (key == "_" ? -1 : 1);
+					sequence.noteAtTickCurrentSet(note.octaveAdd(octaveOffset));
 				}
-				tickAsNote.pitchCode = pitchCode;
-				track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
-				sequence.uiUpdate_Tracks(song);
 			}
 		}
-		else if ( (key >= "0" && key <= "9") || key == "`" )
+		else if ( key == "[" || key == "{" || key == "]" || key == "}" ) // volume
 		{
-			var keyAsInt = parseInt(key);
-			if (key == "`")
+			var note = sequence.noteAtTickCurrent();
+			if (note != null)
 			{
-				keyAsInt = 0;
+				var volumeOffset = ( (key == "[" || key == "{") ? -1 : 1);
+				volumeOffset *= ( key == "[" || key == "]" ? 1 : 10);
+				sequence.noteAtTickCurrentSet(note.volumeAsPercentageAdd(volumeOffset));
 			}
-			else if (key == 0)
-			{
-				keyAsInt = 9.9;
-			}
-			var volumeAsPercentageToSet = keyAsInt * 10;
-			var tickAsNote = sequence.noteAtTickCurrent();
-			tickAsNote.volumeAsPercentage = volumeAsPercentageToSet;
-			track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
-			sequence.uiUpdate_Tracks(song);
 		}
-		else if (key == "-" || key == "+")
+		else if (key == "," || key == ".") // duration
 		{
-			var tickAsNote = sequence.noteAtTickCurrent();
-			var durationInTicks = tickAsNote.durationInTicks;
-			var direction = (key == "-" ? -1 : 1);
-			durationInTicks += direction;
-			if (durationInTicks < 1)
+			var note = sequence.noteAtTickCurrent();
+			if (note != null)
 			{
-				durationInTicks = 1;
+				var ticksOffset = ( key == "," ? -1 : 1);
+				sequence.noteAtTickCurrentSet(note.durationInTicksAdd(ticksOffset));
 			}
-			tickAsNote.durationInTicks = durationInTicks;
-			track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
-			sequence.uiUpdate_Tracks(song);
 		}
-		else if (key == "[" || key == "]")
+		else if (key == "<" || key == ">") // shift start time
 		{
-			var tickAsNote = sequence.noteAtTickCurrent();
-			var octaveOffset = (key == "[" ? -1 : 1);
-			tickAsNote.octaveIndex += octaveOffset;
-			if (tickAsNote.octaveIndex <= 0)
+			var note = sequence.noteAtTickCurrent();
+			if (note != null)
 			{
-				tickAsNote.octaveIndex = 0;
+				var ticksOffset = ( key == "<" ? -1 : 1);
+				sequence.noteAtTickCurrentTimeStartInTicksAdd(ticksOffset);
 			}
-			else if (tickAsNote.octaveIndex > 9)
-			{
-				tickAsNote.octaveIndex = 9;
-			}
-			track.noteAtTick_Set(sequence.tickIndexSelected, tickAsNote);
-			sequence.uiUpdate_Tracks(song);
 		}
 		else if (key.toLowerCase() == "n")
 		{
@@ -218,5 +220,7 @@ function Tracker(songCurrent)
 		{
 			song.playOrStop();
 		}
+
+		sequence.uiUpdate_Tracks(song);
 	}
 }

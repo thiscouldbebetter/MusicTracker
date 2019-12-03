@@ -37,7 +37,7 @@ function Track(instrumentName, notes)
 		return returnValue;
 	}
 
-	Track.prototype.noteAtTick_Set = function(tickIndexToSearch, valueToSet)
+	Track.prototype.noteAtTickSet = function(tickIndexToSearch, valueToSet)
 	{
 		var returnValue = null;
 
@@ -120,6 +120,11 @@ function Track(instrumentName, notes)
 		}
 	}
 
+	Track.prototype.notesReorder = function()
+	{
+		this.notes.sort( (x, y) => { return x.timeStartInTicks - y.timeStartInTicks } );
+	}
+
 	Track.prototype.play = function(song, sequence)
 	{
 		var samples = this.toSamples(song, sequence);
@@ -128,7 +133,8 @@ function Track(instrumentName, notes)
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
 		this.sound = new Sound("", wavFile);
-		this.sound.play();
+		var track = this;
+		this.sound.play( () => { track.sound = null; } );
 	}
 
 	Track.prototype.playOrStop = function(song, sequence)
