@@ -106,7 +106,9 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		);
 		this.sound = new Sound("", wavFile);
 		var song = this;
-		this.sound.play( () => { song.sound = null; } );
+		this.sound.play( () => { song.stop(); } );
+
+		song.uiCursorFollow();
 	}
 
 	Song.prototype.playOrStop = function()
@@ -146,6 +148,12 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		this.uiUpdate();
 	}
 
+	Song.prototype.sequenceSelectNext = function()
+	{
+		var sequenceNext = this.sequences[this.sequence];
+		this.sequenceSelectByName(sequenceNextName);
+	}
+
 	Song.prototype.sequenceSelected = function()
 	{
 		return (this.sequenceNameSelected == null ? null : this.sequences[this.sequenceNameSelected]);
@@ -171,6 +179,12 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		{
 			this.sound.stop();
 			this.sound = null;
+		}
+
+		if (this.cursorMover != null)
+		{
+			clearInterval(this.cursorMover);
+			this.cursorMover = null;
 		}
 	}
 
@@ -209,7 +223,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 			// Use sequence.durationInSamples() rather than sequenceAsSamples.length,
 			// as that may include "carryover" notes.
-			sequenceCurrentStartInSamples += sequence.durationInSamples(this); 
+			sequenceCurrentStartInSamples += sequence.durationInSamples(this);
 		}
 
 		this.trimSamples(songAsSamples);
@@ -387,6 +401,47 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				this.sequences[i].uiClear();
 			}
 		}
+	}
+
+	Song.prototype.uiCursorFollow = function()
+	{
+		var song = this;
+
+		var sequences = song.sequences;
+		var sequenceNameIndex = 0;
+		var sequenceNames = song.sequenceNamesToPlayInOrder;
+		var sequenceName = sequenceNames[sequenceNameIndex];
+		var sequence = sequences[sequenceName];
+		sequence.tickSelectAtIndex(0);
+		var ticksPerSecond = sequence.ticksPerSecond; // hack - Assuming this doesn't change.
+		var millisecondsPerTick = 1000 / ticksPerSecond;
+
+		this.cursorMover = setInterval
+		(
+			function()
+			{
+				var sequence = song.sequenceSelected();
+				sequence.tickIndexSelected++;
+				if (sequence.tickIndexSelected > sequence.durationInTicks)
+				{
+					sequenceNameIndex++;
+					if (sequenceNameIndex >= sequenceNames.length)
+					{
+						clearInterval(song.cursorMover);
+					}
+					else
+					{
+						sequenceName = sequenceNames[sequenceNameIndex];
+						sequence = sequences[sequenceName];
+						sequence.tickIndexSelected = 0;
+						song.sequenceSelectByName(sequenceName);
+						sequence.uiUpdate(song);
+					}
+				}
+				sequence.uiUpdate_TickCursorPositionFromSelected(true);
+			},
+			millisecondsPerTick
+		);
 	}
 
 	Song.prototype.uiUpdate = function()

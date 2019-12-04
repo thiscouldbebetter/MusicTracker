@@ -12,7 +12,8 @@ function Tracker(songCurrent)
 		return returnValue;
 	}
 
-	Tracker.Instance = Tracker.new();
+	// This must be done after all classes are loaded.
+	// Tracker.Instance = Tracker.new();
 
 	Tracker.samplesToWavFile = function(fileName, samplesPerSecond, bitsPerSample, samplesToConvert)
 	{
@@ -93,21 +94,21 @@ function Tracker(songCurrent)
 		var track = sequence.trackSelected();
 
 		var key = event.key;
-		if (key.startsWith("Arrow") == true)
+		if (key.startsWith("Arrow"))
 		{
-			if (key.endsWith("Left") == true)
+			if (key.endsWith("Left"))
 			{
 				sequence.trackSelectNextInDirection(-1);
 			}
-			else if (key.endsWith("Right") == true)
+			else if (key.endsWith("Right"))
 			{
 				sequence.trackSelectNextInDirection(1);
 			}
-			else if (key.endsWith("Down") == true)
+			else if (key.endsWith("Down"))
 			{
 				sequence.tickSelectNextInDirection(1);
 			}
-			else if (key.endsWith("Up") == true)
+			else if (key.endsWith("Up"))
 			{
 				sequence.tickSelectNextInDirection(-1);
 			}
@@ -151,7 +152,7 @@ function Tracker(songCurrent)
 			else if (pitchCode == "E#")
 			{
 				pitchCode = "F";
-			} 
+			}
 			var note = sequence.noteAtTickCurrent();
 			if (note == null)
 			{
@@ -221,6 +222,7 @@ function Tracker(songCurrent)
 			song.playOrStop();
 		}
 
+		sequence.uiUpdate_TickCursorPositionFromSelected();
 		sequence.uiUpdate_Tracks(song);
 	}
 }

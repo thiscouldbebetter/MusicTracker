@@ -134,7 +134,9 @@ function Track(instrumentName, notes)
 		);
 		this.sound = new Sound("", wavFile);
 		var track = this;
-		this.sound.play( () => { track.sound = null; } );
+		this.sound.play( () => { track.stop(song, sequence); } );
+
+		this.uiCursorFollow(song, sequence);
 	}
 
 	Track.prototype.playOrStop = function(song, sequence)
@@ -156,6 +158,38 @@ function Track(instrumentName, notes)
 			this.sound.stop();
 			this.sound = null;
 		}
+		if (this.cursorMover != null)
+		{
+			clearInterval(this.cursorMover);
+			this.cursorMover = null;
+		}
+	}
+
+	Track.prototype.tickAtIndexAsString = function(sequence, tickIndex)
+	{
+		var noteAtTick = this.noteAtTick(tickIndex);
+		var returnValue = ( noteAtTick == null ? Note.Blank : noteAtTick.toString() );
+		return returnValue;
+	}
+
+	Track.prototype.ticksAsStrings = function(sequence)
+	{
+		var returnValues = [];
+
+		for (var i = 0; i < sequence.durationInTicks; i++)
+		{
+			returnValues.push(Note.Blank);
+		}
+
+		var notes = this.notes;
+		for (var i = 0; i < notes.length; i++)
+		{
+			var note = notes[i];
+			var noteAsString = note.toString();
+			returnValues[note.timeStartInTicks] = noteAsString;
+		}
+
+		return returnValues;
 	}
 
 	// samples
@@ -207,4 +241,29 @@ function Track(instrumentName, notes)
 
 		return trackAsSamples;
 	}
+
+	// ui
+
+	Track.prototype.uiCursorFollow = function(song, sequence)
+	{
+		sequence.tickSelectAtIndex(0);
+
+		var ticksPerSecond = sequence.ticksPerSecond;
+		var millisecondsPerTick = 1000 / ticksPerSecond;
+
+		this.cursorMover = setInterval
+		(
+			function()
+			{
+				sequence.tickIndexSelected++;
+				if (sequence.tickIndexSelected > sequence.durationInTicks)
+				{
+					clearInterval(sequence.cursorMover);
+				}
+				sequence.uiUpdate_TickCursorPositionFromSelected(false);
+			},
+			millisecondsPerTick
+		);
+	}
+
 }
