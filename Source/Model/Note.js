@@ -1,23 +1,24 @@
 
-function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, durationInTicks)
+class Note
 {
-	this.timeStartInTicks = timeStartInTicks;
-	this.octaveIndex = octaveIndex;
-	this.pitchCode = pitchCode;
-	this.volumeAsPercentage = volumeAsPercentage;
-	this.durationInTicks = durationInTicks;
-}
+	constructor(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, durationInTicks)
+	{
+		this.timeStartInTicks = timeStartInTicks;
+		this.octaveIndex = octaveIndex;
+		this.pitchCode = pitchCode;
+		this.volumeAsPercentage = volumeAsPercentage;
+		this.durationInTicks = durationInTicks;
+	}
 
-{
-	Note.Blank = "-----------"; // "pitch-volume-duration";
-	Note.VolumeAsPercentageMax = 99; // Not technically a percentage.
+	static Blank = "-----------"; // "pitch-volume-duration";
+	static VolumeAsPercentageMax = 99; // Not technically a percentage.
 
-	Note.default = function()
+	static default()
 	{
 		return Note.fromString("C_4-25-0001");
 	}
 
-	Note.prototype.clone = function()
+	clone()
 	{
 		return new Note
 		(
@@ -29,7 +30,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		);
 	}
 
-	Note.prototype.durationInTicksAdd = function(ticksToAdd)
+	durationInTicksAdd(ticksToAdd)
 	{
 		this.durationInTicks += ticksToAdd;
 		if (this.durationInTicks < 1)
@@ -39,7 +40,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return this;
 	}
 
-	Note.prototype.durationInSamples = function(song, sequence)
+	durationInSamples(song, sequence)
 	{
 		var returnValue =
 			this.durationInTicks
@@ -49,7 +50,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return returnValue;
 	}
 
-	Note.prototype.frequencyInHertz = function()
+	frequencyInHertz()
 	{
 		var octave = this.octave();
 		var frequencyBase = octave.frequencyInHertzOfC;
@@ -58,12 +59,12 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return frequency;
 	}
 
-	Note.prototype.octave = function()
+	octave()
 	{
 		return Octave.Instances._All[this.octaveIndex];
 	}
 
-	Note.prototype.octaveAdd = function(octaveOffset)
+	octaveAdd(octaveOffset)
 	{
 		this.octaveIndex += octaveOffset;
 		if (this.octaveIndex < 0)
@@ -77,7 +78,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return this;
 	}
 
-	Note.prototype.overwriteWith = function(other)
+	overwriteWith(other)
 	{
 		this.timeStartInTicks = other.timeStartInTicks;
 		this.octaveIndex = other.octaveIndex;
@@ -87,12 +88,12 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return this;
 	}
 
-	Note.prototype.pitch = function()
+	pitch()
 	{
 		return Pitch.Instances._All[this.pitchCode];
 	}
 
-	Note.prototype.pitchAdd = function(pitchOffset)
+	pitchAdd(pitchOffset)
 	{
 		var pitches = Pitch.Instances._All;
 		var pitchIndex = pitches.indexOf(this.pitch());
@@ -125,7 +126,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return this;
 	}
 
-	Note.prototype.pitchCodeSet = function(value)
+	pitchCodeSet(value)
 	{
 		var pitches = Pitch.Instances._All;
 		var pitch = pitches[value];
@@ -136,7 +137,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return this;
 	}
 
-	Note.prototype.play = function(song, sequence, track)
+	play(song, sequence, track)
 	{
 		var samples = this.toSamples(song, sequence, track);
 		var wavFile = Tracker.samplesToWavFile
@@ -148,7 +149,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		this.sound.play( () => { note.sound = null; } );
 	}
 
-	Note.prototype.stop = function()
+	stop()
 	{
 		if (this.sound != null)
 		{
@@ -157,7 +158,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		}
 	}
 
-	Note.prototype.timeStartInSamples = function(song, sequence)
+	timeStartInSamples(song, sequence)
 	{
 		var timeStartInSeconds = this.timeStartInSeconds(sequence);
 		var returnValue = Math.round
@@ -167,17 +168,17 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return returnValue;
 	}
 
-	Note.prototype.timeStartInSeconds = function(sequence)
+	timeStartInSeconds(sequence)
 	{
 		return this.timeStartInTicks / sequence.ticksPerSecond;
 	}
 
-	Note.prototype.volumeAsFraction = function()
+	volumeAsFraction()
 	{
 		return this.volumeAsPercentage / Note.VolumeAsPercentageMax;
 	}
 
-	Note.prototype.volumeAsPercentageAdd = function(volumeOffset)
+	volumeAsPercentageAdd(volumeOffset)
 	{
 		this.volumeAsPercentage += volumeOffset;
 		if (this.volumeAsPercentage < 0)
@@ -193,12 +194,13 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 
 	// samples
 
-	Note.prototype.toSamples = function(song, sequence, track, instrument)
+	toSamples(song, sequence, track, instrument)
 	{
 		var samplesPerSecond = song.samplesPerSecond;
 		var durationInSamples = this.durationInSamples(song, sequence);
 		var frequencyInHertz = this.frequencyInHertz();
 		var volumeAsFraction = this.volumeAsFraction();
+		volumeAsFraction *= song.volumeAsFraction;
 		var instrument = track.instrument(song);
 		var noteAsSamples = instrument.samplesForNote
 		(
@@ -210,7 +212,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 
 	// strings
 
-	Note.fromString = function(stringToParse, timeStartInTicks)
+	static fromString(stringToParse, timeStartInTicks)
 	{
 		stringToParse = stringToParse.toUpperCase();
 
@@ -268,7 +270,7 @@ function Note(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, dura
 		return returnValue;
 	}
 
-	Note.prototype.toString = function()
+	toString()
 	{
 		var returnValue =
 			this.pitchCode + this.octaveIndex + "-"

@@ -10,7 +10,7 @@ function test()
 function Tests()
 {
 	this.wavFilePath = "../../Media/Pluck.wav";
-	this.song = Song.new(44100, 16);
+	this.song = Song.blank(44100, 16);
 	this.sequence = this.song.sequences[0];
 	this.track = this.sequence.tracks[0];
 }

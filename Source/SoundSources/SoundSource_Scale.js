@@ -1,17 +1,15 @@
 
-function SoundSource_Scale(amplitudeMultiplier, child)
+class SoundSource_Scale
 {
-	this.typeName = SoundSourceType.Instances().Scale.name;
+	constructor(amplitudeMultiplier, child)
+	{
+		this.typeName = SoundSourceType.Instances().Scale.name;
 
-	this.amplitudeMultiplier = amplitudeMultiplier;
-	this.child = child;
-}
+		this.amplitudeMultiplier = amplitudeMultiplier;
+		this.child = child;
+	}
 
-{
-	SoundSource_Scale.prototype.sampleForFrequencyAndTime = function
-	(
-		frequencyInHertz, timeInSeconds
-	)
+	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
 	{
 		var sampleFromChild =
 			this.child.sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds);
@@ -21,14 +19,14 @@ function SoundSource_Scale(amplitudeMultiplier, child)
 
 	// ui
 
-	SoundSource_Scale.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 		delete this.inputAmplitudeMultiplier;
 		this.child.uiClear();
 	}
 
-	SoundSource_Scale.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		var d = document;
 

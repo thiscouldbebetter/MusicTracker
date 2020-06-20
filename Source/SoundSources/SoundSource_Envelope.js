@@ -1,29 +1,29 @@
 
-function SoundSource_Envelope
-(
-	ticksPerSecond,
-	attackDurationInTicks,
-	decayDurationInTicks,
-	sustainDurationInTicks,
-	sustainAmplitudeMultiplier,
-	releaseDurationInTicks,
-	child
-)
+class SoundSource_Envelope
 {
-	this.typeName = SoundSourceType.Instances().Envelope.name;
+	constructor
+	(
+		ticksPerSecond,
+		attackDurationInTicks,
+		decayDurationInTicks,
+		sustainDurationInTicks,
+		sustainAmplitudeMultiplier,
+		releaseDurationInTicks,
+		child
+	)
+	{
+		this.typeName = SoundSourceType.Instances().Envelope.name;
 
-	this.ticksPerSecond = ticksPerSecond;
-	this.attackDurationInTicks = attackDurationInTicks;
-	this.decayDurationInTicks = decayDurationInTicks;
-	this.sustainDurationInTicks = sustainDurationInTicks;
-	this.sustainAmplitudeMultiplier = sustainAmplitudeMultiplier;
-	this.releaseDurationInTicks = releaseDurationInTicks;
-	this.child = child;
-}
+		this.ticksPerSecond = ticksPerSecond;
+		this.attackDurationInTicks = attackDurationInTicks;
+		this.decayDurationInTicks = decayDurationInTicks;
+		this.sustainDurationInTicks = sustainDurationInTicks;
+		this.sustainAmplitudeMultiplier = sustainAmplitudeMultiplier;
+		this.releaseDurationInTicks = releaseDurationInTicks;
+		this.child = child;
+	}
 
-{
-
-	SoundSource_Envelope.default = function()
+	static default()
 	{
 		return new SoundSource_Envelope
 		(
@@ -37,10 +37,7 @@ function SoundSource_Envelope
 		);
 	}
 
-	SoundSource_Envelope.prototype.sampleForFrequencyAndTime = function
-	(
-		frequencyInHertz, timeInSeconds
-	)
+	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
 	{
 		var amplitudeMultiplier;
 
@@ -95,7 +92,7 @@ function SoundSource_Envelope
 
 	// ui
 
-	SoundSource_Envelope.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 		delete this.inputAttackDurationInTicks;
@@ -106,7 +103,7 @@ function SoundSource_Envelope
 		this.child.uiClear();
 	}
 
-	SoundSource_Envelope.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		var soundSource = this;
 		var d = document;

@@ -1,11 +1,12 @@
 
-function SoundSource_Sawtooth()
+class SoundSource_Sawtooth
 {
-	this.typeName = SoundSourceType.Instances().Sawtooth.name;
-}
+	constructor()
+	{
+		this.typeName = SoundSourceType.Instances().Sawtooth.name;
+	}
 
-{
-	SoundSource_Sawtooth.prototype.sampleForFrequencyAndTime = function(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
 	{
 		var secondsPerCycle = 1 / frequencyInHertz;
 		var secondsSinceCycleStarted = timeInSeconds % secondsPerCycle;
@@ -19,12 +20,12 @@ function SoundSource_Sawtooth()
 
 	// ui
 
-	SoundSource_Sawtooth.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 	}
 
-	SoundSource_Sawtooth.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		if (this.divSoundSource == null)
 		{

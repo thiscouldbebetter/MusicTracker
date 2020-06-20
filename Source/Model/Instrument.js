@@ -1,11 +1,13 @@
-function Instrument(name, soundSource)
-{
-	this.name = name;
-	this.soundSource = soundSource;
-}
 
+class Instrument
 {
-	Instrument.new = function(name)
+	constructor(name, soundSource)
+	{
+		this.name = name;
+		this.soundSource = soundSource;
+	}
+
+	static default(name)
 	{
 		var returnValue = new Instrument
 		(
@@ -18,7 +20,7 @@ function Instrument(name, soundSource)
 		return returnValue;
 	}
 
-	Instrument.prototype.sampleForFrequencyAndTime = function(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
 	{
 		var returnValue = this.soundSource.sampleForFrequencyAndTime
 		(
@@ -27,7 +29,7 @@ function Instrument(name, soundSource)
 		return returnValue;
 	}
 
-	Instrument.prototype.samplesForNote = function
+	samplesForNote
 	(
 		samplesPerSecond, durationInSamples, frequencyInHertz, volumeAsFraction
 	)
@@ -50,20 +52,20 @@ function Instrument(name, soundSource)
 
 	// string
 
-	Instrument.objectPrototypesSet = function(object)
+	static objectPrototypesSet(object)
 	{
 		object.__proto__ = Instrument.prototype;
 		SoundSource.objectPrototypesSet(object.soundSource);
 	}
 
-	Instrument.fromStringJSON = function(instrumentAsJSON)
+	static fromStringJSON(instrumentAsJSON)
 	{
 		var returnValue = JSON.parse(instrumentAsJSON);
 		Instrument.objectPrototypesSet(returnValue);
 		return returnValue;
 	}
 
-	Instrument.prototype.toStringJSON = function()
+	toStringJSON()
 	{
 		var returnValue = JSON.stringify(this);
 		return returnValue;
@@ -71,7 +73,7 @@ function Instrument(name, soundSource)
 
 	// ui
 
-	Instrument.prototype.uiClear = function()
+	uiClear()
 	{
 		if (this.divInstrument != null)
 		{
@@ -86,22 +88,22 @@ function Instrument(name, soundSource)
 		this.soundSource.uiClear();
 	}
 
-	Instrument.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		var instrument = this;
 		var d = document;
 
 		if (this.divInstrument == null)
 		{
-			divInstrument = d.createElement("div");
+			var divInstrument = d.createElement("div");
 
 			var labelName = d.createElement("label");
 			labelName.innerText = "Name:";
 			divInstrument.appendChild(labelName);
 
-			inputName = d.createElement("input");
+			var inputName = d.createElement("input");
 			inputName.value = this.name;
-			inputName.onchange = function(event)
+			inputName.onchange = (event) =>
 			{
 				instrument.name = inputName.value;
 				instrument.uiClear();
@@ -112,7 +114,7 @@ function Instrument(name, soundSource)
 
 			var buttonSave = d.createElement("button");
 			buttonSave.innerText = "Save";
-			buttonSave.onclick = function()
+			buttonSave.onclick = () =>
 			{
 				instrument.uiClear();
 				var instrumentAsJSON = instrument.toStringJSON();
@@ -141,7 +143,7 @@ function Instrument(name, soundSource)
 
 	// ModFile
 
-	Instrument.fromModFileInstrument = function(instrumentFromModFile)
+	static fromModFileInstrument(instrumentFromModFile)
 	{
 		var returnValue = null;
 

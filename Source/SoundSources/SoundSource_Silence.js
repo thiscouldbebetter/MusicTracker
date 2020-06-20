@@ -1,21 +1,22 @@
 
-function SoundSource_Silence()
+class SoundSource_Silence
 {
-	this.typeName = SoundSourceType.Instances().Silence.name;
-}
+	constructor()
+	{
+		this.typeName = SoundSourceType.Instances().Silence.name;
+	}
 
-{
-	SoundSource_Silence.prototype.sampleForFrequencyAndTime = function(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
 	{
 		return 0;
 	}
 
-	SoundSource_Silence.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 	}
 
-	SoundSource_Silence.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		if (this.divSoundSource == null)
 		{

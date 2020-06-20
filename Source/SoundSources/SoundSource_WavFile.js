@@ -1,14 +1,16 @@
 
-function SoundSource_WavFile(pitchBase, wavFile)
+class SoundSource_WavFile
 {
-	this.typeName = SoundSourceType.Instances().WavFile.name;
-	this.pitchBase = pitchBase;
-	this.wavFile = wavFile;
+	constructor(pitchBase, wavFile)
+	{
+		this.typeName = SoundSourceType.Instances().WavFile.name;
+		this.pitchBase = pitchBase;
+		this.wavFile = wavFile;
 
-	this._frequencyBase = null;
-}
-{
-	SoundSource_WavFile.prototype.frequencyBase = function()
+		this._frequencyBase = null;
+	}
+
+	frequencyBase()
 	{
 		if (this._frequencyBase == null)
 		{
@@ -19,10 +21,7 @@ function SoundSource_WavFile(pitchBase, wavFile)
 		return this._frequencyBase;
 	}
 
-	SoundSource_WavFile.prototype.sampleForFrequencyAndTime = function
-	(
-		frequencyInHertz, timeInSeconds
-	)
+	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
 	{
 		var samplesPerSecond = this.samplesPerSecond();
 		var sampleIndex = Math.floor
@@ -38,7 +37,7 @@ function SoundSource_WavFile(pitchBase, wavFile)
 		return returnValue;
 	}
 
-	SoundSource_WavFile.prototype.samplesNormalized = function()
+	samplesNormalized()
 	{
 		if (this._samplesNormalized == null)
 		{
@@ -55,7 +54,7 @@ function SoundSource_WavFile(pitchBase, wavFile)
 		return this._samplesNormalized;
 	}
 
-	SoundSource_WavFile.prototype.samplesPerSecond = function()
+	samplesPerSecond()
 	{
 		if (this._samplesPerSecond == null)
 		{
@@ -70,12 +69,12 @@ function SoundSource_WavFile(pitchBase, wavFile)
 
 	// ui
 
-	SoundSource_WavFile.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 	}
 
-	SoundSource_WavFile.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		var d = document;
 		var soundSource = this;
@@ -86,7 +85,7 @@ function SoundSource_WavFile(pitchBase, wavFile)
 
 			var inputWavFile = d.createElement("input");
 			inputWavFile.type = "file";
-			inputWavFile.onchange = function(event)
+			inputWavFile.onchange = (event) =>
 			{
 				var inputWavFile = event.target;
 				var file = inputWavFile.files[0];
@@ -95,7 +94,7 @@ function SoundSource_WavFile(pitchBase, wavFile)
 					FileHelper.loadFileAsBytes
 					(
 						file,
-						function callback(file, fileAsBytes)
+						(file, fileAsBytes) =>
 						{
 							soundSource.wavFile =
 								WavFile.fromBytes(file.name, fileAsBytes);
@@ -110,7 +109,7 @@ function SoundSource_WavFile(pitchBase, wavFile)
 			this.divSoundSource.appendChild(labelPitchBase);
 
 			var inputPitchBase = d.createElement("input");
-			inputPitchBase.onchange = function(event)
+			inputPitchBase.onchange = (event) =>
 			{
 				soundSource.pitchBase = event.target.value;
 				soundSource._frequencyBase = null;
@@ -120,7 +119,7 @@ function SoundSource_WavFile(pitchBase, wavFile)
 
 			var buttonPlay = d.createElement("button");
 			buttonPlay.innerText = "Play";
-			buttonPlay.onclick = function()
+			buttonPlay.onclick = () =>
 			{
 				new Sound("", soundSource.wavFile).play();
 			}

@@ -1,58 +1,50 @@
-
 // extensions
 
-function ArrayExtensions()
+Array.prototype.addLookups = function(keyName)
 {
-	// Extension class.
+	for (var i = 0; i < this.length; i++)
+	{
+		var element = this[i];
+		var key = element[keyName];
+		this[key] = element;
+	}
+	return this;
 }
 
+Array.prototype.clone = function()
 {
-	Array.prototype.addLookups = function(keyName)
+	var returnValues = [];
+	for (var i = 0; i < this.length; i++)
 	{
-		for (var i = 0; i < this.length; i++)
-		{
-			var element = this[i];
-			var key = element[keyName];
-			this[key] = element;
-		}
-		return this;
+		var elementToClone = this[i];
+		var elementCloned = elementToClone.clone();
+		returnValues.push(elementCloned);
 	}
+	return returnValues;
+}
 
-	Array.prototype.clone = function()
-	{
-		var returnValues = [];
-		for (var i = 0; i < this.length; i++)
-		{
-			var elementToClone = this[i];
-			var elementCloned = elementToClone.clone();
-			returnValues.push(elementCloned);
-		}
-		return returnValues;
-	}
+Array.prototype.contains = function(element)
+{
+	return (this.indexOf(element) >= 0);
+}
 
-	Array.prototype.contains = function(element)
-	{
-		return (this.indexOf(element) >= 0);
-	}
+Array.prototype.insertElementAt = function(element, index)
+{
+	this.splice(index, 0, element);
+	return this;
+}
 
-	Array.prototype.insertElementAt = function(element, index)
+Array.prototype.remove = function(element)
+{
+	if (this.contains(element) == true)
 	{
-		this.splice(index, 0, element);
-		return this;
+		this.removeAt(this.indexOf(element));
 	}
+	return this;
+}
 
-	Array.prototype.remove = function(element)
-	{
-		if (this.contains(element) == true)
-		{
-			this.removeAt(this.indexOf(element));
-		}
-		return this;
-	}
-
-	Array.prototype.removeAt = function(index)
-	{
-		this.splice(index, 1);
-		return this;
-	}
+Array.prototype.removeAt = function(index)
+{
+	this.splice(index, 1);
+	return this;
 }

@@ -1,14 +1,16 @@
 
-function SoundSource_Vibrato(pitchChangesPerSecond, pitchMultipliers, areTransitionsSmooth, child)
+class SoundSource_Vibrato
 {
-	this.typeName = SoundSourceType.Instances().Vibrato.name;
-	this.pitchChangesPerSecond = pitchChangesPerSecond;
-	this.pitchMultipliers = pitchMultipliers;
-	this.areTransitionsSmooth = areTransitionsSmooth;
-	this.child = child;
-}
-{
-	SoundSource_Vibrato.prototype.sampleForFrequencyAndTime = function
+	constructor(pitchChangesPerSecond, pitchMultipliers, areTransitionsSmooth, child)
+	{
+		this.typeName = SoundSourceType.Instances().Vibrato.name;
+		this.pitchChangesPerSecond = pitchChangesPerSecond;
+		this.pitchMultipliers = pitchMultipliers;
+		this.areTransitionsSmooth = areTransitionsSmooth;
+		this.child = child;
+	}
+
+	sampleForFrequencyAndTime
 	(
 		frequencyInHertz, timeInSeconds
 	)
@@ -43,14 +45,14 @@ function SoundSource_Vibrato(pitchChangesPerSecond, pitchMultipliers, areTransit
 
 	// ui
 
-	SoundSource_Vibrato.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 		delete this.inputPitchChangesPerSecond;
 		delete this.inputFrequencyMultipliers;
 	}
 
-	SoundSource_Vibrato.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		var d = document;
 
@@ -77,7 +79,7 @@ function SoundSource_Vibrato(pitchChangesPerSecond, pitchMultipliers, areTransit
 			var inputPitchChangesPerSecond = d.createElement("input");
 			inputPitchChangesPerSecond.type = "number";
 			inputPitchChangesPerSecond.style.width = "64px";
-			inputPitchChangesPerSecond.onchange = function(event)
+			inputPitchChangesPerSecond.onchange = (event) =>
 			{
 				var inputPitchChangesPerSecond = event.target;
 				var pitchChangesPerSecond = parseInt(inputPitchChangesPerSecond.value);
@@ -90,7 +92,7 @@ function SoundSource_Vibrato(pitchChangesPerSecond, pitchMultipliers, areTransit
 			this.divSoundSource.appendChild(labelPitchMultipliers);
 			var inputPitchMultipliers = d.createElement("input");
 			inputPitchMultipliers.style.width = "64px";
-			inputPitchMultipliers.onchange = function(event)
+			inputPitchMultipliers.onchange = (event) =>
 			{
 				var inputPitchMultipliers = event.target;
 				var pitchMultipliersAsString = inputPitchMultipliers.value;

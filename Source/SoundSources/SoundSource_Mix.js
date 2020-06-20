@@ -1,22 +1,23 @@
 
-function SoundSource_Mix(children)
+class SoundSource_Mix
 {
-	this.typeName = SoundSourceType.Instances().Mix.name;
+	constructor(children)
+	{
+		this.typeName = SoundSourceType.Instances().Mix.name;
 
-	this.children = children;
+		this.children = children;
 
-	this.childIndexSelected = 0;
-}
+		this.childIndexSelected = 0;
+	}
 
-{
-	SoundSource_Mix.prototype.childSelected = function()
+	childSelected()
 	{
 		return this.children[this.childIndexSelected];
 	}
 
 	// samples
 
-	SoundSource_Mix.prototype.sampleForFrequencyAndTime = function
+	sampleForFrequencyAndTime
 	(
 		frequencyInHertz, timeInSeconds
 	)
@@ -45,7 +46,7 @@ function SoundSource_Mix(children)
 
 	// ui
 
-	SoundSource_Mix.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 		delete this.selectChild;
@@ -56,7 +57,7 @@ function SoundSource_Mix(children)
 		}
 	}
 
-	SoundSource_Mix.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		var d = document;
 
@@ -83,7 +84,7 @@ function SoundSource_Mix(children)
 
 			var buttonChildAdd = d.createElement("button");
 			buttonChildAdd.innerText = "New";
-			buttonChildAdd.onclick = function()
+			buttonChildAdd.onclick = () =>
 			{
 				var child = new SoundSource(new SoundSource_Sine());
 				var childIndex = soundSource.children.length;

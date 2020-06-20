@@ -1,13 +1,14 @@
 
-function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
+class SoundSourceType
 {
-	this.name = name;
-	this.soundSourceCreate = soundSourceCreate;
-	this.objectPrototypesSet = objectPrototypesSet;
-}
+	constructor(name, soundSourceCreate, objectPrototypesSet)
+	{
+		this.name = name;
+		this.soundSourceCreate = soundSourceCreate;
+		this.objectPrototypesSet = objectPrototypesSet;
+	}
 
-{
-	SoundSourceType.Instances = function ()
+	static Instances()
 	{
 		if (SoundSourceType._Instances == null)
 		{
@@ -15,17 +16,19 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		}
 		return SoundSourceType._Instances;
 	}
+}
+{
 
 	function SoundSourceType_Instances()
 	{
 		this.Clip = new SoundSourceType
 		(
 			"Clip",
-			function create()
+			() => 
 			{
 				return new SoundSource_Clip(0, 1000, new SoundSource(new SoundSource_Silence()));
 			},
-			function objectPrototypesSet(object)
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Clip.prototype;
 				object.child.__proto__ = SoundSource.prototype;
@@ -37,11 +40,11 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Envelope = new SoundSourceType
 		(
 			"Envelope",
-			function create()
+			() => 
 			{
 				return SoundSource_Envelope.default();
 			},
-			function objectPrototypesSet(object)
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Envelope.prototype;
 				object.child.__proto__ = SoundSource.prototype;
@@ -53,11 +56,11 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Harmonics = new SoundSourceType
 		(
 			"Harmonics",
-			function create()
+			() => 
 			{
 				return SoundSource_Harmonics.default();
 			},
-			function objectPrototypesSet(object)
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Harmonics.prototype;
 			}
@@ -66,11 +69,11 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Mix = new SoundSourceType
 		(
 			"Mix",
-			function create()
+			() => 
 			{
 				return new SoundSource_Mix([]);
 			},
-			function objectPrototypesSet(object)
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Scale.prototype;
 				object.child.__proto__ = SoundSource.prototype;
@@ -86,11 +89,11 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Noise = new SoundSourceType
 		(
 			"Noise",
-			function create()
+			() => 
 			{
 				return new SoundSource_Noise();
 			},
-			function objectPrototypesSet(object)
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Noise.prototype;
 			}
@@ -99,11 +102,11 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.PitchChange = new SoundSourceType
 		(
 			"PitchChange",
-			function create()
+			() => 
 			{
 				return new SoundSource_PitchChange(1, new SoundSource(new SoundSource_Silence()));
 			},
-			function objectPrototypesSet(object)
+			(object) => 
 			{
 				object.__proto__ = SoundSource_PitchChange.prototype;
 				object.child.__proto__ = SoundSource.prototype;
@@ -115,8 +118,8 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Sawtooth = new SoundSourceType
 		(
 			"Sawtooth",
-			function create() { return new SoundSource_Sawtooth(); },
-			function objectPrototypesSet(object)
+			() =>  { return new SoundSource_Sawtooth(); },
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Sawtooth.prototype;
 			}
@@ -125,11 +128,11 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Scale = new SoundSourceType
 		(
 			"Scale",
-			function create()
+			() => 
 			{
 				return new SoundSource_Scale(1, new SoundSource(new SoundSource_Silence()));
 			},
-			function objectPrototypesSet(object)
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Scale.prototype;
 				object.child.__proto__ = SoundSource.prototype;
@@ -141,11 +144,11 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Silence = new SoundSourceType
 		(
 			"Silence",
-			function create()
+			() => 
 			{
 				return new SoundSource_Silence()
 			},
-			function objectPrototypesSet(object)
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Silence.prototype;
 			}
@@ -154,8 +157,8 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Sine = new SoundSourceType
 		(
 			"Sine",
-			function create() { return new SoundSource_Sine(); },
-			function objectPrototypesSet(object)
+			() =>  { return new SoundSource_Sine(); },
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Sine.prototype;
 			}
@@ -164,8 +167,8 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Square = new SoundSourceType
 		(
 			"Square",
-			function create() { return new SoundSource_Square(); },
-			function objectPrototypesSet(object)
+			() =>  { return new SoundSource_Square(); },
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Square.prototype;
 			}
@@ -174,8 +177,8 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Triangle = new SoundSourceType
 		(
 			"Triangle",
-			function create() { return new SoundSource_Triangle(); },
-			function objectPrototypesSet(object)
+			() =>  { return new SoundSource_Triangle(); },
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Triangle.prototype;
 			}
@@ -184,7 +187,7 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.Vibrato = new SoundSourceType
 		(
 			"Vibrato",
-			function create()
+			() => 
 			{
 				var pitches = Pitch.Instances;
 				return new SoundSource_Vibrato
@@ -198,7 +201,7 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 					true, // areTransitionsSmooth
 					new SoundSource(new SoundSource_Sine()));
 			},
-			function objectPrototypesSet(object)
+			(object) => 
 			{
 				object.__proto__ = SoundSource_Vibrato.prototype;
 				object.child.__proto__ = SoundSource.prototype;
@@ -210,8 +213,8 @@ function SoundSourceType(name, soundSourceCreate, objectPrototypesSet)
 		this.WavFile = new SoundSourceType
 		(
 			"WavFile",
-			function create() { return new SoundSource_WavFile("C_3"); },
-			function objectPrototypesSet(object)
+			() =>  { return new SoundSource_WavFile("C_3"); },
+			(object) => 
 			{
 				object.__proto__ = SoundSource_WavFile.prototype;
 				object.wavFile.__proto__ = WavFile.prototype;

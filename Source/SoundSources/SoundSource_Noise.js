@@ -1,17 +1,17 @@
 
-function SoundSource_Noise()
+class SoundSource_Noise
 {
-	this.typeName = SoundSourceType.Instances().Noise.name;
-}
+	constructor()
+	{
+		this.typeName = SoundSourceType.Instances().Noise.name;
+	}
 
-{
-
-	SoundSource_Noise.default = function()
+	static default()
 	{
 		return new SoundSource_Noise();
 	}
 
-	SoundSource_Noise.prototype.sampleForFrequencyAndTime = function
+	sampleForFrequencyAndTime
 	(
 		frequencyInHertz, timeInSeconds
 	)
@@ -21,12 +21,12 @@ function SoundSource_Noise()
 
 	// ui
 
-	SoundSource_Noise.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 	}
 
-	SoundSource_Noise.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		var d = document;
 

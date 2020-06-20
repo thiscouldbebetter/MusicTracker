@@ -1,17 +1,18 @@
 
-function SoundSource(child)
+class SoundSource
 {
-	this.child = child;
-}
+	constructor(child)
+	{
+		this.child = child;
+	}
 
-{
 	// constants
 
-	SoundSource.RadiansPerCycle = Math.PI * 2;
+	static RadiansPerCycle = Math.PI * 2;
 
 	// methods
 
-	SoundSource.prototype.sampleForFrequencyAndTime = function
+	sampleForFrequencyAndTime
 	(
 		frequencyInHertz, timeInSeconds
 	)
@@ -25,7 +26,7 @@ function SoundSource(child)
 
 	// serialization
 
-	SoundSource.objectPrototypesSet = function(object)
+	static objectPrototypesSet(object)
 	{
 		object.__proto__ = SoundSource.prototype;
 		var child = object.child;
@@ -36,13 +37,13 @@ function SoundSource(child)
 
 	// ui
 
-	SoundSource.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 		this.child.uiClear();
 	}
 
-	SoundSource.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		var d = document;
 
@@ -67,7 +68,7 @@ function SoundSource(child)
 				soundSourceTypeAsOption.innerText = soundSourceTypeName;
 				selectType.appendChild(soundSourceTypeAsOption);
 			}
-			selectType.onchange = function(event)
+			selectType.onchange = (event) =>
 			{
 				var selectType = event.target;
 				var typeNameSelected = selectType.value;

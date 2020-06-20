@@ -1,18 +1,16 @@
 
-function SoundSource_Clip(startInSeconds, endInSeconds, child)
+class SoundSource_Clip
 {
-	this.typeName = SoundSourceType.Instances().Clip.name;
+	constructor(startInSeconds, endInSeconds, child)
+	{
+		this.typeName = SoundSourceType.Instances().Clip.name;
 
-	this.startInSeconds = startInSeconds;
-	this.endInSeconds = endInSeconds;
-	this.child = child;
-}
+		this.startInSeconds = startInSeconds;
+		this.endInSeconds = endInSeconds;
+		this.child = child;
+	}
 
-{
-	SoundSource_Clip.prototype.sampleForFrequencyAndTime = function
-	(
-		frequencyInHertz, timeInSeconds
-	)
+	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
 	{
 		var returnValue;
 
@@ -30,14 +28,14 @@ function SoundSource_Clip(startInSeconds, endInSeconds, child)
 
 	// ui
 
-	SoundSource_Clip.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 		delete this.inputStartInSeconds;
 		delete this.inputEndInSeconds;
 	}
 
-	SoundSource_Clip.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		var d = document;
 

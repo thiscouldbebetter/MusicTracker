@@ -1,24 +1,26 @@
 
-function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, sequenceNamesToPlayInOrder)
+class Song
 {
-	this.name = name;
-	this.samplesPerSecond = samplesPerSecond;
-	this.bitsPerSample = bitsPerSample;
-	this.instruments = instruments.addLookups("name");
-	this.sequences = sequences.addLookups("name");
+	constructor(name, samplesPerSecond, bitsPerSample, volumeAsFraction, instruments, sequences, sequenceNamesToPlayInOrder)
+	{
+		this.name = name;
+		this.samplesPerSecond = samplesPerSecond;
+		this.bitsPerSample = bitsPerSample;
+		this.volumeAsFraction = volumeAsFraction || 0.25;
+		this.instruments = instruments.addLookups("name");
+		this.sequences = sequences.addLookups("name");
 
-	this.sequenceNamesToPlayInOrder = sequenceNamesToPlayInOrder;
-	this.sequenceNameSelected = this.sequences[0].name;
-	this.instrumentNameSelected = this.instruments[0].name;
-}
+		this.sequenceNamesToPlayInOrder = sequenceNamesToPlayInOrder;
+		this.sequenceNameSelected = this.sequences[0].name;
+		this.instrumentNameSelected = this.instruments[0].name;
+	}
 
-{
-	Song.demo = function(samplesPerSecond, bitsPerSample)
+	static demo(samplesPerSecond, bitsPerSample)
 	{
 		samplesPerSecond = (samplesPerSecond == null ? 8000 : samplesPerSecond);
 		bitsPerSample = (bitsPerSample == null ? 8 : bitsPerSample);
 
-		var instrument0 = Instrument.new("Instrument0");
+		var instrument0 = Instrument.default("Instrument0");
 
 		var sequenceA = Sequence.demo(instrument0.name, "A");
 		var sequenceB = Sequence.demo2(instrument0.name, "B");
@@ -28,6 +30,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			"Scale",
 			samplesPerSecond,
 			bitsPerSample,
+			null, // volumeAsFraction
 			[ instrument0 ],
 			[ sequenceA, sequenceB ],
 			// sequenceNamesToPlayInOrder
@@ -41,20 +44,21 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return returnValue;
 	}
 
-	Song.new = function(samplesPerSecond, bitsPerSample)
+	static blank(samplesPerSecond, bitsPerSample)
 	{
 		samplesPerSecond = (samplesPerSecond == null ? 8000 : samplesPerSecond);
 		bitsPerSample = (bitsPerSample == null ? 8 : bitsPerSample);
 
-		var instrument0 = Instrument.new("Instrument0");
+		var instrument0 = Instrument.default("Instrument0");
 
-		var sequence0 = Sequence.new(instrument0.name, 0);
+		var sequence0 = Sequence.blank(instrument0.name, 0);
 
 		var returnValue = new Song
 		(
 			"[untitled]",
 			samplesPerSecond,
 			bitsPerSample,
+			null, // volumeAsFraction
 			[ instrument0 ],
 			[ sequence0 ],
 			// sequenceNamesToPlayInOrder
@@ -67,7 +71,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return returnValue;
 	}
 
-	Song.prototype.durationInSamples = function()
+	durationInSamples()
 	{
 		var durationInSamplesSoFar = 0;
 
@@ -82,13 +86,13 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return durationInSamplesSoFar;
 	}
 
-	Song.prototype.instrumentAdd = function(instrument)
+	instrumentAdd(instrument)
 	{
 		this.instruments.push(instrument);
 		this.instruments[instrument.name] = instrument;
 	}
 
-	Song.prototype.instrumentSelected = function(value)
+	instrumentSelected(value)
 	{
 		if (value != null)
 		{
@@ -97,7 +101,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return this.instruments[this.instrumentNameSelected];
 	}
 
-	Song.prototype.play = function()
+	play()
 	{
 		var samples = this.toSamples();
 		var wavFile = Tracker.samplesToWavFile
@@ -111,7 +115,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		song.uiCursorFollow();
 	}
 
-	Song.prototype.playOrStop = function()
+	playOrStop()
 	{
 		if (this.sound == null)
 		{
@@ -123,7 +127,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		}
 	}
 
-	Song.prototype.sequenceRename = function(sequenceNameOld, sequenceNameNew)
+	sequenceRename(sequenceNameOld, sequenceNameNew)
 	{
 		var sequence = this.sequences[sequenceNameOld];
 		delete this.sequences[sequenceNameOld];
@@ -141,25 +145,25 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		}
 	}
 
-	Song.prototype.sequenceSelectByName = function(sequenceNameToSelect)
+	sequenceSelectByName(sequenceNameToSelect)
 	{
 		this.sequenceNameSelected = sequenceNameToSelect;
 		this.sequenceSelected().uiClear();
 		this.uiUpdate();
 	}
 
-	Song.prototype.sequenceSelectNext = function()
+	sequenceSelectNext()
 	{
 		var sequenceNext = this.sequences[this.sequence];
 		this.sequenceSelectByName(sequenceNextName);
 	}
 
-	Song.prototype.sequenceSelected = function()
+	sequenceSelected()
 	{
 		return (this.sequenceNameSelected == null ? null : this.sequences[this.sequenceNameSelected]);
 	}
 
-	Song.prototype.sequencesToPlayInOrder = function()
+	sequencesToPlayInOrder()
 	{
 		var returnValues = [];
 
@@ -173,7 +177,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return returnValues;
 	}
 
-	Song.prototype.stop = function()
+	stop()
 	{
 		if (this.sound != null)
 		{
@@ -188,7 +192,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		}
 	}
 
-	Song.prototype.toSamples = function()
+	toSamples()
 	{
 		var sequencesInOrder = this.sequencesToPlayInOrder();
 		var sequencesAsSampleArrays = [];
@@ -231,7 +235,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return songAsSamples;
 	}
 
-	Song.prototype.trimSamples = function(samplesToTrim)
+	trimSamples(samplesToTrim)
 	{
 		for (var s = 0; s < samplesToTrim.length; s++)
 		{
@@ -250,7 +254,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 	// mod
 
-	Song.fromModFile = function(modFile)
+	static fromModFile(modFile)
 	{
 		var instruments = Song.fromModFile_Instruments(modFile);
 
@@ -271,6 +275,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			this.name,
 			ModFile.SamplesPerSecond, // samplesPerSecond,
 			ModFile.BitsPerSample, // bitsPerSample,
+			null, // volumeAsFraction
 			instruments,
 			sequences,
 			sequenceNamesToPlayInOrder
@@ -279,7 +284,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return song;
 	}
 
-	Song.fromModFile_Instruments = function(modFile)
+	static fromModFile_Instruments(modFile)
 	{
 		var instruments = [];
 		var instrumentsFromModFile = modFile.instruments;
@@ -296,7 +301,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return instruments;
 	}
 
-	Song.fromModFile_Sequences = function(modFile, instruments)
+	static fromModFile_Sequences(modFile, instruments)
 	{
 		var ticksPerSecond = 8;
 		var volumeCurrentByChannel = [99, 99, 99, 99];
@@ -378,7 +383,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 	// ui
 
-	Song.prototype.uiClear = function()
+	uiClear()
 	{
 		if (this.divSong != null)
 		{
@@ -403,7 +408,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		}
 	}
 
-	Song.prototype.uiCursorFollow = function()
+	uiCursorFollow()
 	{
 		var song = this;
 
@@ -444,7 +449,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		);
 	}
 
-	Song.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		if (this.divSong == null)
 		{
@@ -454,6 +459,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		this.inputName.value = this.name;
 		this.inputSamplesPerSecond.value = this.samplesPerSecond;
 		this.selectBitsPerSample.value = this.bitsPerSample;
+		this.inputVolumeAsPercentage.value = this.volumeAsFraction * 100;
 		this.selectInstrument.value = this.instrumentNameSelected;
 		this.selectSequence.value = this.sequenceNameSelected;
 
@@ -474,7 +480,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		return this.divSong;
 	}
 
-	Song.prototype.uiUpdate_Create = function()
+	uiUpdate_Create()
 	{
 		var song = this;
 
@@ -489,9 +495,9 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var buttonNew = d.createElement("button");
 		buttonNew.innerText = "New";
-		buttonNew.onclick = function()
+		buttonNew.onclick = () =>
 		{
-			var song = Song.new();
+			var song = Song.blank();
 			var tracker = Tracker.Instance;
 			tracker.songCurrent = song;
 			tracker.uiClear();
@@ -505,7 +511,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var inputName = d.createElement("input");
 		divSong.appendChild(inputName);
-		inputName.onchange = function(event)
+		inputName.onchange = (event) =>
 		{
 			song.name = inputName.value;
 		}
@@ -513,7 +519,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var buttonSave = d.createElement("button");
 		buttonSave.innerText = "Save";
-		buttonSave.onclick = function()
+		buttonSave.onclick = () =>
 		{
 			var parentElement = song.divSong.parentElement;
 			song.uiClear();
@@ -537,7 +543,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var inputFileToLoad = d.createElement("input");
 		inputFileToLoad.type = "file";
-		inputFileToLoad.onchange = function(event)
+		inputFileToLoad.onchange = (event) =>
 		{
 			var file = event.target.files[0];
 			if (file != null)
@@ -548,7 +554,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 					FileHelper.loadFileAsBytes
 					(
 						file,
-						function callback(file, fileAsBytes)
+						(file, fileAsBytes) => // callback
 						{
 							var modFile = ModFile.fromBytes
 							(
@@ -561,7 +567,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				else // Assume JSON.
 				{
 					var fileReader = new FileReader();
-					fileReader.onload = function(event2)
+					fileReader.onload(event2)
 					{
 						var songAsJSON = event2.target.result;
 						var song = Song.fromJSON(songAsJSON);
@@ -578,6 +584,8 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		divSong.appendChild(d.createElement("br"));
 
+		// Samples per Second.
+
 		var labelSamplesPerSecond = d.createElement("label");
 		labelSamplesPerSecond.innerText = "Samples per Second:";
 		divSong.appendChild(labelSamplesPerSecond);
@@ -585,7 +593,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		var inputSamplesPerSecond = d.createElement("input");
 		inputSamplesPerSecond.type = "number";
 		inputSamplesPerSecond.style.width = "64px";
-		inputSamplesPerSecond.onchange = function(event)
+		inputSamplesPerSecond.onchange = (event) =>
 		{
 			var inputSamplesPerSecond = event.target;
 			var samplesPerSecondAsString = inputSamplesPerSecond.value;
@@ -594,6 +602,8 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		}
 		divSong.appendChild(inputSamplesPerSecond);
 		this.inputSamplesPerSecond = inputSamplesPerSecond;
+
+		// Bits per sample.
 
 		var labelBitsPerSample = d.createElement("label");
 		labelBitsPerSample.innerText = "Bits per Sample:";
@@ -609,7 +619,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			bitsPerSampleAsOption.text = bitsPerSample;
 			selectBitsPerSample.appendChild(bitsPerSampleAsOption);
 		}
-		selectBitsPerSample.onchange = function(event)
+		selectBitsPerSample.onchange = (event) =>
 		{
 			var selectBitsPerSample = event.target;
 			var bitsPerSampleAsString = selectBitsPerSample.value;
@@ -619,9 +629,32 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		divSong.appendChild(selectBitsPerSample);
 		this.selectBitsPerSample = selectBitsPerSample;
 
+		// Volume.
+
+		var labelVolumeAsPercentage = d.createElement("label");
+		labelVolumeAsPercentage.innerText = "Volume As Percentage:";
+		divSong.appendChild(labelVolumeAsPercentage);
+
+		var inputVolumeAsPercentage = d.createElement("input");
+		inputVolumeAsPercentage.type = "number";
+		inputVolumeAsPercentage.style.width = "48px";
+		inputVolumeAsPercentage.onchange = (event) =>
+		{
+			var inputVolumeAsPercentage = event.target;
+			var volumeAsPercentageAsString = inputVolumeAsPercentage.value;
+			var volumeAsPercentage = parseFloat(volumeAsPercentageAsString);
+			song.volumeAsFraction = volumeAsPercentage / 100;
+		}
+		divSong.appendChild(inputVolumeAsPercentage);
+		this.inputVolumeAsPercentage = inputVolumeAsPercentage;
+
+		divSong.appendChild(d.createElement("br"));
+
+		// Play.
+
 		var buttonPlay = d.createElement("button");
 		buttonPlay.innerText = "Play/Stop (p)";
-		buttonPlay.onclick = function()
+		buttonPlay.onclick = () =>
 		{
 			song.playOrStop();
 		}
@@ -629,7 +662,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var buttonExport = d.createElement("button");
 		buttonExport.innerText = "Export to WAV";
-		buttonExport.onclick = function()
+		buttonExport.onclick = () =>
 		{
 			var songFilePath = song.name + ".wav";
 			var songAsSamples = song.toSamples();
@@ -648,7 +681,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		checkboxKeyboardCommands.type = "checkbox";
 		checkboxKeyboardCommands.value = "Keyboard Commands";
 		checkboxKeyboardCommands.checked = Tracker.Instance.useKeyboardCommands;
-		checkboxKeyboardCommands.onchange = function(event)
+		checkboxKeyboardCommands.onchange = (event) =>
 		{
 			Tracker.Instance.useKeyboardCommands = event.target.checked;
 		}
@@ -673,7 +706,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			instrumentAsSelectOption.innerText = instrument.name;
 			selectInstrument.appendChild(instrumentAsSelectOption);
 		}
-		selectInstrument.onchange = function(event)
+		selectInstrument.onchange = (event) =>
 		{
 			var instrumentName = selectInstrument.value;
 			var instrument = song.instruments[instrumentName];
@@ -685,7 +718,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var buttonInstrumentNew = d.createElement("button");
 		buttonInstrumentNew.innerText = "New";
-		buttonInstrumentNew.onclick = function()
+		buttonInstrumentNew.onclick = () =>
 		{
 			var now = new Date();
 			var nowAsString =
@@ -693,7 +726,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				+ ("" + now.getMinutes()).padLeft(2, "0")
 				+ ("" + now.getSeconds()).padLeft(2, "0");
 			var instrumentName = "Instrument" + nowAsString;
-			var instrument = Instrument.new(instrumentName);
+			var instrument = Instrument.default(instrumentName);
 			instrumentAsOption = d.createElement("option");
 			instrumentAsOption.innerText = instrument.name;
 			selectInstrument.appendChild(instrumentAsOption);
@@ -712,7 +745,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var inputFileToLoad = d.createElement("input");
 		inputFileToLoad.type = "file";
-		inputFileToLoad.onchange = function(event)
+		inputFileToLoad.onchange = (event) =>
 		{
 			var file = event.target.files[0];
 			if (file != null)
@@ -720,7 +753,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 				FileHelper.loadFileAsText
 				(
 					file,
-					function callback(file, instrumentAsJSON)
+					(file, instrumentAsJSON) => // callback
 					{
 						var instrument = Instrument.fromStringJSON(instrumentAsJSON);
 						session.instrumentAdd(instrument);
@@ -748,7 +781,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 		divSong.appendChild(d.createElement("br"));
 
 		var inputSequenceNamesToPlayInOrder = d.createElement("input");
-		inputSequenceNamesToPlayInOrder.onchange = function(event)
+		inputSequenceNamesToPlayInOrder.onchange = (event) =>
 		{
 			song.sequenceNamesToPlayInOrder =
 				inputSequenceNamesToPlayInOrder.value.split(";");
@@ -770,7 +803,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 			sequenceAsSelectOption.innerText = sequence.name;
 			selectSequence.appendChild(sequenceAsSelectOption);
 		}
-		selectSequence.onchange = function(event)
+		selectSequence.onchange = (event) =>
 		{
 			var selectSequence = event.target;
 			var sequenceNameToSelect = selectSequence.value;
@@ -782,10 +815,10 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var buttonSequenceNew = d.createElement("button");
 		buttonSequenceNew.innerText = "New";
-		buttonSequenceNew.onclick = function()
+		buttonSequenceNew.onclick = () =>
 		{
 			var sequences = song.sequences;
-			var sequenceNew = Sequence.new(song.instruments[0].name, sequences.length);
+			var sequenceNew = Sequence.blank(song.instruments[0].name, sequences.length);
 			sequences.push(sequenceNew);
 			sequences[sequenceNew.name] = sequenceNew;
 			var sequenceNewAsOption = d.createElement("option");
@@ -797,7 +830,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var buttonSequenceClone = d.createElement("button");
 		buttonSequenceClone.innerText = "Clone";
-		buttonSequenceClone.onclick = function()
+		buttonSequenceClone.onclick = () =>
 		{
 			var sequences = song.sequences;
 			var sequenceNameNext = String.fromCharCode("A".charCodeAt(0) + sequences.length);
@@ -815,7 +848,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 		var buttonSequenceDelete = d.createElement("button");
 		buttonSequenceDelete.innerText = "Delete";
-		buttonSequenceDelete.onclick = function()
+		buttonSequenceDelete.onclick = () =>
 		{
 			var sequenceSelected = song.sequenceSelected();
 			var sequences = song.sequences;
@@ -836,7 +869,7 @@ function Song(name, samplesPerSecond, bitsPerSample, instruments, sequences, seq
 
 	// json
 
-	Song.fromJSON = function(songAsJSON)
+	static fromJSON(songAsJSON)
 	{
 		var song = JSON.parse(songAsJSON);
 

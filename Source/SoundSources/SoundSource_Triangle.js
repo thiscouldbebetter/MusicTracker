@@ -1,11 +1,12 @@
 
-function SoundSource_Triangle()
+class SoundSource_Triangle
 {
-	this.typeName = SoundSourceType.Instances().Triangle.name;
-}
+	constructor()
+	{
+		this.typeName = SoundSourceType.Instances().Triangle.name;
+	}
 
-{
-	SoundSource_Triangle.prototype.sampleForFrequencyAndTime = function(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
 	{
 		var secondsPerCycle = 1 / frequencyInHertz;
 		var secondsSinceCycleStarted = timeInSeconds % secondsPerCycle;
@@ -27,12 +28,12 @@ function SoundSource_Triangle()
 
 	// ui
 
-	SoundSource_Triangle.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 	}
 
-	SoundSource_Triangle.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		if (this.divSoundSource == null)
 		{

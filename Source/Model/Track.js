@@ -1,22 +1,23 @@
 
-function Track(instrumentName, notes)
+class Track
 {
-	this.instrumentName = instrumentName;
-	this.notes = notes;
-}
+	constructor(instrumentName, notes)
+	{
+		this.instrumentName = instrumentName;
+		this.notes = notes;
+	}
 
-{
-	Track.prototype.clone = function()
+	clone()
 	{
 		return new Track(this.instrumentName, this.notes.clone());
 	}
 
-	Track.prototype.instrument = function(song)
+	instrument(song)
 	{
 		return song.instruments[this.instrumentName];
 	}
 
-	Track.prototype.noteAtTick = function(tickIndexToSearch)
+	noteAtTick(tickIndexToSearch)
 	{
 		var returnValue = null;
 
@@ -37,7 +38,7 @@ function Track(instrumentName, notes)
 		return returnValue;
 	}
 
-	Track.prototype.noteAtTickSet = function(tickIndexToSearch, valueToSet)
+	noteAtTickSet(tickIndexToSearch, valueToSet)
 	{
 		var returnValue = null;
 
@@ -81,7 +82,7 @@ function Track(instrumentName, notes)
 		return returnValue;
 	}
 
-	Track.prototype.notePrecedingTick = function(tickIndexToSearch)
+	notePrecedingTick(tickIndexToSearch)
 	{
 		var returnValue = null;
 
@@ -99,7 +100,7 @@ function Track(instrumentName, notes)
 		return returnValue;
 	}
 
-	Track.prototype.notesSustainAll = function(sequence)
+	notesSustainAll(sequence)
 	{
 		// For MOD file conversion.
 		// All notes last until the next note starts.
@@ -120,12 +121,12 @@ function Track(instrumentName, notes)
 		}
 	}
 
-	Track.prototype.notesReorder = function()
+	notesReorder()
 	{
 		this.notes.sort( (x, y) => { return x.timeStartInTicks - y.timeStartInTicks } );
 	}
 
-	Track.prototype.play = function(song, sequence)
+	play(song, sequence)
 	{
 		var samples = this.toSamples(song, sequence);
 		var wavFile = Tracker.samplesToWavFile
@@ -139,7 +140,7 @@ function Track(instrumentName, notes)
 		this.uiCursorFollow(song, sequence);
 	}
 
-	Track.prototype.playOrStop = function(song, sequence)
+	playOrStop(song, sequence)
 	{
 		if (this.sound == null)
 		{
@@ -151,7 +152,7 @@ function Track(instrumentName, notes)
 		}
 	}
 
-	Track.prototype.stop = function()
+	stop()
 	{
 		if (this.sound != null)
 		{
@@ -165,14 +166,14 @@ function Track(instrumentName, notes)
 		}
 	}
 
-	Track.prototype.tickAtIndexAsString = function(sequence, tickIndex)
+	tickAtIndexAsString(sequence, tickIndex)
 	{
 		var noteAtTick = this.noteAtTick(tickIndex);
 		var returnValue = ( noteAtTick == null ? Note.Blank : noteAtTick.toString() );
 		return returnValue;
 	}
 
-	Track.prototype.ticksAsStrings = function(sequence)
+	ticksAsStrings(sequence)
 	{
 		var returnValues = [];
 
@@ -194,7 +195,7 @@ function Track(instrumentName, notes)
 
 	// samples
 
-	Track.prototype.toSamples = function(song, sequence)
+	toSamples(song, sequence)
 	{
 		var trackAsSamples = [];
 
@@ -244,7 +245,7 @@ function Track(instrumentName, notes)
 
 	// ui
 
-	Track.prototype.uiCursorFollow = function(song, sequence)
+	uiCursorFollow(song, sequence)
 	{
 		sequence.tickSelectAtIndex(0);
 

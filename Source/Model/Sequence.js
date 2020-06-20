@@ -1,20 +1,21 @@
 
-function Sequence(name, ticksPerSecond, durationInTicks, tracks)
+class Sequence
 {
-	this.name = name;
-	this.ticksPerSecond = ticksPerSecond;
-	this.durationInTicks = durationInTicks;
-	this.tracks = tracks;
+	constructor(name, ticksPerSecond, durationInTicks, tracks)
+	{
+		this.name = name;
+		this.ticksPerSecond = ticksPerSecond;
+		this.durationInTicks = durationInTicks;
+		this.tracks = tracks;
 
-	this.trackIndexSelected = 0;
-	this.tickIndexSelected = 0;
-}
+		this.trackIndexSelected = 0;
+		this.tickIndexSelected = 0;
+	}
 
-{
-	Sequence.TickIndexDigitsMax = 4;
-	Sequence.TrackDelimiter = " | ";
+	static TickIndexDigitsMax = 4;
+	static TrackDelimiter = " | ";
 
-	Sequence.demo = function(instrumentName, sequenceName)
+	static demo(instrumentName, sequenceName)
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
@@ -75,7 +76,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return returnValue;
 	}
 
-	Sequence.demo2 = function(instrumentName, sequenceName)
+	static demo2(instrumentName, sequenceName)
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
@@ -136,7 +137,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return returnValue;
 	}
 
-	Sequence.new = function(instrumentName, sequencesSoFar)
+	static blank(instrumentName, sequencesSoFar)
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
@@ -163,30 +164,30 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return returnValue;
 	}
 
-	Sequence.prototype.durationInSamples = function(song)
+	durationInSamples(song)
 	{
 		return this.durationInSeconds() * song.samplesPerSecond;
 	}
 
-	Sequence.prototype.durationInSeconds = function()
+	durationInSeconds()
 	{
 		return this.durationInTicks / this.ticksPerSecond;
 	}
 
-	Sequence.prototype.noteAtTickCurrent = function()
+	noteAtTickCurrent()
 	{
 		var trackSelected = this.trackSelected();
 		var noteAtTick = trackSelected.noteAtTick(this.tickIndexSelected);
 		return noteAtTick;
 	}
 
-	Sequence.prototype.noteAtTickCurrentSet = function(value)
+	noteAtTickCurrentSet(value)
 	{
 		var trackSelected = this.trackSelected();
 		var noteAtTick = trackSelected.noteAtTickSet(this.tickIndexSelected, value);
 	}
 
-	Sequence.prototype.noteAtTickCurrentTimeStartInTicksAdd = function(ticksToMove)
+	noteAtTickCurrentTimeStartInTicksAdd(ticksToMove)
 	{
 		var track = this.trackSelected();
 
@@ -211,14 +212,14 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return this;
 	}
 
-	Sequence.prototype.notePrecedingTickCurrent = function()
+	notePrecedingTickCurrent()
 	{
 		var trackSelected = this.trackSelected();
 		var noteAtTick = trackSelected.notePrecedingTick(this.tickIndexSelected);
 		return noteAtTick;
 	}
 
-	Sequence.prototype.notesSustainAll = function()
+	notesSustainAll()
 	{
 		for (var t = 0; t < this.tracks.length; t++)
 		{
@@ -227,7 +228,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		}
 	}
 
-	Sequence.prototype.play = function(song)
+	play(song)
 	{
 		var samples = this.toSamples(song);
 		var wavFile = Tracker.samplesToWavFile
@@ -241,7 +242,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		this.uiCursorFollow(song);
 	}
 
-	Sequence.prototype.playOrStop = function(song)
+	playOrStop(song)
 	{
 		if (this.sound == null)
 		{
@@ -253,7 +254,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		}
 	}
 
-	Sequence.prototype.stop = function()
+	stop()
 	{
 		if (this.sound != null)
 		{
@@ -267,7 +268,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		}
 	}
 
-	Sequence.prototype.tickInsertAtCursor = function()
+	tickInsertAtCursor()
 	{
 		var track = this.trackSelected();
 		var notes = track.notes;
@@ -281,7 +282,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		}
 	}
 
-	Sequence.prototype.tickRemoveAtCursor = function()
+	tickRemoveAtCursor()
 	{
 		this.noteAtTickCurrentSet(null);
 		var track = this.trackSelected();
@@ -296,7 +297,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		}
 	}
 
-	Sequence.prototype.tickSelectAtIndex = function(tickIndexToSelect)
+	tickSelectAtIndex(tickIndexToSelect)
 	{
 		if (tickIndexToSelect < 0)
 		{
@@ -309,19 +310,19 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		this.tickIndexSelected = tickIndexToSelect;
 	}
 
-	Sequence.prototype.tickSelectNextInDirection = function(direction)
+	tickSelectNextInDirection(direction)
 	{
 		this.tickSelectAtIndex(this.tickIndexSelected + direction);
 	}
 
-	Sequence.prototype.tickSelectedAsString = function()
+	tickSelectedAsString()
 	{
 		var noteAtTick = this.noteAtTickCurrent();
 		var tickAsString = (noteAtTick == null ? Note.Blank : noteAtTick.toString());
 		return tickAsString;
 	}
 
-	Sequence.prototype.trackSelectAtIndex = function(trackIndexToSelect)
+	trackSelectAtIndex(trackIndexToSelect)
 	{
 		if (trackIndexToSelect >= this.tracks.length)
 		{
@@ -334,12 +335,12 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		this.trackIndexSelected = trackIndexToSelect;
 	}
 
-	Sequence.prototype.trackSelectNextInDirection = function(direction)
+	trackSelectNextInDirection(direction)
 	{
 		this.trackSelectAtIndex(this.trackIndexSelected + direction);
 	}
 
-	Sequence.prototype.trackSelected = function(value)
+	trackSelected(value)
 	{
 		if (value != null)
 		{
@@ -350,7 +351,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 	// cloneable
 
-	Sequence.prototype.clone = function()
+	clone()
 	{
 		return new Sequence
 		(
@@ -363,7 +364,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 	// samples
 
-	Sequence.prototype.toSamples = function(song)
+	toSamples(song)
 	{
 		var sequenceAsSamples = [];
 
@@ -405,7 +406,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 	// ui
 
-	Sequence.prototype.ticksAsStrings = function()
+	ticksAsStrings()
 	{
 		var returnValues = [];
 		for (var i = 0; i < this.durationInTicks; i++)
@@ -417,7 +418,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return returnValues;
 	}
 
-	Sequence.prototype.tickAtIndexAsString = function(tickIndex)
+	tickAtIndexAsString(tickIndex)
 	{
 		var ticksForTracksToJoin = [];
 
@@ -436,7 +437,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return tickAsString;
 	}
 
-	Sequence.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSequence;
 		delete this.inputSequenceName;
@@ -449,7 +450,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		delete this.selectTicks;
 	}
 
-	Sequence.prototype.uiCursorFollow = function(song)
+	uiCursorFollow(song)
 	{
 		var sequence = this;
 
@@ -473,7 +474,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		);
 	}
 
-	Sequence.prototype.uiUpdate = function(song)
+	uiUpdate(song)
 	{
 		if (this.divSequence == null)
 		{
@@ -491,7 +492,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return this.divSequence;
 	}
 
-	Sequence.prototype.uiUpdate_Create = function(song)
+	uiUpdate_Create(song)
 	{
 		var sequence = this;
 
@@ -506,7 +507,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		divSequence.appendChild(labelSequenceName);
 
 		var inputSequenceName = d.createElement("input");
-		inputSequenceName.onchange = function(event)
+		inputSequenceName.onchange = (event) =>
 		{
 			var sequenceNameNew = event.target.value;
 			song.sequenceRename(sequence.name, sequenceNameNew);
@@ -517,7 +518,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var buttonSequenceSelectedPlay = d.createElement("button");
 		buttonSequenceSelectedPlay.innerText = "Play/Stop (s)";
-		buttonSequenceSelectedPlay.onclick = function()
+		buttonSequenceSelectedPlay.onclick = () =>
 		{
 			sequence.playOrStop(song);
 		}
@@ -531,7 +532,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var inputTicksPerSecond = d.createElement("input");
 		inputTicksPerSecond.type = "number";
-		inputTicksPerSecond.onchange = function(event)
+		inputTicksPerSecond.onchange = (event) =>
 		{
 			var inputTicksPerSecond = event.target;
 			var ticksPerSecondAsString = inputTicksPerSecond.value;
@@ -550,7 +551,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var inputDurationInTicks = d.createElement("input");
 		inputDurationInTicks.type = "number";
-		inputDurationInTicks.onchange = function(event)
+		inputDurationInTicks.onchange = (event) =>
 		{
 			var inputDurationInTicks = event.target;
 			var durationInTicksAsString = inputDurationInTicks.value;
@@ -576,7 +577,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return divSequence;
 	}
 
-	Sequence.prototype.uiUpdate_SelectTrack = function()
+	uiUpdate_SelectTrack()
 	{
 		var selectTrack = this.selectTrack;
 		selectTrack.innerHTML = "";
@@ -590,7 +591,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		selectTrack.selectedIndex = this.trackIndexSelected;
 	}
 
-	Sequence.prototype.uiUpdate_Tracks = function(song)
+	uiUpdate_Tracks(song)
 	{
 		if (this.divTracks == null)
 		{
@@ -604,7 +605,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return this.divTracks;
 	}
 
-	Sequence.prototype.uiUpdate_Tracks_Create = function(song)
+	uiUpdate_Tracks_Create(song)
 	{
 		var d = document;
 
@@ -620,7 +621,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var buttonTrackNew = d.createElement("button");
 		buttonTrackNew.innerText = "New";
-		buttonTrackNew.onclick = function()
+		buttonTrackNew.onclick = () =>
 		{
 			var instrument = song.instruments[0];
 			var track = new Track(instrument.name, []);
@@ -635,7 +636,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		divTracks.appendChild(labelSelected);
 
 		var selectTrack = d.createElement("select");
-		selectTrack.onchange = function(event)
+		selectTrack.onchange = (event) =>
 		{
 			sequence.trackIndexSelected = parseInt(selectTrack.value);
 			sequence.uiUpdate(song);
@@ -645,7 +646,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var buttonTrackSelectedPlay = d.createElement("button");
 		buttonTrackSelectedPlay.innerText = "Play/Stop (t)";
-		buttonTrackSelectedPlay.onclick = function()
+		buttonTrackSelectedPlay.onclick = () =>
 		{
 			var trackSelected = sequence.trackSelected();
 			trackSelected.playOrStop(song, sequence);
@@ -654,7 +655,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var buttonTrackClone = d.createElement("button");
 		buttonTrackClone.innerText = "Clone";
-		buttonTrackClone.onclick = function()
+		buttonTrackClone.onclick = () =>
 		{
 			var trackToClone = sequence.trackSelected();
 			var trackCloned = trackToClone.clone();
@@ -666,7 +667,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var buttonTrackSelectedDelete = d.createElement("button");
 		buttonTrackSelectedDelete.innerText = "Delete";
-		buttonTrackSelectedDelete.onclick = function()
+		buttonTrackSelectedDelete.onclick = () =>
 		{
 			var tracks = sequence.tracks;
 			if (tracks.length > 1)
@@ -687,7 +688,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var selectInstrument = d.createElement("select");
 		divTrack.appendChild(selectInstrument);
-		selectInstrument.onchange = function(event)
+		selectInstrument.onchange = (event) =>
 		{
 			var trackSelected = sequence.trackSelected();
 			trackSelected.instrumentName = selectInstrument.value;
@@ -702,7 +703,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "Insert (Ins)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			sequence.tickInsertAtCursor();
 			sequence.uiUpdate(song);
@@ -711,7 +712,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "Remove (Del)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			sequence.tickRemoveAtCursor();
 			sequence.uiUpdate(song);
@@ -726,7 +727,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		inputTickSelected.style.fontFamily = "monospace";
 		inputTickSelected.size = 12;
 		inputTickSelected.disabled = true;
-		inputTickSelected.onkeypress = function(event)
+		inputTickSelected.onkeypress = (event) =>
 		{
 			var keyPressed = event.key;
 			if (keyPressed == "Enter")
@@ -744,7 +745,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "Clear (Backsp)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			sequence.noteAtTickCurrentSet(null);
 			sequence.uiUpdate_Tracks(song);
@@ -753,7 +754,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var buttonTickSelectedPlay = d.createElement("button");
 		buttonTickSelectedPlay.innerText = "Play (n)";
-		buttonTickSelectedPlay.onclick = function()
+		buttonTickSelectedPlay.onclick = () =>
 		{
 			var tickIndex = sequence.tickIndexSelected;
 			var tickAsString = inputTickSelected.value;
@@ -771,7 +772,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "^ (<)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -784,7 +785,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "v (>)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -803,7 +804,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "-1 (-)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -816,7 +817,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "+1 (=)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -833,7 +834,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "-1 (_)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -846,7 +847,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "+1 (+)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -863,7 +864,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "-10 ({)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -876,7 +877,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "-1 ([)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -889,7 +890,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "+1 (])";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -902,7 +903,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "+10 (})";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -919,7 +920,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "-1 (,)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -932,7 +933,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 		var button = d.createElement("button");
 		button.innerText = "+1 (.)";
-		button.onclick = function()
+		button.onclick = () =>
 		{
 			var note = sequence.noteAtTickCurrent();
 			if (note != null)
@@ -963,7 +964,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		return divTracks;
 	}
 
-	Sequence.prototype.uiUpdate_Tracks_Instruments = function(song)
+	uiUpdate_Tracks_Instruments(song)
 	{
 		this.selectInstrument.innerHTML = "";
 		var instruments = song.instruments;
@@ -983,7 +984,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		this.selectInstrument.value = trackSelected.instrumentName;
 	}
 
-	Sequence.prototype.uiUpdate_Tracks_Ticks = function()
+	uiUpdate_Tracks_Ticks()
 	{
 		var selectTicks = this.selectTicks;
 
@@ -1006,7 +1007,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 		}
 	}
 
-	Sequence.prototype.uiUpdate_TickCursorPositionFromSelected = function(shouldHighlightWholeTick)
+	uiUpdate_TickCursorPositionFromSelected(shouldHighlightWholeTick)
 	{
 		var trackSelected = this.trackSelected();
 
@@ -1060,7 +1061,7 @@ function Sequence(name, ticksPerSecond, durationInTicks, tracks)
 
 	// ui event handlers
 
-	Sequence.prototype.selectTicks_Clicked = function(song, event)
+	selectTicks_Clicked(song, event)
 	{
 		var selectTicks = event.target;
 		var cursorOffset = selectTicks.selectionStart;

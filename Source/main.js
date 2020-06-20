@@ -1,5 +1,5 @@
 function main()
 {
-	Tracker.Instance = Tracker.new();
+	Tracker.Instance = Tracker.default();
 	Tracker.Instance.uiUpdate();
 }

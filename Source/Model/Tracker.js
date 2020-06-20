@@ -1,11 +1,13 @@
 
-function Tracker(songCurrent)
+class Tracker
 {
-	this.songCurrent = songCurrent;
-	this.useKeyboardCommands = true;
-}
-{
-	Tracker.new = function()
+	constructor(songCurrent)
+	{
+		this.songCurrent = songCurrent;
+		this.useKeyboardCommands = true;
+	}
+
+	static default()
 	{
 		var song = Song.demo();
 		var returnValue = new Tracker(song);
@@ -13,9 +15,9 @@ function Tracker(songCurrent)
 	}
 
 	// This must be done after all classes are loaded.
-	// Tracker.Instance = Tracker.new();
+	// Tracker.Instance = Tracker.default();
 
-	Tracker.samplesToWavFile = function(fileName, samplesPerSecond, bitsPerSample, samplesToConvert)
+	static samplesToWavFile(fileName, samplesPerSecond, bitsPerSample, samplesToConvert)
 	{
 		var samplingInfo = new WavFileSamplingInfo
 		(
@@ -38,7 +40,7 @@ function Tracker(songCurrent)
 		return samplesAsWavFile;
 	}
 
-	Tracker.samplesValidate = function(samples)
+	static samplesValidate(samples)
 	{
 		for (var i = 0; i < samples.length; i++)
 		{
@@ -51,14 +53,14 @@ function Tracker(songCurrent)
 
 	// ui
 
-	Tracker.prototype.uiClear = function()
+	uiClear()
 	{
 		this.divTracker.parentElement.removeChild(this.divTracker);
 		this.songCurrent.uiClear();
 		delete this.divTracker;
 	}
 
-	Tracker.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		if (this.divTracker == null)
 		{
@@ -80,7 +82,7 @@ function Tracker(songCurrent)
 
 	// events
 
-	Tracker.prototype.handleEventKeyDown = function(event)
+	handleEventKeyDown(event)
 	{
 		if (this.useKeyboardCommands == false)
 		{

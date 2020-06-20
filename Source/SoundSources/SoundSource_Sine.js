@@ -1,11 +1,12 @@
 
-function SoundSource_Sine()
+class SoundSource_Sine
 {
-	this.typeName = SoundSourceType.Instances().Sine.name;
-}
+	constructor()
+	{
+		this.typeName = SoundSourceType.Instances().Sine.name;
+	}
 
-{
-	SoundSource_Sine.prototype.sampleForFrequencyAndTime = function(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
 	{
 		var secondsPerCycle = 1 / frequencyInHertz;
 		var secondsSinceCycleStarted = timeInSeconds % secondsPerCycle;
@@ -19,12 +20,12 @@ function SoundSource_Sine()
 
 	// ui
 
-	SoundSource_Sine.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 	}
 
-	SoundSource_Sine.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		if (this.divSoundSource == null)
 		{

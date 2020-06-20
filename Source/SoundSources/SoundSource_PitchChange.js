@@ -1,14 +1,15 @@
 
-function SoundSource_PitchChange(frequencyMultiplier, child)
+class SoundSource_PitchChange
 {
-	this.typeName = SoundSourceType.Instances().PitchChange.name;
+	constructor(frequencyMultiplier, child)
+	{
+		this.typeName = SoundSourceType.Instances().PitchChange.name;
 
-	this.frequencyMultiplier = frequencyMultiplier;
-	this.child = child;
-}
+		this.frequencyMultiplier = frequencyMultiplier;
+		this.child = child;
+	}
 
-{
-	SoundSource_PitchChange.prototype.sampleForFrequencyAndTime = function
+	sampleForFrequencyAndTime
 	(
 		frequencyInHertz, timeInSeconds
 	)
@@ -23,13 +24,13 @@ function SoundSource_PitchChange(frequencyMultiplier, child)
 
 	// ui
 
-	SoundSource_PitchChange.prototype.uiClear = function()
+	uiClear()
 	{
 		delete this.divSoundSource;
 		delete this.inputFrequencyMultiplier;
 	}
 
-	SoundSource_PitchChange.prototype.uiUpdate = function()
+	uiUpdate()
 	{
 		var d = document;
 
@@ -55,7 +56,7 @@ function SoundSource_PitchChange(frequencyMultiplier, child)
 			inputFrequencyMultiplier.type = "number";
 			inputFrequencyMultiplier.style.width = "64px";
 			var soundSource = this;
-			inputFrequencyMultiplier.onchange = function(event)
+			inputFrequencyMultiplier.onchange = (event) =>
 			{
 				var inputFrequencyMultiplier = event.target;
 				soundSource.frequencyMultiplier = parseFloat(inputFrequencyMultiplier.value);
