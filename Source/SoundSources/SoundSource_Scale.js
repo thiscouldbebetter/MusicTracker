@@ -34,6 +34,17 @@ class SoundSource_Scale
 		{
 			this.divSoundSource = d.createElement("div");
 
+			var labelAmplitudeMultiplier = d.createElement("label");
+			labelAmplitudeMultiplier.innerText = "Amplitude Multiplier:";
+			this.divSoundSource.appendChild(labelAmplitudeMultiplier);
+			var inputAmplitudeMultiplier = d.createElement("input");
+			inputAmplitudeMultiplier.type = "number";
+			inputAmplitudeMultiplier.style.width = "64px";
+			this.divSoundSource.appendChild(inputAmplitudeMultiplier);
+			this.inputAmplitudeMultiplier = inputAmplitudeMultiplier;
+
+			this.divSoundSource.appendChild(d.createElement("br"));
+
 			var labelChild = d.createElement("label");
 			labelChild.innerText = "Child:";
 			this.divSoundSource.appendChild(labelChild);
@@ -44,15 +55,6 @@ class SoundSource_Scale
 
 			var childAsDiv = this.child.uiUpdate();
 			this.divChild.appendChild(childAsDiv);
-
-			var labelAmplitudeMultiplier = d.createElement("label");
-			labelAmplitudeMultiplier.innerText = "Amplitude Multiplier:";
-			this.divSoundSource.appendChild(labelAmplitudeMultiplier);
-			var inputAmplitudeMultiplier = d.createElement("input");
-			inputAmplitudeMultiplier.type = "number";
-			inputAmplitudeMultiplier.style.width = "64px";
-			this.divSoundSource.appendChild(inputAmplitudeMultiplier);
-			this.inputAmplitudeMultiplier = inputAmplitudeMultiplier;
 		}
 		else
 		{

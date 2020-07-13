@@ -62,17 +62,6 @@ class SoundSource_Vibrato
 
 			this.divSoundSource = d.createElement("div");
 
-			var labelChild = d.createElement("label");
-			labelChild.innerText = "Child:";
-			this.divSoundSource.appendChild(labelChild);
-
-			var divChild = d.createElement("div");
-			this.divSoundSource.appendChild(divChild);
-			this.divChild = divChild;
-
-			var childAsDiv = this.child.uiUpdate();
-			this.divChild.appendChild(childAsDiv);
-
 			var labelPitchChangesPerSecond = d.createElement("label");
 			labelPitchChangesPerSecond.innerText = "Pitch Changes per Second:";
 			this.divSoundSource.appendChild(labelPitchChangesPerSecond);
@@ -110,6 +99,19 @@ class SoundSource_Vibrato
 
 			this.inputPitchChangesPerSecond = inputPitchChangesPerSecond;
 			this.inputPitchMultipliers = inputPitchMultipliers;
+
+			this.divSoundSource.appendChild(d.createElement("br"));
+
+			var labelChild = d.createElement("label");
+			labelChild.innerText = "Child:";
+			this.divSoundSource.appendChild(labelChild);
+
+			var divChild = d.createElement("div");
+			this.divSoundSource.appendChild(divChild);
+			this.divChild = divChild;
+
+			var childAsDiv = this.child.uiUpdate();
+			this.divChild.appendChild(childAsDiv);
 		}
 		else
 		{

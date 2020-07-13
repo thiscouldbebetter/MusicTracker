@@ -112,17 +112,6 @@ class SoundSource_Envelope
 		{
 			this.divSoundSource = d.createElement("div");
 
-			var labelChild = d.createElement("label");
-			labelChild.innerText = "Child:";
-			this.divSoundSource.appendChild(labelChild);
-
-			var divChild = d.createElement("div");
-			this.divSoundSource.appendChild(divChild);
-			this.divChild = divChild;
-
-			var childAsDiv = this.child.uiUpdate();
-			this.divChild.appendChild(childAsDiv);
-
 			var labelTicksPerSecond = d.createElement("label");
 			labelTicksPerSecond.innerText = "Ticks per Second:";
 			this.divSoundSource.appendChild(labelTicksPerSecond);
@@ -208,6 +197,17 @@ class SoundSource_Envelope
 			this.divSoundSource.appendChild(inputReleaseDurationInTicks);
 			this.divSoundSource.appendChild(d.createElement("br"));
 			this.inputReleaseDurationInTicks = inputReleaseDurationInTicks;
+
+			var labelChild = d.createElement("label");
+			labelChild.innerText = "Child:";
+			this.divSoundSource.appendChild(labelChild);
+
+			var divChild = d.createElement("div");
+			this.divSoundSource.appendChild(divChild);
+			this.divChild = divChild;
+
+			var childAsDiv = this.child.uiUpdate();
+			this.divChild.appendChild(childAsDiv);
 		}
 		else
 		{

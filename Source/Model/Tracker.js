@@ -4,7 +4,7 @@ class Tracker
 	constructor(songCurrent)
 	{
 		this.songCurrent = songCurrent;
-		this.useKeyboardCommands = true;
+		this.useKeyboardCommands = false;
 	}
 
 	static default()
@@ -96,6 +96,7 @@ class Tracker
 		var track = sequence.trackSelected();
 
 		var key = event.key;
+
 		if (key.startsWith("Arrow"))
 		{
 			if (key.endsWith("Left"))

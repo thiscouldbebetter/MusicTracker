@@ -43,17 +43,6 @@ class SoundSource_Clip
 		{
 			this.divSoundSource = d.createElement("div");
 
-			var labelChild = d.createElement("label");
-			labelChild.innerText = "Child:";
-			this.divSoundSource.appendChild(labelChild);
-
-			var divChild = d.createElement("div");
-			this.divSoundSource.appendChild(divChild);
-			this.divChild = divChild;
-
-			var childAsDiv = this.child.uiUpdate();
-			this.divChild.appendChild(childAsDiv);
-
 			var labelStartInSeconds = d.createElement("label");
 			labelStartInSeconds.innerText = "Start in Seconds:";
 			this.divSoundSource.appendChild(labelStartInSeconds);
@@ -71,6 +60,19 @@ class SoundSource_Clip
 			inputEndInSeconds.style.width = "64px";
 			this.divSoundSource.appendChild(inputEndInSeconds);
 			this.inputEndInSeconds = inputEndInSeconds;
+
+			this.divSoundSource.appendChild(d.createElement("br"));
+
+			var labelChild = d.createElement("label");
+			labelChild.innerText = "Child:";
+			this.divSoundSource.appendChild(labelChild);
+
+			var divChild = d.createElement("div");
+			this.divSoundSource.appendChild(divChild);
+			this.divChild = divChild;
+
+			var childAsDiv = this.child.uiUpdate();
+			this.divChild.appendChild(childAsDiv);
 		}
 		else
 		{

@@ -79,6 +79,17 @@ class SoundSource_Mix
 				childAsOption = "" + i;
 				selectChild.appendChild(childAsOption);
 			}
+			selectChild.onchange = (selectChildChangedEvent) =>
+			{
+				var child = this.childSelected();
+
+				var divChild = d.createElement("div");
+				this.divSoundSource.appendChild(divChild);
+				this.divChild = divChild;
+
+				var childAsDiv = child.uiUpdate();
+				this.divChild.appendChild(childAsDiv);
+			};
 			this.divSoundSource.appendChild(selectChild);
 			this.selectChild = selectChild;
 
@@ -86,7 +97,17 @@ class SoundSource_Mix
 			buttonChildAdd.innerText = "New";
 			buttonChildAdd.onclick = () =>
 			{
-				var child = new SoundSource(new SoundSource_Sine());
+				var child = new SoundSource
+				(
+					new SoundSource_Scale
+					(
+						1, // volumeAsFraction
+						new SoundSource
+						(
+							new SoundSource_Silence()
+						)
+					)
+				);
 				var childIndex = soundSource.children.length;
 				soundSource.childIndexSelected = childIndex;
 				soundSource.children.push(child);
@@ -94,7 +115,7 @@ class SoundSource_Mix
 				childAsOption.innerText = childIndex;
 				selectChild.appendChild(childAsOption);
 				soundSource.uiUpdate();
-			}
+			};
 			this.divSoundSource.appendChild(buttonChildAdd);
 
 			var divChild = d.createElement("div");

@@ -567,7 +567,7 @@ class Song
 				else // Assume JSON.
 				{
 					var fileReader = new FileReader();
-					fileReader.onload(event2)
+					fileReader.onload = (event2) =>
 					{
 						var songAsJSON = event2.target.result;
 						var song = Song.fromJSON(songAsJSON);

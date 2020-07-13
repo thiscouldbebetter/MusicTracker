@@ -9,10 +9,7 @@ class SoundSource_PitchChange
 		this.child = child;
 	}
 
-	sampleForFrequencyAndTime
-	(
-		frequencyInHertz, timeInSeconds
-	)
+	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
 	{
 		var returnValue = this.child.sampleForFrequencyAndTime
 		(
@@ -38,17 +35,6 @@ class SoundSource_PitchChange
 		{
 			this.divSoundSource = d.createElement("div");
 
-			var labelChild = d.createElement("label");
-			labelChild.innerText = "Child:";
-			this.divSoundSource.appendChild(labelChild);
-
-			var divChild = d.createElement("div");
-			this.divSoundSource.appendChild(divChild);
-			this.divChild = divChild;
-
-			var childAsDiv = this.child.uiUpdate();
-			this.divChild.appendChild(childAsDiv);
-
 			var labelFrequencyMultiplier = d.createElement("label");
 			labelFrequencyMultiplier.innerText = "Frequency Multiplier:";
 			this.divSoundSource.appendChild(labelFrequencyMultiplier);
@@ -63,6 +49,19 @@ class SoundSource_PitchChange
 			}
 			this.divSoundSource.appendChild(inputFrequencyMultiplier);
 			this.inputFrequencyMultiplier = inputFrequencyMultiplier;
+
+			this.divSoundSource.appendChild(d.createElement("br"));
+
+			var labelChild = d.createElement("label");
+			labelChild.innerText = "Child:";
+			this.divSoundSource.appendChild(labelChild);
+
+			var divChild = d.createElement("div");
+			this.divSoundSource.appendChild(divChild);
+			this.divChild = divChild;
+
+			var childAsDiv = this.child.uiUpdate();
+			this.divChild.appendChild(childAsDiv);
 		}
 		else
 		{
