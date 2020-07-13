@@ -1,6 +1,6 @@
 {
     "name": "Greensleeves",
-    "samplesPerSecond": 8000,
+    "samplesPerSecond": 4000,
     "bitsPerSample": 8,
     "volumeAsFraction": 0.25,
     "instruments": [
@@ -16,7 +16,7 @@
     "sequences": [
         {
             "name": "A",
-            "ticksPerSecond": 16,
+            "ticksPerSecond": 8,
             "durationInTicks": 102,
             "tracks": [
                 {
@@ -203,7 +203,7 @@
         },
         {
             "name": "B",
-            "ticksPerSecond": 16,
+            "ticksPerSecond": 8,
             "durationInTicks": 112,
             "tracks": [
                 {
@@ -385,7 +385,7 @@
         },
         {
             "name": "C",
-            "ticksPerSecond": 16,
+            "ticksPerSecond": 8,
             "durationInTicks": 92,
             "tracks": [
                 {
