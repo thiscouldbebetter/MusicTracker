@@ -2,6 +2,7 @@
     "name": "Greensleeves",
     "samplesPerSecond": 8000,
     "bitsPerSample": 8,
+    "volumeAsFraction": 0.25,
     "instruments": [
         {
             "name": "Instrument0",

@@ -393,6 +393,7 @@ class Song
 			delete this.inputName;
 			delete this.inputSamplesPerSecond;
 			delete this.selectBitsPerSample;
+			delete this.inputVolumeAsPercentage;
 			delete this.selectInstrument;
 			delete this.inputSequenceNamesToPlayInOrder;
 			delete this.selectSequence;
