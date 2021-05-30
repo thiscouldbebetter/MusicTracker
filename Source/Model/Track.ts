@@ -1,23 +1,29 @@
 
 class Track
 {
-	constructor(instrumentName, notes)
+	instrumentName: string;
+	notes: Note[];
+
+	cursorMover: any;
+	sound: Sound;
+
+	constructor(instrumentName: string, notes: Note[])
 	{
 		this.instrumentName = instrumentName;
 		this.notes = notes;
 	}
 
-	clone()
+	clone(): Track
 	{
-		return new Track(this.instrumentName, this.notes.clone());
+		return new Track(this.instrumentName, ArrayHelper.clone(this.notes));
 	}
 
-	instrument(song)
+	instrument(song: Song): Instrument
 	{
-		return song.instruments[this.instrumentName];
+		return song.instrumentsByName.get(this.instrumentName);
 	}
 
-	noteAtTick(tickIndexToSearch)
+	noteAtTick(tickIndexToSearch: number): Note
 	{
 		var returnValue = null;
 
@@ -38,7 +44,7 @@ class Track
 		return returnValue;
 	}
 
-	noteAtTickSet(tickIndexToSearch, valueToSet)
+	noteAtTickSet(tickIndexToSearch: number, valueToSet: Note): void
 	{
 		var returnValue = null;
 
@@ -63,14 +69,14 @@ class Track
 			if (valueToSet != null)
 			{
 				valueToSet.timeStartInTicks = tickIndexToSearch;
-				this.notes.insertElementAt(valueToSet, n);
+				ArrayHelper.insertElementAt(this.notes, valueToSet, n);
 			}
 		}
 		else
 		{
 			if (valueToSet == null)
 			{
-				this.notes.remove(noteExisting);
+				ArrayHelper.remove(this.notes, noteExisting);
 			}
 			else
 			{
@@ -82,7 +88,7 @@ class Track
 		return returnValue;
 	}
 
-	notePrecedingTick(tickIndexToSearch)
+	notePrecedingTick(tickIndexToSearch: number): Note
 	{
 		var returnValue = null;
 
@@ -100,7 +106,7 @@ class Track
 		return returnValue;
 	}
 
-	notesSustainAll(sequence)
+	notesSustainAll(sequence: Sequence): void
 	{
 		// For MOD file conversion.
 		// All notes last until the next note starts.
@@ -121,26 +127,26 @@ class Track
 		}
 	}
 
-	notesReorder()
+	notesReorder(): void
 	{
 		this.notes.sort( (x, y) => { return x.timeStartInTicks - y.timeStartInTicks } );
 	}
 
-	play(song, sequence)
+	play(song: Song, sequence: Sequence): void
 	{
 		var samples = this.toSamples(song, sequence);
 		var wavFile = Tracker.samplesToWavFile
 		(
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
-		this.sound = new Sound("", wavFile);
+		this.sound = new Sound("", wavFile, null);
 		var track = this;
-		this.sound.play( () => { track.stop(song, sequence); } );
+		this.sound.play( () => { track.stop(); } );
 
 		this.uiCursorFollow(song, sequence);
 	}
 
-	playOrStop(song, sequence)
+	playOrStop(song: Song, sequence: Sequence)
 	{
 		if (this.sound == null)
 		{
@@ -152,7 +158,7 @@ class Track
 		}
 	}
 
-	stop()
+	stop(): void
 	{
 		if (this.sound != null)
 		{
@@ -166,14 +172,14 @@ class Track
 		}
 	}
 
-	tickAtIndexAsString(sequence, tickIndex)
+	tickAtIndexAsString(sequence: Sequence, tickIndex: number): string
 	{
 		var noteAtTick = this.noteAtTick(tickIndex);
 		var returnValue = ( noteAtTick == null ? Note.Blank : noteAtTick.toString() );
 		return returnValue;
 	}
 
-	ticksAsStrings(sequence)
+	ticksAsStrings(sequence: Sequence): string[] 
 	{
 		var returnValues = [];
 
@@ -195,7 +201,7 @@ class Track
 
 	// samples
 
-	toSamples(song, sequence)
+	toSamples(song: Song, sequence: Sequence): number[]
 	{
 		var trackAsSamples = [];
 
@@ -245,7 +251,7 @@ class Track
 
 	// ui
 
-	uiCursorFollow(song, sequence)
+	uiCursorFollow(song: Song, sequence: Sequence): void
 	{
 		sequence.tickSelectAtIndex(0);
 

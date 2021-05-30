@@ -1,12 +1,15 @@
 
-class SoundSource_Triangle
+class SoundSource_Triangle extends SoundSourceChild
 {
 	constructor()
 	{
-		this.typeName = SoundSourceType.Instances().Triangle.name;
+		super(SoundSourceType.Instances().Triangle.name);
 	}
 
-	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime
+	(
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		var secondsPerCycle = 1 / frequencyInHertz;
 		var secondsSinceCycleStarted = timeInSeconds % secondsPerCycle;
@@ -28,12 +31,12 @@ class SoundSource_Triangle
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		if (this.divSoundSource == null)
 		{

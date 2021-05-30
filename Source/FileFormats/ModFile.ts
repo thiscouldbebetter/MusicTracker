@@ -1,7 +1,20 @@
 
 class ModFile
 {
-	constructor(name, title, instruments, sequenceIndicesToPlayInOrder, sequences)
+	name: string;
+	title: string;
+	instruments: ModFileInstrument[];
+	sequenceIndicesToPlayInOrder: number[];
+	sequences: ModFileSequence[];
+
+	constructor
+	(
+		name: string,
+		title: string,
+		instruments: ModFileInstrument[],
+		sequenceIndicesToPlayInOrder: number[],
+		sequences: ModFileSequence[]
+	)
 	{
 		this.name = name;
 		this.title = title;
@@ -13,7 +26,7 @@ class ModFile
 	static SamplesPerSecond = 8287;
 	static BitsPerSample = 16;
 
-	static fromBytes(name, bytes)
+	static fromBytes(name: string, bytes: number[]): ModFile
 	{
 		// Based on descriptions of the MOD file format found at the URLs:
 		// "https://www.aes.id.au/modformat.html"
@@ -22,7 +35,7 @@ class ModFile
 
 		var reader = new ByteStreamBigEndian(bytes);
 
-		var title = reader.readString(20).replaceAll("\0", "").trim();
+		var title = StringHelper.replaceAll(reader.readString(20), "\0", "").trim();
 
 		var instruments = [];
 
@@ -30,7 +43,13 @@ class ModFile
 		for (var i = 0; i < numberOfInstruments; i++)
 		{
 			var instrumentName =
-				reader.readString(22).replaceAll("\0", "").trim().makeIdentifier().trim();
+				StringHelper.makeIdentifier
+				(
+					StringHelper.replaceAll
+					(
+						reader.readString(22), "\0", ""
+					).trim()
+				).trim();
 
 			// In "words". 2 bytes/word
 			var numberOfSamplesInInstrumentPlusOne = reader.readShort();
@@ -59,7 +78,7 @@ class ModFile
 		}
 
 		var numberOfSequencesToPlay = reader.readByte(); // 1 to 128.
-		var reserved = reader.readByte(); // Should be 127.
+		reader.readByte(); // reserved - Should be 127.
 		var sequenceIndicesToPlay = reader.readBytes(128); // Each 0 - 63.
 		sequenceIndicesToPlay.length = numberOfSequencesToPlay;
 
@@ -85,7 +104,7 @@ class ModFile
 		{
 			// It wasn't a signature, it was the start of sequence definitions.
 			// Back up 4 bytes.
-			reader.byteIndex -= 4;
+			reader.byteIndexCurrent -= 4;
 		}
 
 		var samplesPerSequence = 64; // Or "divisions".
@@ -172,60 +191,60 @@ class ModFile
 
 	} // end function
 
-	static pitchNameToPitchCodeLookup =
-	{
+	static pitchCodesByName = new Map<string,number>
+	([
 		// Pitch codes:
 		// From https://www.ocf.berkeley.edu/~eek/index.html/tiny_examples/ptmod/ap12.html:
 		// "Periodtable for Tuning 0, Normal
 
-		"C_1": 856,
-		"C#1": 808,
-		"D_1": 762,
-		"D#1": 720,
-		"E_1": 678,
-		"F_1": 640,
-		"F#1": 604,
-		"G_1": 570,
-		"G#1": 538,
-		"A_1": 508,
-		"A#1": 480,
-		"B_1": 453,
+		[ "C_1", 856 ],
+		[ "C#1", 808 ],
+		[ "D_1", 762 ],
+		[ "D#1", 720 ],
+		[ "E_1", 678 ],
+		[ "F_1", 640 ],
+		[ "F#1", 604 ],
+		[ "G_1", 570 ],
+		[ "G#1", 538 ],
+		[ "A_1", 508 ],
+		[ "A#1", 480 ],
+		[ "B_1", 453 ],
 
-		"C_2": 428,
-		"C#2": 404,
-		"D_2": 381,
-		"D#2": 360,
-		"E_2": 339,
-		"F_2": 320,
-		"F#2": 302,
-		"G_2": 285,
-		"G#2": 269,
-		"A_2": 254,
-		"A#2": 240,
-		"B_2": 226,
+		[ "C_2", 428 ],
+		[ "C#2", 404 ],
+		[ "D_2", 381 ],
+		[ "D#2", 360 ],
+		[ "E_2", 339 ],
+		[ "F_2", 320 ],
+		[ "F#2", 302 ],
+		[ "G_2", 285 ],
+		[ "G#2", 269 ],
+		[ "A_2", 254 ],
+		[ "A#2", 240 ],
+		[ "B_2", 226 ],
 
-		"C_3": 214,
-		"C#3": 202,
-		"D_3": 190,
-		"D#3": 180,
-		"E_3": 170,
-		"F_3": 160,
-		"F#3": 151,
-		"G_3": 143,
-		"G#3": 135,
-		"A_3": 127,
-		"A#3": 120,
-		"B_3": 113,
-	};
+		[ "C_3", 214 ],
+		[ "C#3", 202 ],
+		[ "D_3", 190 ],
+		[ "D#3", 180 ],
+		[ "E_3", 170 ],
+		[ "F_3", 160 ],
+		[ "F#3", 151 ],
+		[ "G_3", 143 ],
+		[ "G#3", 135 ],
+		[ "A_3", 127 ],
+		[ "A#3", 120 ],
+		[ "B_3", 113 ],
+	]);
 
-	static pitchNameForPitchCode(pitchCodeToFind)
+	static pitchNameForPitchCode(pitchCodeToFind: number): string
 	{
 		var returnValue = null;
 
-		var lookup = ModFile.pitchNameToPitchCodeLookup;
+		var lookup = ModFile.pitchCodesByName;
 		for (var pitchName in lookup)
 		{
-			var pitchCodeFromLookup = lookup[pitchName];
+			var pitchCodeFromLookup = lookup.get(pitchName);
 			if (pitchCodeFromLookup <= pitchCodeToFind)
 			{
 				returnValue = pitchName;
@@ -245,14 +264,21 @@ class ModFile
 
 class ModFileDivisionCell
 {
-	constructor(instrumentIndex, pitchCode, effect)
+	instrumentIndex: number;
+	pitchCode: number;
+	effect: ModFileEffect;
+
+	constructor
+	(
+		instrumentIndex: number, pitchCode: number, effect: ModFileEffect
+	)
 	{
 		this.instrumentIndex = instrumentIndex;
 		this.pitchCode = pitchCode;
 		this.effect = effect;
 	}
 
-	toString()
+	toString(): string
 	{
 		var returnValue =
 		(
@@ -266,7 +292,11 @@ class ModFileDivisionCell
 
 class ModFileEffect
 {
-	constructor(defnID, arg0, arg1)
+	defnID: number;
+	arg0: number;
+	arg1: number;
+
+	constructor(defnID: number, arg0: number, arg1: number)
 	{
 		this.defnID = defnID;
 		this.arg0 = arg0;
@@ -306,7 +336,7 @@ class ModFileEffect
 		// F - Invert Loop
 	// F - Set Speed
 
-	toString()
+	toString(): string
 	{
 		var returnValue =
 		(
@@ -320,14 +350,23 @@ class ModFileEffect
 
 class ModFileInstrument
 {
+	name: string;
+	numberOfSamplesPlusOne: number;
+	pitchShiftInSixteenthTones: number;
+	volume: number;
+	repeatOffsetInWords: number;
+	repeatLengthInWords: number;
+
+	samples: number[];
+
 	constructor
 	(
-		name,
-		numberOfSamplesPlusOne,
-		pitchShiftInSixteenthTones,
-		volume,
-		repeatOffsetInWords,
-		repeatLengthInWords
+		name: string,
+		numberOfSamplesPlusOne: number,
+		pitchShiftInSixteenthTones: number,
+		volume: number,
+		repeatOffsetInWords: number,
+		repeatLengthInWords: number
 	)
 	{
 		this.name = name;
@@ -343,7 +382,9 @@ class ModFileInstrument
 
 class ModFileSequence
 {
-	constructor(divisionCellsForChannels)
+	divisionCellsForChannels: ModFileDivisionCell[][];
+
+	constructor(divisionCellsForChannels: ModFileDivisionCell[][])
 	{
 		this.divisionCellsForChannels = divisionCellsForChannels;
 	}

@@ -1,7 +1,12 @@
 
 class ByteConverter
 {
-	constructor(numberOfBits)
+	numberOfBits: number;
+	numberOfBytes: number;
+	maxValueSigned: number;
+	maxValueUnsigned: number;
+
+	constructor(numberOfBits: number)
 	{
 		this.numberOfBits = numberOfBits;
 		this.numberOfBytes = Math.floor(this.numberOfBits / 8);
@@ -13,17 +18,16 @@ class ByteConverter
 			(1 << (numberOfBits));
 	}
 
-	bytesToFloat(bytes)
+	bytesToFloat(bytes: number[]): number
 	{
-		var bytesAsInteger = this.bytesToInteger(bytes);
+		var bytesAsInteger = this.bytesToIntegerSignedBE(bytes); // Signed or unsigned?  BE or LE?
 
 		var returnValue = this.integerToFloat(bytesAsInteger);
 
-
 		return returnValue;
 	}
 
-	bytesToIntegerSignedBE(bytes)
+	bytesToIntegerSignedBE(bytes: number[]): number
 	{
 		// Big-endian.
 
@@ -45,7 +49,7 @@ class ByteConverter
 		return returnValue;
 	}
 
-	bytesToIntegerSignedLE(bytes)
+	bytesToIntegerSignedLE(bytes: number[]): number
 	{
 		// Little-endian.
 
@@ -66,7 +70,7 @@ class ByteConverter
 		return returnValue;
 	}
 
-	bytesToIntegerUnsignedBE(bytes)
+	bytesToIntegerUnsignedBE(bytes: number[]): number
 	{
 		// Big-endian.
 
@@ -83,7 +87,7 @@ class ByteConverter
 		return returnValue;
 	}
 
-	bytesToIntegerUnsignedLE(bytes)
+	bytesToIntegerUnsignedLE(bytes: number[]): number
 	{
 		// Little-endian.
 
@@ -99,15 +103,15 @@ class ByteConverter
 		return returnValue;
 	}
 
-	floatToInteger(float)
+	floatToInteger(float: number): number
 	{
 		return float * this.maxValueSigned;
 	}
 
-	integerToBytesBE(integer)
+	integerToBytesBE(integer: number): number[]
 	{
 		// Big-endian.
-		var returnValues = [];
+		var returnValues = new Array<number>();
 
 		for (var i = 0; i < this.numberOfBytes; i++)
 		{
@@ -118,10 +122,10 @@ class ByteConverter
 		return returnValues;
 	}
 
-	integerToBytesLE(integer)
+	integerToBytesLE(integer: number): number[]
 	{
 		// Little-endian.
-		var returnValues = [];
+		var returnValues = new Array<number>();
 
 		for (var i = 0; i < this.numberOfBytes; i++)
 		{
@@ -132,7 +136,7 @@ class ByteConverter
 		return returnValues;
 	}
 
-	integerToFloat(integer)
+	integerToFloat(integer: number): number
 	{
 		var returnValue =
 			integer / this.maxValueSigned;

@@ -1,7 +1,22 @@
 
 class Note
 {
-	constructor(timeStartInTicks, octaveIndex, pitchCode, volumeAsPercentage, durationInTicks)
+	timeStartInTicks: number;
+	octaveIndex: number;
+	pitchCode: string;
+	volumeAsPercentage: number;
+	durationInTicks: number;
+
+	sound: Sound;
+
+	constructor
+	(
+		timeStartInTicks: number,
+		octaveIndex: number,
+		pitchCode: string,
+		volumeAsPercentage: number,
+		durationInTicks: number
+	)
 	{
 		this.timeStartInTicks = timeStartInTicks;
 		this.octaveIndex = octaveIndex;
@@ -13,12 +28,12 @@ class Note
 	static Blank = "-----------"; // "pitch-volume-duration";
 	static VolumeAsPercentageMax = 99; // Not technically a percentage.
 
-	static default()
+	static default(): Note
 	{
-		return Note.fromString("C_4-25-0001");
+		return Note.fromString("C_4-25-0001", null);
 	}
 
-	clone()
+	clone(): Note
 	{
 		return new Note
 		(
@@ -30,7 +45,7 @@ class Note
 		);
 	}
 
-	durationInTicksAdd(ticksToAdd)
+	durationInTicksAdd(ticksToAdd: number): Note
 	{
 		this.durationInTicks += ticksToAdd;
 		if (this.durationInTicks < 1)
@@ -40,7 +55,7 @@ class Note
 		return this;
 	}
 
-	durationInSamples(song, sequence)
+	durationInSamples(song: Song, sequence: Sequence): number
 	{
 		var returnValue =
 			this.durationInTicks
@@ -50,7 +65,7 @@ class Note
 		return returnValue;
 	}
 
-	frequencyInHertz()
+	frequencyInHertz(): number
 	{
 		var octave = this.octave();
 		var frequencyBase = octave.frequencyInHertzOfC;
@@ -59,26 +74,26 @@ class Note
 		return frequency;
 	}
 
-	octave()
+	octave(): Octave
 	{
-		return Octave.Instances._All[this.octaveIndex];
+		return Octave.Instances()._All[this.octaveIndex];
 	}
 
-	octaveAdd(octaveOffset)
+	octaveAdd(octaveOffset: number): Note
 	{
 		this.octaveIndex += octaveOffset;
 		if (this.octaveIndex < 0)
 		{
 			this.octaveIndex = 0;
 		}
-		else if (this.octaveIndex >= Octave.Instances._All.length)
+		else if (this.octaveIndex >= Octave.Instances()._All.length)
 		{
-			this.octaveIndex = Octave.Instances._All.length - 1;
+			this.octaveIndex = Octave.Instances()._All.length - 1;
 		}
 		return this;
 	}
 
-	overwriteWith(other)
+	overwriteWith(other: Note): Note
 	{
 		this.timeStartInTicks = other.timeStartInTicks;
 		this.octaveIndex = other.octaveIndex;
@@ -88,14 +103,14 @@ class Note
 		return this;
 	}
 
-	pitch()
+	pitch(): Pitch
 	{
-		return Pitch.Instances._All[this.pitchCode];
+		return Pitch.Instances().byCode(this.pitchCode);
 	}
 
-	pitchAdd(pitchOffset)
+	pitchAdd(pitchOffset: number): Note
 	{
-		var pitches = Pitch.Instances._All;
+		var pitches = Pitch.Instances()._All;
 		var pitchIndex = pitches.indexOf(this.pitch());
 		pitchIndex += pitchOffset;
 		if (pitchIndex < 0)
@@ -112,7 +127,7 @@ class Note
 		}
 		else if (pitchIndex >= pitches.length)
 		{
-			if (this.octaveIndex >= Octave.Instances._All.length - 1)
+			if (this.octaveIndex >= Octave.Instances()._All.length - 1)
 			{
 				pitchIndex -= pitchOffset;
 			}
@@ -126,10 +141,9 @@ class Note
 		return this;
 	}
 
-	pitchCodeSet(value)
+	pitchCodeSet(value: string): Note
 	{
-		var pitches = Pitch.Instances._All;
-		var pitch = pitches[value];
+		var pitch = Pitch.Instances().byCode(value);
 		if (pitch != null)
 		{
 			this.pitchCode = pitch.code;
@@ -137,19 +151,19 @@ class Note
 		return this;
 	}
 
-	play(song, sequence, track)
+	play(song: Song, sequence: Sequence, track: Track): void
 	{
-		var samples = this.toSamples(song, sequence, track);
+		var samples = this.toSamples(song, sequence, track, null);
 		var wavFile = Tracker.samplesToWavFile
 		(
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
-		this.sound = new Sound("", wavFile);
+		this.sound = new Sound("", wavFile, null);
 		var note = this;
 		this.sound.play( () => { note.sound = null; } );
 	}
 
-	stop()
+	stop(): void
 	{
 		if (this.sound != null)
 		{
@@ -158,7 +172,7 @@ class Note
 		}
 	}
 
-	timeStartInSamples(song, sequence)
+	timeStartInSamples(song: Song, sequence: Sequence): number
 	{
 		var timeStartInSeconds = this.timeStartInSeconds(sequence);
 		var returnValue = Math.round
@@ -168,17 +182,17 @@ class Note
 		return returnValue;
 	}
 
-	timeStartInSeconds(sequence)
+	timeStartInSeconds(sequence: Sequence): number
 	{
 		return this.timeStartInTicks / sequence.ticksPerSecond;
 	}
 
-	volumeAsFraction()
+	volumeAsFraction(): number
 	{
 		return this.volumeAsPercentage / Note.VolumeAsPercentageMax;
 	}
 
-	volumeAsPercentageAdd(volumeOffset)
+	volumeAsPercentageAdd(volumeOffset: number): Note
 	{
 		this.volumeAsPercentage += volumeOffset;
 		if (this.volumeAsPercentage < 0)
@@ -194,7 +208,10 @@ class Note
 
 	// samples
 
-	toSamples(song, sequence, track, instrument)
+	toSamples
+	(
+		song: Song, sequence: Sequence, track: Track, instrument: Instrument
+	): number[]
 	{
 		var samplesPerSecond = song.samplesPerSecond;
 		var durationInSamples = this.durationInSamples(song, sequence);
@@ -212,11 +229,11 @@ class Note
 
 	// strings
 
-	static fromString(stringToParse, timeStartInTicks)
+	static fromString(stringToParse: string, timeStartInTicks: number): Note
 	{
 		stringToParse = stringToParse.toUpperCase();
 
-		var returnValue;
+		var returnValue: Note = null;
 
 		var parts = stringToParse.split("-");
 		if (parts.length != 3)
@@ -227,7 +244,7 @@ class Note
 		{
 			var pitchCodeAndOctaveIndex = parts[0];
 			var pitchCode = pitchCodeAndOctaveIndex.substr(0, 2);
-			var pitch = Pitch.Instances._All[pitchCode];
+			var pitch = Pitch.Instances().byCode(pitchCode);
 
 			if (pitch == null)
 			{
@@ -255,7 +272,7 @@ class Note
 				}
 				else
 				{
-					var returnValue = new Note
+					returnValue = new Note
 					(
 						timeStartInTicks,
 						octaveIndex,
@@ -270,12 +287,12 @@ class Note
 		return returnValue;
 	}
 
-	toString()
+	toString(): string
 	{
 		var returnValue =
 			this.pitchCode + this.octaveIndex + "-"
-			+ ("" + this.volumeAsPercentage).padLeft(2, "0") + "-"
-			+ ("" + this.durationInTicks).padLeft(4, "0");
+			+ StringHelper.padLeft("" + this.volumeAsPercentage, 2, "0") + "-"
+			+ StringHelper.padLeft("" + this.durationInTicks, 4, "0");
 		return returnValue
 	}
 }

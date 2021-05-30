@@ -1,7 +1,11 @@
 
-class SoundSource
+class SoundSource //
 {
-	constructor(child)
+	child: SoundSourceChild;
+
+	divSoundSource: any;
+
+	constructor(child: SoundSourceChild)
 	{
 		this.child = child;
 	}
@@ -14,7 +18,7 @@ class SoundSource
 
 	sampleForFrequencyAndTime
 	(
-		frequencyInHertz, timeInSeconds
+		frequencyInHertz: number, timeInSeconds: number
 	)
 	{
 		var returnValue = this.child.sampleForFrequencyAndTime
@@ -26,24 +30,24 @@ class SoundSource
 
 	// serialization
 
-	static objectPrototypesSet(object)
+	static objectPrototypesSet(objectToSet: any): void
 	{
-		object.__proto__ = SoundSource.prototype;
-		var child = object.child;
+		Object.setPrototypeOf(objectToSet, SoundSource.prototype);
+		var child = objectToSet.child;
 		var childTypeName = child.typeName;
-		var type = SoundSourceType.Instances()[childTypeName];
+		var type = SoundSourceType.Instances().byName(childTypeName);
 		type.objectPrototypesSet(child);
 	}
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 		this.child.uiClear();
 	}
 
-	uiUpdate()
+	uiUpdate(): any
 	{
 		var d = document;
 
@@ -68,11 +72,11 @@ class SoundSource
 				soundSourceTypeAsOption.innerText = soundSourceTypeName;
 				selectType.appendChild(soundSourceTypeAsOption);
 			}
-			selectType.onchange = (event) =>
+			selectType.onchange = (event: any) =>
 			{
 				var selectType = event.target;
 				var typeNameSelected = selectType.value;
-				var typeSelected = SoundSourceType.Instances()[typeNameSelected];
+				var typeSelected = SoundSourceType.Instances().byName(typeNameSelected);
 				divSoundSource.removeChild(soundSource.child.divSoundSource);
 				var child = typeSelected.soundSourceCreate();
 				soundSource.child = child;

@@ -1,15 +1,23 @@
 
-class SoundSource_PitchChange
+class SoundSource_PitchChange extends SoundSourceChild
 {
-	constructor(frequencyMultiplier, child)
+	frequencyMultiplier: number;
+	child: SoundSource;
+
+	inputFrequencyMultiplier: any;
+
+	constructor(frequencyMultiplier: number, child: SoundSource)
 	{
-		this.typeName = SoundSourceType.Instances().PitchChange.name;
+		super(SoundSourceType.Instances().PitchChange.name);
 
 		this.frequencyMultiplier = frequencyMultiplier;
 		this.child = child;
 	}
 
-	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime
+	(
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		var returnValue = this.child.sampleForFrequencyAndTime
 		(
@@ -21,13 +29,13 @@ class SoundSource_PitchChange
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 		delete this.inputFrequencyMultiplier;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		var d = document;
 
@@ -42,7 +50,7 @@ class SoundSource_PitchChange
 			inputFrequencyMultiplier.type = "number";
 			inputFrequencyMultiplier.style.width = "64px";
 			var soundSource = this;
-			inputFrequencyMultiplier.onchange = (event) =>
+			inputFrequencyMultiplier.onchange = (event: any) =>
 			{
 				var inputFrequencyMultiplier = event.target;
 				soundSource.frequencyMultiplier = parseFloat(inputFrequencyMultiplier.value);

@@ -1,16 +1,31 @@
 
-class SoundSource_Clip
+class SoundSource_Clip extends SoundSourceChild
 {
-	constructor(startInSeconds, endInSeconds, child)
+	startInSeconds: number;
+	endInSeconds: number;
+	child: SoundSource;
+
+	inputStartInSeconds: any;
+	inputEndInSeconds: any;
+
+	constructor
+	(
+		startInSeconds: number,
+		endInSeconds: number,
+		child: SoundSource
+	)
 	{
-		this.typeName = SoundSourceType.Instances().Clip.name;
+		super(SoundSourceType.Instances().Clip.name);
 
 		this.startInSeconds = startInSeconds;
 		this.endInSeconds = endInSeconds;
 		this.child = child;
 	}
 
-	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime
+	(
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		var returnValue;
 
@@ -20,7 +35,10 @@ class SoundSource_Clip
 		}
 		else
 		{
-			returnValue = child.sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds);
+			returnValue = this.child.sampleForFrequencyAndTime
+			(
+				frequencyInHertz, timeInSeconds
+			);
 		}
 
 		return returnValue;
@@ -28,14 +46,14 @@ class SoundSource_Clip
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 		delete this.inputStartInSeconds;
 		delete this.inputEndInSeconds;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		var d = document;
 

@@ -1,12 +1,15 @@
 
-class SoundSource_Sine
+class SoundSource_Sine extends SoundSourceChild
 {
 	constructor()
 	{
-		this.typeName = SoundSourceType.Instances().Sine.name;
+		super(SoundSourceType.Instances().Sine.name);
 	}
 
-	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime
+	(
+		frequencyInHertz: number, timeInSeconds: number
+	)
 	{
 		var secondsPerCycle = 1 / frequencyInHertz;
 		var secondsSinceCycleStarted = timeInSeconds % secondsPerCycle;
@@ -20,12 +23,12 @@ class SoundSource_Sine
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		if (this.divSoundSource == null)
 		{

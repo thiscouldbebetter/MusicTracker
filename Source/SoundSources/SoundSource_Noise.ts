@@ -1,32 +1,32 @@
 
-class SoundSource_Noise
+class SoundSource_Noise extends SoundSourceChild
 {
 	constructor()
 	{
-		this.typeName = SoundSourceType.Instances().Noise.name;
+		super(SoundSourceType.Instances().Noise.name);
 	}
 
-	static default()
+	static default(): SoundSource_Noise
 	{
 		return new SoundSource_Noise();
 	}
 
 	sampleForFrequencyAndTime
 	(
-		frequencyInHertz, timeInSeconds
-	)
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		return Math.random() * 2 - 1;
 	}
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		var d = document;
 

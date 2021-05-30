@@ -1,40 +1,59 @@
 
-String.prototype.makeIdentifier = function()
+class StringHelper
 {
-	var returnValue = "_";
-	for (var i = 0; i < this.length; i++)
+	static makeIdentifier(stringToMakeIdentifier: string): string
 	{
-		var char = this[i];
-		if (char == " ")
+		var returnValue = "_";
+		for (var i = 0; i < stringToMakeIdentifier.length; i++)
 		{
-			// Do nothing.
+			var char = stringToMakeIdentifier[i];
+			if (char == " ")
+			{
+				// Do nothing.
+			}
+			else
+			{
+				var charAsNumber = parseFloat(char);
+
+				if
+				(
+					char.toLowerCase() != char.toUpperCase()
+					|| isNaN(charAsNumber) == false
+				)
+				{
+					returnValue += charAsNumber;
+				}
+			}
 		}
-		else if
+
+		return returnValue;
+	}
+
+	static padLeft
+	(
+		stringToPad: string, lengthToPadTo: number, charToPadWith: string
+	): string
+	{
+		var returnValue = stringToPad;
+
+		while (returnValue.length < lengthToPadTo)
+		{
+			returnValue = charToPadWith + returnValue;
+		}
+
+		return returnValue;
+	}
+
+	static replaceAll
+	(
+		stringToReplaceWithin: string,
+		stringToBeReplaced: string,
+		stringToReplaceWith: string
+	): string
+	{
+		return stringToReplaceWithin.replace
 		(
-			char.toLowerCase() != char.toUpperCase()
-			|| isNaN(char) == false
-		)
-		{
-			returnValue += char;
-		}
+			new RegExp(stringToBeReplaced, "g"), stringToReplaceWith
+		);
 	}
-
-	return returnValue;
-}
-
-String.prototype.padLeft = function(lengthToPadTo, charToPadWith)
-{
-	var returnValue = this;
-
-	while (returnValue.length < lengthToPadTo)
-	{
-		returnValue = charToPadWith + returnValue;
-	}
-
-	return returnValue;
-}
-
-String.prototype.replaceAll = function(stringToBeReplaced, stringToReplaceWith)
-{
-	return this.replace(new RegExp(stringToBeReplaced, "g"), stringToReplaceWith);
 }

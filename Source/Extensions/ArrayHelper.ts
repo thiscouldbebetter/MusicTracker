@@ -1,50 +1,53 @@
-// extensions
 
-Array.prototype.addLookups = function(keyName)
+class ArrayHelper
 {
-	for (var i = 0; i < this.length; i++)
+	static addLookups<K, E>(array: E[], getKeyForElement: (e: E) => K ): Map<K, E>
 	{
-		var element = this[i];
-		var key = element[keyName];
-		this[key] = element;
+		var returnLookup = new Map<K, E>();
+		for (var i = 0; i < array.length; i++)
+		{
+			var element = array[i];
+			var key = getKeyForElement(element);
+			returnLookup.set(key, element);
+		}
+		return returnLookup;
 	}
-	return this;
-}
 
-Array.prototype.clone = function()
-{
-	var returnValues = [];
-	for (var i = 0; i < this.length; i++)
+	static clone(array: any[]): any[]
 	{
-		var elementToClone = this[i];
-		var elementCloned = elementToClone.clone();
-		returnValues.push(elementCloned);
+		var returnValues = [];
+		for (var i = 0; i < array.length; i++)
+		{
+			var elementToClone = array[i];
+			var elementCloned = elementToClone.clone();
+			returnValues.push(elementCloned);
+		}
+		return returnValues;
 	}
-	return returnValues;
-}
 
-Array.prototype.contains = function(element)
-{
-	return (this.indexOf(element) >= 0);
-}
-
-Array.prototype.insertElementAt = function(element, index)
-{
-	this.splice(index, 0, element);
-	return this;
-}
-
-Array.prototype.remove = function(element)
-{
-	if (this.contains(element) == true)
+	static contains(array: any[], element: any): boolean
 	{
-		this.removeAt(this.indexOf(element));
+		return (array.indexOf(element) >= 0);
 	}
-	return this;
-}
 
-Array.prototype.removeAt = function(index)
-{
-	this.splice(index, 1);
-	return this;
+	static insertElementAt(array: any[], element: any, index: number): any[]
+	{
+		array.splice(index, 0, element);
+		return array;
+	}
+
+	static remove(array: any[], element: any): any[]
+	{
+		if (ArrayHelper.contains(array, element) )
+		{
+			ArrayHelper.removeAt(array, array.indexOf(element) );
+		}
+		return array;
+	}
+
+	static removeAt(array: any[], index: number): any[]
+	{
+		array.splice(index, 1);
+		return array;
+	}
 }

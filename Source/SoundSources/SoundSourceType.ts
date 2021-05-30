@@ -1,25 +1,54 @@
 
 class SoundSourceType
 {
-	constructor(name, soundSourceCreate, objectPrototypesSet)
+	name: string;
+	soundSourceCreate: ()=>SoundSourceChild;
+	objectPrototypesSet: (objectToSet: any)=>void;
+
+	constructor
+	(
+		name: string,
+		soundSourceCreate: ()=>SoundSourceChild,
+		objectPrototypesSet: (objectToSet: any)=>void
+	)
 	{
 		this.name = name;
 		this.soundSourceCreate = soundSourceCreate;
 		this.objectPrototypesSet = objectPrototypesSet;
 	}
 
-	static Instances()
+	static _instances: SoundSourceType_Instances;
+	static Instances(): SoundSourceType_Instances
 	{
-		if (SoundSourceType._Instances == null)
+		if (SoundSourceType._instances == null)
 		{
-			SoundSourceType._Instances = new SoundSourceType_Instances();
+			SoundSourceType._instances = new SoundSourceType_Instances();
 		}
-		return SoundSourceType._Instances;
+		return SoundSourceType._instances;
 	}
 }
-{
 
-	function SoundSourceType_Instances()
+class SoundSourceType_Instances
+{
+	Clip: SoundSourceType;
+	Envelope: SoundSourceType;
+	Harmonics: SoundSourceType;
+	Mix: SoundSourceType;
+	Noise: SoundSourceType;
+	PitchChange: SoundSourceType;
+	Sawtooth: SoundSourceType;
+	Scale: SoundSourceType;
+	Silence: SoundSourceType;
+	Sine: SoundSourceType;
+	Square: SoundSourceType;
+	Triangle: SoundSourceType;
+	Vibrato: SoundSourceType;
+	WavFile: SoundSourceType;
+
+	_All: SoundSourceType[];
+	_AllByName: Map<string, SoundSourceType>;
+
+	constructor()
 	{
 		this.Clip = new SoundSourceType
 		(
@@ -28,12 +57,12 @@ class SoundSourceType
 			{
 				return new SoundSource_Clip(0, 1000, new SoundSource(new SoundSource_Silence()));
 			},
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Clip.prototype;
-				object.child.__proto__ = SoundSource.prototype;
-				var child = object.child.child;
-				SoundSourceType.Instances()[child.typeName].objectPrototypesSet(child);
+				Object.setPrototypeOf(objectToSet, SoundSource_Clip.prototype);
+				Object.setPrototypeOf(objectToSet.child, SoundSource.prototype);
+				var child = objectToSet.child.child;
+				SoundSourceType.Instances().byName(child.typeName).objectPrototypesSet(child);
 			}
 		);
 
@@ -44,12 +73,12 @@ class SoundSourceType
 			{
 				return SoundSource_Envelope.default();
 			},
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Envelope.prototype;
-				object.child.__proto__ = SoundSource.prototype;
-				var child = object.child.child;
-				SoundSourceType.Instances()[child.typeName].objectPrototypesSet(child);
+				Object.setPrototypeOf(objectToSet, SoundSource_Envelope.prototype);
+				Object.setPrototypeOf(objectToSet.child, SoundSource.prototype);
+				var child = objectToSet.child.child;
+				SoundSourceType.Instances().byName(child.typeName).objectPrototypesSet(child);
 			}
 		);
 
@@ -60,9 +89,9 @@ class SoundSourceType
 			{
 				return SoundSource_Harmonics.default();
 			},
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Harmonics.prototype;
+				Object.setPrototypeOf(objectToSet, SoundSource_Harmonics.prototype);
 			}
 		);
 
@@ -73,15 +102,15 @@ class SoundSourceType
 			{
 				return new SoundSource_Mix([]);
 			},
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Scale.prototype;
-				object.child.__proto__ = SoundSource.prototype;
-				var children = object.child.children;
+				Object.setPrototypeOf(objectToSet, SoundSource_Scale.prototype);
+				Object.setPrototypeOf(objectToSet.child, SoundSource.prototype);
+				var children = objectToSet.child.children;
 				for (var i = 0; i < children.length; i++)
 				{
 					var child = children[i];
-					SoundSourceType.Instances()[child.typeName].objectPrototypesSet(child);
+					SoundSourceType.Instances().byName(child.typeName).objectPrototypesSet(child);
 				}
 			}
 		);
@@ -93,9 +122,9 @@ class SoundSourceType
 			{
 				return new SoundSource_Noise();
 			},
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Noise.prototype;
+				Object.setPrototypeOf(objectToSet, SoundSource_Noise.prototype);
 			}
 		);
 
@@ -106,12 +135,12 @@ class SoundSourceType
 			{
 				return new SoundSource_PitchChange(1, new SoundSource(new SoundSource_Silence()));
 			},
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_PitchChange.prototype;
-				object.child.__proto__ = SoundSource.prototype;
-				var child = object.child.child;
-				SoundSourceType.Instances()[child.typeName].objectPrototypesSet(child);
+				Object.setPrototypeOf(objectToSet, SoundSource_PitchChange.prototype);
+				Object.setPrototypeOf(objectToSet.child, SoundSource.prototype);
+				var child = objectToSet.child.child;
+				SoundSourceType.Instances().byName(child.typeName).objectPrototypesSet(child);
 			}
 		);
 
@@ -119,9 +148,9 @@ class SoundSourceType
 		(
 			"Sawtooth",
 			() =>  { return new SoundSource_Sawtooth(); },
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Sawtooth.prototype;
+				Object.setPrototypeOf(objectToSet, SoundSource_Sawtooth.prototype);
 			}
 		);
 
@@ -132,12 +161,12 @@ class SoundSourceType
 			{
 				return new SoundSource_Scale(1, new SoundSource(new SoundSource_Silence()));
 			},
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Scale.prototype;
-				object.child.__proto__ = SoundSource.prototype;
-				var child = object.child.child;
-				SoundSourceType.Instances()[child.typeName].objectPrototypesSet(child);
+				Object.setPrototypeOf(objectToSet, SoundSource_Scale.prototype);
+				Object.setPrototypeOf(objectToSet.child, SoundSource.prototype);
+				var child = objectToSet.child.child;
+				SoundSourceType.Instances().byName(child.typeName).objectPrototypesSet(child);
 			}
 		);
 
@@ -148,9 +177,9 @@ class SoundSourceType
 			{
 				return new SoundSource_Silence()
 			},
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Silence.prototype;
+				Object.setPrototypeOf(objectToSet, SoundSource_Silence.prototype);
 			}
 		);
 
@@ -158,9 +187,9 @@ class SoundSourceType
 		(
 			"Sine",
 			() =>  { return new SoundSource_Sine(); },
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Sine.prototype;
+				Object.setPrototypeOf(objectToSet, SoundSource_Sine.prototype);
 			}
 		);
 
@@ -168,9 +197,9 @@ class SoundSourceType
 		(
 			"Square",
 			() =>  { return new SoundSource_Square(); },
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Square.prototype;
+				Object.setPrototypeOf(objectToSet, SoundSource_Square.prototype);
 			}
 		);
 
@@ -178,9 +207,9 @@ class SoundSourceType
 		(
 			"Triangle",
 			() =>  { return new SoundSource_Triangle(); },
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Triangle.prototype;
+				Object.setPrototypeOf(objectToSet, SoundSource_Triangle.prototype);
 			}
 		);
 
@@ -189,7 +218,6 @@ class SoundSourceType
 			"Vibrato",
 			() => 
 			{
-				var pitches = Pitch.Instances;
 				return new SoundSource_Vibrato
 				(
 					16, // pitchChangesPerSecond
@@ -201,23 +229,23 @@ class SoundSourceType
 					true, // areTransitionsSmooth
 					new SoundSource(new SoundSource_Sine()));
 			},
-			(object) => 
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_Vibrato.prototype;
-				object.child.__proto__ = SoundSource.prototype;
-				var child = object.child.child;
-				SoundSourceType.Instances()[child.typeName].objectPrototypesSet(child);
+				Object.setPrototypeOf(objectToSet, SoundSource_Vibrato.prototype);
+				Object.setPrototypeOf(objectToSet.child, SoundSource.prototype);
+				var child = objectToSet.child.child;
+				SoundSourceType.Instances().byName(child.typeName).objectPrototypesSet(child);
 			}
 		);
 
 		this.WavFile = new SoundSourceType
 		(
 			"WavFile",
-			() =>  { return new SoundSource_WavFile("C_3"); },
-			(object) => 
+			() =>  { return new SoundSource_WavFile("C_3", null); },
+			(objectToSet: any) => 
 			{
-				object.__proto__ = SoundSource_WavFile.prototype;
-				object.wavFile.__proto__ = WavFile.prototype;
+				Object.setPrototypeOf(objectToSet, SoundSource_WavFile.prototype);
+				Object.setPrototypeOf(objectToSet.wavFile, WavFile.prototype);
 			}
 		);
 
@@ -239,5 +267,13 @@ class SoundSourceType
 			this.Vibrato,
 			this.WavFile,
 		];
+
+		this._AllByName =
+			ArrayHelper.addLookups(this._All, (t: SoundSourceType) => t.name);
+	}
+
+	byName(name: string): SoundSourceType
+	{
+		return this._AllByName.get(name);
 	}
 }

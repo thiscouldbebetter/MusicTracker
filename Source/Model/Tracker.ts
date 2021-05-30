@@ -1,15 +1,21 @@
 
 class Tracker
 {
-	constructor(songCurrent)
+	songCurrent: Song;
+
+	useKeyboardCommands: boolean;
+
+	divTracker: any;
+
+	constructor(songCurrent: Song)
 	{
 		this.songCurrent = songCurrent;
 		this.useKeyboardCommands = false;
 	}
 
-	static default()
+	static default(): Tracker
 	{
-		var song = Song.demo();
+		var song = Song.demo(null, null);
 		var returnValue = new Tracker(song);
 		return returnValue;
 	}
@@ -17,14 +23,31 @@ class Tracker
 	// This must be done after all classes are loaded.
 	// Tracker.Instance = Tracker.default();
 
-	static samplesToWavFile(fileName, samplesPerSecond, bitsPerSample, samplesToConvert)
+	static _instance: Tracker;
+	static Instance(): Tracker
+	{
+		if (Tracker._instance == null)
+		{
+			Tracker._instance = Tracker.default();
+		}
+		return Tracker._instance;
+	}
+
+	static samplesToWavFile
+	(
+		fileName: string,
+		samplesPerSecond: number,
+		bitsPerSample: number,
+		samplesToConvert: number[]
+	): WavFile
 	{
 		var samplingInfo = new WavFileSamplingInfo
 		(
 			1, // formatCode
 			1, // numberOfChannels
 			samplesPerSecond,
-			bitsPerSample
+			bitsPerSample,
+			null // ?
 		);
 
 		var samplesForWavFile =
@@ -40,7 +63,7 @@ class Tracker
 		return samplesAsWavFile;
 	}
 
-	static samplesValidate(samples)
+	static samplesValidate(samples: number[]): void
 	{
 		for (var i = 0; i < samples.length; i++)
 		{
@@ -53,14 +76,14 @@ class Tracker
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		this.divTracker.parentElement.removeChild(this.divTracker);
 		this.songCurrent.uiClear();
 		delete this.divTracker;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		if (this.divTracker == null)
 		{
@@ -82,7 +105,7 @@ class Tracker
 
 	// events
 
-	handleEventKeyDown(event)
+	handleEventKeyDown(event: any): void
 	{
 		if (this.useKeyboardCommands == false)
 		{
@@ -225,7 +248,7 @@ class Tracker
 			song.playOrStop();
 		}
 
-		sequence.uiUpdate_TickCursorPositionFromSelected();
+		sequence.uiUpdate_TickCursorPositionFromSelected(null);
 		sequence.uiUpdate_Tracks(song);
 	}
 }

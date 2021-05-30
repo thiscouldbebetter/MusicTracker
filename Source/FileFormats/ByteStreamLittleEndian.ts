@@ -1,7 +1,12 @@
 
 class ByteStreamLittleEndian
 {
-	constructor(bytes)
+	bytes: number[];
+
+	numberOfBytesTotal: number;
+	byteIndexCurrent: number;
+
+	constructor(bytes: number[])
 	{
 		this.bytes = bytes;
 
@@ -9,12 +14,12 @@ class ByteStreamLittleEndian
 		this.byteIndexCurrent = 0;
 	}
 
-	hasMoreBytes()
+	hasMoreBytes(): boolean
 	{
 		return (this.byteIndexCurrent < this.numberOfBytesTotal);
 	}
 
-	peekBytes(numberOfBytesToRead)
+	peekBytes(numberOfBytesToRead: number): number[]
 	{
 		var returnValue = [];
 
@@ -26,7 +31,7 @@ class ByteStreamLittleEndian
 		return returnValue;
 	}
 
-	readBytes(numberOfBytesToRead)
+	readBytes(numberOfBytesToRead: number): number[]
 	{
 		var returnValue = [];
 
@@ -38,7 +43,7 @@ class ByteStreamLittleEndian
 		return returnValue;
 	}
 
-	readByte()
+	readByte(): number
 	{
 		var returnValue = this.bytes[this.byteIndexCurrent];
 
@@ -47,7 +52,7 @@ class ByteStreamLittleEndian
 		return returnValue;
 	}
 
-	readInt()
+	readInt(): number
 	{
 		var returnValue =
 		(
@@ -60,7 +65,7 @@ class ByteStreamLittleEndian
 		return returnValue;
 	}
 
-	readShort()
+	readShort(): number
 	{
 		var returnValue =
 		(
@@ -71,7 +76,7 @@ class ByteStreamLittleEndian
 		return returnValue;
 	}
 
-	readString(numberOfBytesToRead)
+	readString(numberOfBytesToRead: number): string
 	{
 		var returnValue = "";
 
@@ -84,7 +89,7 @@ class ByteStreamLittleEndian
 		return returnValue;
 	}
 
-	writeBytes(bytesToWrite)
+	writeBytes(bytesToWrite: number[]): void
 	{
 		for (var b = 0; b < bytesToWrite.length; b++)
 		{
@@ -94,14 +99,14 @@ class ByteStreamLittleEndian
 		this.byteIndexCurrent = this.bytes.length;
 	}
 
-	writeByte(byteToWrite)
+	writeByte(byteToWrite: number): void
 	{
 		this.bytes.push(byteToWrite);
 
 		this.byteIndexCurrent++;
 	}
 
-	writeInt(integerToWrite)
+	writeInt(integerToWrite: number): void
 	{
 		this.bytes.push( (integerToWrite & 0x000000FF) );
 		this.bytes.push( (integerToWrite & 0x0000FF00) >>> 8 );
@@ -111,7 +116,7 @@ class ByteStreamLittleEndian
 		this.byteIndexCurrent += 4;
 	}
 
-	writeShort(shortToWrite)
+	writeShort(shortToWrite: number): void
 	{
 		this.bytes.push( (shortToWrite & 0x00FF) );
 		this.bytes.push( (shortToWrite & 0xFF00) >>> 8 );
@@ -119,7 +124,7 @@ class ByteStreamLittleEndian
 		this.byteIndexCurrent += 2;
 	}
 
-	writeString(stringToWrite)
+	writeString(stringToWrite: string): void
 	{
 		for (var i = 0; i < stringToWrite.length; i++)
 		{

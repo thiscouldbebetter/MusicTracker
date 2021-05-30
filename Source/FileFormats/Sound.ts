@@ -1,7 +1,16 @@
 
-class Sound
+class Sound //
 {
-	constructor(name, sourceWavFile, offsetInSeconds)
+	name: string;
+	sourceWavFile: WavFile;
+	offsetInSeconds: number;
+
+	domElementAudio: any;
+
+	constructor
+	(
+		name: string, sourceWavFile: WavFile, offsetInSeconds: number
+	)
 	{
 		this.name = name;
 		this.offsetInSeconds = (offsetInSeconds || 0);
@@ -10,12 +19,12 @@ class Sound
 
 	// instance methods
 
-	durationInSeconds()
+	durationInSeconds(): number
 	{
 		return this.sourceWavFile.durationInSeconds();
 	}
 
-	play(callback)
+	play(callback: ()=>void): void
 	{
 		var soundAsWavFile = this.sourceWavFile;
 
@@ -29,7 +38,7 @@ class Sound
 		domElementSoundSource.src = soundAsDataURI;
 
 		var domElementAudio = document.createElement("audio");
-		domElementAudio.autoplay = "autoplay";
+		domElementAudio.autoplay = true;
 		var sound = this;
 		domElementAudio.onended = () =>
 		{
@@ -46,7 +55,7 @@ class Sound
 		document.body.appendChild(domElementAudio);
 	}
 
-	stop()
+	stop(): void
 	{
 		if (this.domElementAudio != null)
 		{

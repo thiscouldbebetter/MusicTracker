@@ -1,18 +1,33 @@
 
-class SoundSource_Envelope
+class SoundSource_Envelope extends SoundSourceChild
 {
+	ticksPerSecond: number;
+	attackDurationInTicks: number;
+	decayDurationInTicks: number;
+	sustainDurationInTicks: number;
+	sustainAmplitudeMultiplier: number;
+	releaseDurationInTicks: number;
+	child: SoundSource;
+
+	inputAttackDurationInTicks: any;
+	inputDecayDurationInTicks: any;
+	inputReleaseDurationInTicks: any
+	inputSustainAmplitudeMultiplier: any;
+	inputSustainDurationInTicks: any;
+	inputTicksPerSecond: any;
+
 	constructor
 	(
-		ticksPerSecond,
-		attackDurationInTicks,
-		decayDurationInTicks,
-		sustainDurationInTicks,
-		sustainAmplitudeMultiplier,
-		releaseDurationInTicks,
-		child
+		ticksPerSecond: number,
+		attackDurationInTicks: number,
+		decayDurationInTicks: number,
+		sustainDurationInTicks: number,
+		sustainAmplitudeMultiplier: number,
+		releaseDurationInTicks: number,
+		child: SoundSource
 	)
 	{
-		this.typeName = SoundSourceType.Instances().Envelope.name;
+		super(SoundSourceType.Instances().Envelope.name);
 
 		this.ticksPerSecond = ticksPerSecond;
 		this.attackDurationInTicks = attackDurationInTicks;
@@ -23,7 +38,7 @@ class SoundSource_Envelope
 		this.child = child;
 	}
 
-	static default()
+	static default(): SoundSource_Envelope
 	{
 		return new SoundSource_Envelope
 		(
@@ -37,7 +52,10 @@ class SoundSource_Envelope
 		);
 	}
 
-	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime
+	(
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		var amplitudeMultiplier;
 
@@ -92,7 +110,7 @@ class SoundSource_Envelope
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 		delete this.inputAttackDurationInTicks;
@@ -103,7 +121,7 @@ class SoundSource_Envelope
 		this.child.uiClear();
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		var soundSource = this;
 		var d = document;

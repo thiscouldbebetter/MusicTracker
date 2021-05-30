@@ -1,22 +1,25 @@
 
-class SoundSource_Silence
+class SoundSource_Silence extends SoundSourceChild
 {
 	constructor()
 	{
-		this.typeName = SoundSourceType.Instances().Silence.name;
+		super(SoundSourceType.Instances().Silence.name);
 	}
 
-	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime
+	(
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		return 0;
 	}
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		if (this.divSoundSource == null)
 		{

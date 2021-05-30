@@ -1,6 +1,9 @@
 class FrequencyAnalysis
 {
-	constructor(sineAmplitudes, cosineAmplitudes)
+	sineAmplitudes: number[];
+	cosineAmplitudes: number[];
+
+	constructor(sineAmplitudes: number[], cosineAmplitudes: number[])
 	{
 		this.sineAmplitudes = sineAmplitudes;
 		this.cosineAmplitudes = cosineAmplitudes;
@@ -8,8 +11,11 @@ class FrequencyAnalysis
 
 	static fromSamples
 	(
-		numberOfOscillators, frequencyLowestInCyclesPerSecond, samplesPerSecond, samples
-	)
+		numberOfOscillators: number,
+		frequencyLowestInCyclesPerSecond: number,
+		samplesPerSecond: number,
+		samples: number[]
+	): FrequencyAnalysis
 	{
 		var sineAmplitudes = [];
 		var cosineAmplitudes = [];
@@ -66,8 +72,10 @@ class FrequencyAnalysis
 
 	toSamples
 	(
-		samplesPerSecond, frequencyFundamentalInCyclesPerSecond, durationInSeconds
-	)
+		samplesPerSecond: number,
+		frequencyFundamentalInCyclesPerSecond: number,
+		durationInSeconds: number
+	): number[]
 	{
 		var samples = [];
 

@@ -1,9 +1,24 @@
 
-class SoundSource_Vibrato
+class SoundSource_Vibrato extends SoundSourceChild
 {
-	constructor(pitchChangesPerSecond, pitchMultipliers, areTransitionsSmooth, child)
+	pitchChangesPerSecond: number;
+	pitchMultipliers: number[];
+	areTransitionsSmooth: boolean;
+	child: SoundSource;
+
+	inputFrequencyMultipliers: any;
+	inputPitchChangesPerSecond: any;
+	inputPitchMultipliers: any;
+
+	constructor
+	(
+		pitchChangesPerSecond: number,
+		pitchMultipliers: number[],
+		areTransitionsSmooth: boolean,
+		child: SoundSource
+	)
 	{
-		this.typeName = SoundSourceType.Instances().Vibrato.name;
+		super(SoundSourceType.Instances().Vibrato.name);
 		this.pitchChangesPerSecond = pitchChangesPerSecond;
 		this.pitchMultipliers = pitchMultipliers;
 		this.areTransitionsSmooth = areTransitionsSmooth;
@@ -12,15 +27,15 @@ class SoundSource_Vibrato
 
 	sampleForFrequencyAndTime
 	(
-		frequencyInHertz, timeInSeconds
-	)
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		var timeInCycles = timeInSeconds * this.pitchChangesPerSecond;
 		var cycleIndexCurrent = Math.floor(timeInCycles);
 		var pitchMultiplierIndexCurrent = cycleIndexCurrent % this.pitchMultipliers.length;
 		var pitchMultiplierCurrent = this.pitchMultipliers[pitchMultiplierIndexCurrent];
 
-		if (this.areTransitionsSmooth == true)
+		if (this.areTransitionsSmooth)
 		{
 			var cycleIndexNext = cycleIndexCurrent + 1;
 			var fractionThroughCycleCurrent = timeInCycles - cycleIndexCurrent;
@@ -45,14 +60,14 @@ class SoundSource_Vibrato
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 		delete this.inputPitchChangesPerSecond;
 		delete this.inputFrequencyMultipliers;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		var d = document;
 
@@ -68,7 +83,7 @@ class SoundSource_Vibrato
 			var inputPitchChangesPerSecond = d.createElement("input");
 			inputPitchChangesPerSecond.type = "number";
 			inputPitchChangesPerSecond.style.width = "64px";
-			inputPitchChangesPerSecond.onchange = (event) =>
+			inputPitchChangesPerSecond.onchange = (event: any) =>
 			{
 				var inputPitchChangesPerSecond = event.target;
 				var pitchChangesPerSecond = parseInt(inputPitchChangesPerSecond.value);
@@ -81,7 +96,7 @@ class SoundSource_Vibrato
 			this.divSoundSource.appendChild(labelPitchMultipliers);
 			var inputPitchMultipliers = d.createElement("input");
 			inputPitchMultipliers.style.width = "64px";
-			inputPitchMultipliers.onchange = (event) =>
+			inputPitchMultipliers.onchange = (event: any) =>
 			{
 				var inputPitchMultipliers = event.target;
 				var pitchMultipliersAsString = inputPitchMultipliers.value;

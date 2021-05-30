@@ -1,9 +1,17 @@
 
-class SoundSource_Harmonics
+class SoundSource_Harmonics extends SoundSourceChild
 {
-	constructor(relativeAmplitudesOfHarmonics)
+	relativeAmplitudesOfHarmonics: number[];
+
+	absoluteAmplitudesOfHarmonics: number[]
+
+	inputRelativeAmplitudesOfHarmonics: any;
+
+	_sine: SoundSource_Sine;
+
+	constructor(relativeAmplitudesOfHarmonics: number[])
 	{
-		this.typeName = SoundSourceType.Instances().Harmonics.name;
+		super(SoundSourceType.Instances().Harmonics.name);
 		this.relativeAmplitudesOfHarmonics = relativeAmplitudesOfHarmonics;
 		this.absoluteAmplitudesOfHarmonics = [];
 		this.absoluteAmplitudesOfHarmonicsCalculate();
@@ -11,12 +19,12 @@ class SoundSource_Harmonics
 		this._sine = new SoundSource_Sine();
 	}
 
-	static default()
+	static default(): SoundSource_Harmonics
 	{
 		return new SoundSource_Harmonics([1, 0, 1, 0, 1, 0, 1, 0, 1]);
 	}
 
-	absoluteAmplitudesOfHarmonicsCalculate()
+	absoluteAmplitudesOfHarmonicsCalculate(): void
 	{
 		var absoluteAmplitudes = this.absoluteAmplitudesOfHarmonics;
 		absoluteAmplitudes.length = 0;
@@ -40,8 +48,8 @@ class SoundSource_Harmonics
 
 	relativeAmplitudesOfHarmonicsFromString
 	(
-		relativeAmplitudesAsString
-	)
+		relativeAmplitudesAsString: string
+	): void
 	{
 		var relativeAmplitudesAsStrings = relativeAmplitudesAsString.split(",");
 		var relativeAmplitudes = this.relativeAmplitudesOfHarmonics;
@@ -56,7 +64,7 @@ class SoundSource_Harmonics
 		this.absoluteAmplitudesOfHarmonicsCalculate();
 	}
 
-	relativeAmplitudesOfHarmonicsToString()
+	relativeAmplitudesOfHarmonicsToString(): string
 	{
 		var returnValue = this.relativeAmplitudesOfHarmonics.join(",");
 		return returnValue;
@@ -64,8 +72,8 @@ class SoundSource_Harmonics
 
 	sampleForFrequencyAndTime
 	(
-		frequencyInHertz, timeInSeconds
-	)
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		var returnValue = 0;
 
@@ -86,13 +94,13 @@ class SoundSource_Harmonics
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 		delete this.inputRelativeAmplitudesOfHarmonics;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		var d = document;
 
@@ -107,7 +115,7 @@ class SoundSource_Harmonics
 			inputRelativeAmplitudesOfHarmonics.value =
 				this.relativeAmplitudesOfHarmonicsToString();
 			var soundSource = this;
-			inputRelativeAmplitudesOfHarmonics.onchange = (event) =>
+			inputRelativeAmplitudesOfHarmonics.onchange = (event: any) =>
 			{
 				var inputRelativeAmplitudesOfHarmonics = event.target;
 				var relativeAmplitudesAsString = inputRelativeAmplitudesOfHarmonics.value;

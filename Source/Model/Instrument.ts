@@ -1,13 +1,19 @@
 
 class Instrument
 {
-	constructor(name, soundSource)
+	name: string;
+	soundSource: SoundSource;
+
+	divInstrument: any;
+	inputName: any;
+
+	constructor(name: string, soundSource: SoundSource)
 	{
 		this.name = name;
 		this.soundSource = soundSource;
 	}
 
-	static default(name)
+	static default(name: string): Instrument
 	{
 		var returnValue = new Instrument
 		(
@@ -20,7 +26,10 @@ class Instrument
 		return returnValue;
 	}
 
-	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime
+	(
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		var returnValue = this.soundSource.sampleForFrequencyAndTime
 		(
@@ -31,8 +40,11 @@ class Instrument
 
 	samplesForNote
 	(
-		samplesPerSecond, durationInSamples, frequencyInHertz, volumeAsFraction
-	)
+		samplesPerSecond: number,
+		durationInSamples: number,
+		frequencyInHertz: number,
+		volumeAsFraction: number
+	): number[]
 	{
 		var noteAsSamples = [];
 
@@ -52,20 +64,20 @@ class Instrument
 
 	// string
 
-	static objectPrototypesSet(object)
+	static objectPrototypesSet(objectToSet: any): void
 	{
-		object.__proto__ = Instrument.prototype;
-		SoundSource.objectPrototypesSet(object.soundSource);
+		Object.setPrototypeOf(objectToSet, Instrument.prototype);
+		SoundSource.objectPrototypesSet(objectToSet.soundSource);
 	}
 
-	static fromStringJSON(instrumentAsJSON)
+	static fromStringJSON(instrumentAsJSON: string): Instrument
 	{
 		var returnValue = JSON.parse(instrumentAsJSON);
 		Instrument.objectPrototypesSet(returnValue);
 		return returnValue;
 	}
 
-	toStringJSON()
+	toStringJSON(): string
 	{
 		var returnValue = JSON.stringify(this);
 		return returnValue;
@@ -73,7 +85,7 @@ class Instrument
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		if (this.divInstrument != null)
 		{
@@ -88,7 +100,7 @@ class Instrument
 		this.soundSource.uiClear();
 	}
 
-	uiUpdate()
+	uiUpdate(): any
 	{
 		var instrument = this;
 		var d = document;
@@ -143,7 +155,10 @@ class Instrument
 
 	// ModFile
 
-	static fromModFileInstrument(instrumentFromModFile)
+	static fromModFileInstrument
+	(
+		instrumentFromModFile: ModFileInstrument
+	): Instrument
 	{
 		var returnValue = null;
 
@@ -170,15 +185,16 @@ class Instrument
 					1, // formatCode
 					1, // numberOfChannels
 					ModFile.SamplesPerSecond,
-					ModFile.BitsPerSample
+					ModFile.BitsPerSample,
+					null // ?
 				),
 				samplesForChannels
 			);
 			var soundSourceWavFile = new SoundSource_WavFile("C_3", instrumentAsWavFile);
 			var soundSourceWrapper = new SoundSource(soundSourceWavFile);
-			var instrument = new Instrument(instrumentFromModFile.name, soundSourceWrapper);
+			returnValue = new Instrument(instrumentFromModFile.name, soundSourceWrapper);
 		}
 
-		return instrument;
+		return returnValue;
 	}
 }

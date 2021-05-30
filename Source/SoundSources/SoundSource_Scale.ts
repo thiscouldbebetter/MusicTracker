@@ -1,32 +1,40 @@
 
-class SoundSource_Scale
+class SoundSource_Scale extends SoundSourceChild
 {
-	constructor(amplitudeMultiplier, child)
+	amplitudeMultiplier: number;
+	child: SoundSource;
+
+	inputAmplitudeMultiplier: any;
+
+	constructor(amplitudeMultiplier: number, child: SoundSource)
 	{
-		this.typeName = SoundSourceType.Instances().Scale.name;
+		super(SoundSourceType.Instances().Scale.name);
 
 		this.amplitudeMultiplier = amplitudeMultiplier;
 		this.child = child;
 	}
 
-	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime
+	(
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		var sampleFromChild =
 			this.child.sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds);
-		var returnValue = this.amplitudeMultiplier * childSample;
+		var returnValue = this.amplitudeMultiplier * sampleFromChild;
 		return returnValue;
 	}
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 		delete this.inputAmplitudeMultiplier;
 		this.child.uiClear();
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		var d = document;
 

@@ -1,10 +1,10 @@
 
 class FileHelper
 {
-	static loadFileAsText(fileToLoad, callback)
+	static loadFileAsText(fileToLoad: any, callback: any): void
 	{
 		var fileReader = new FileReader();
-		fileReader.onload(fileLoadedEvent)
+		fileReader.onload = (fileLoadedEvent: any) =>
 		{
 			var textFromFileLoaded = fileLoadedEvent.target.result;
 			callback(fileToLoad, textFromFileLoaded);
@@ -12,10 +12,10 @@ class FileHelper
 		fileReader.readAsText(fileToLoad, "UTF-8");
 	}
 
-	static loadFileAsBytes(fileToLoad, callback)
+	static loadFileAsBytes(fileToLoad: any, callback: any): void
 	{
 		var fileReader = new FileReader();
-		fileReader.onload(fileLoadedEvent)
+		fileReader.onload = (fileLoadedEvent: any) =>
 		{
 			var fileContentsAsBinaryString = fileLoadedEvent.target.result;
 			var fileContentsAsBytes = [];
@@ -29,7 +29,7 @@ class FileHelper
 		fileReader.readAsBinaryString(fileToLoad);
 	}
 
-	static saveBytesToFile(bytesToSave, filenameToSaveTo)
+	static saveBytesToFile(bytesToSave: number[], filenameToSaveTo: string): void
 	{
 		var numberOfBytes = bytesToSave.length;
 		var bytesAsArrayBuffer = new ArrayBuffer(numberOfBytes);
@@ -52,7 +52,7 @@ class FileHelper
 
 	}
 
-	static saveTextAsFile(textToWrite, fileNameToSaveAs)
+	static saveTextAsFile(textToWrite: string, fileNameToSaveAs: string): void
 	{
 		var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
 

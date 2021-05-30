@@ -1,27 +1,38 @@
 
-class SoundSource_WavFile
+class SoundSource_WavFile extends SoundSourceChild
 {
-	constructor(pitchBase, wavFile)
+	pitchBaseCode: string;
+	wavFile: WavFile;
+
+	_frequencyBase: number;
+	_samplesNormalized: number[];
+	_samplesPerSecond: number;
+
+	constructor(pitchBaseCode: string, wavFile: WavFile)
 	{
-		this.typeName = SoundSourceType.Instances().WavFile.name;
-		this.pitchBase = pitchBase;
+		super(SoundSourceType.Instances().WavFile.name);
+
+		this.pitchBaseCode = pitchBaseCode;
 		this.wavFile = wavFile;
 
 		this._frequencyBase = null;
 	}
 
-	frequencyBase()
+	frequencyBase(): number
 	{
 		if (this._frequencyBase == null)
 		{
-			var note = Note.fromString(this.pitchBase + "-00-0000")
+			var note = Note.fromString(this.pitchBaseCode + "-00-0000", null)
 			this._frequencyBase = note.frequencyInHertz();
 		}
 
 		return this._frequencyBase;
 	}
 
-	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime
+	(
+		frequencyInHertz: number, timeInSeconds: number
+	)
 	{
 		var samplesPerSecond = this.samplesPerSecond();
 		var sampleIndex = Math.floor
@@ -37,7 +48,7 @@ class SoundSource_WavFile
 		return returnValue;
 	}
 
-	samplesNormalized()
+	samplesNormalized(): number[]
 	{
 		if (this._samplesNormalized == null)
 		{
@@ -54,7 +65,7 @@ class SoundSource_WavFile
 		return this._samplesNormalized;
 	}
 
-	samplesPerSecond()
+	samplesPerSecond(): number
 	{
 		if (this._samplesPerSecond == null)
 		{
@@ -69,12 +80,12 @@ class SoundSource_WavFile
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		var d = document;
 		var soundSource = this;
@@ -85,7 +96,7 @@ class SoundSource_WavFile
 
 			var inputWavFile = d.createElement("input");
 			inputWavFile.type = "file";
-			inputWavFile.onchange = (event) =>
+			inputWavFile.onchange = (event: any) =>
 			{
 				var inputWavFile = event.target;
 				var file = inputWavFile.files[0];
@@ -94,7 +105,7 @@ class SoundSource_WavFile
 					FileHelper.loadFileAsBytes
 					(
 						file,
-						(file, fileAsBytes) =>
+						(file: any, fileAsBytes: number[]) =>
 						{
 							soundSource.wavFile =
 								WavFile.fromBytes(file.name, fileAsBytes);
@@ -109,19 +120,19 @@ class SoundSource_WavFile
 			this.divSoundSource.appendChild(labelPitchBase);
 
 			var inputPitchBase = d.createElement("input");
-			inputPitchBase.onchange = (event) =>
+			inputPitchBase.onchange = (event: any) =>
 			{
-				soundSource.pitchBase = event.target.value;
+				soundSource.pitchBaseCode = event.target.value;
 				soundSource._frequencyBase = null;
 			}
-			inputPitchBase.value = this.pitchBase;
+			inputPitchBase.value = this.pitchBaseCode;
 			this.divSoundSource.appendChild(inputPitchBase);
 
 			var buttonPlay = d.createElement("button");
 			buttonPlay.innerText = "Play";
 			buttonPlay.onclick = () =>
 			{
-				new Sound("", soundSource.wavFile).play();
+				new Sound("", soundSource.wavFile, null).play(null);
 			}
 			this.divSoundSource.appendChild(buttonPlay);
 		}

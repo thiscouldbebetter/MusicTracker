@@ -1,12 +1,15 @@
 
-class SoundSource_Square
+class SoundSource_Square extends SoundSourceChild
 {
 	constructor()
 	{
-		this.typeName = SoundSourceType.Instances().Square.name;
+		super(SoundSourceType.Instances().Square.name);
 	}
 
-	sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds)
+	sampleForFrequencyAndTime
+	(
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		var secondsPerCycle = 1 / frequencyInHertz;
 		var secondsSinceCycleStarted = timeInSeconds % secondsPerCycle;
@@ -18,12 +21,12 @@ class SoundSource_Square
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		if (this.divSoundSource == null)
 		{

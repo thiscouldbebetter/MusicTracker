@@ -1,7 +1,34 @@
 
 class Sequence
 {
-	constructor(name, ticksPerSecond, durationInTicks, tracks)
+	name: string;
+	ticksPerSecond: number;
+	durationInTicks: number;
+	tracks: Track[];
+
+	trackIndexSelected: number;
+	tickIndexSelected: number;
+
+	cursorMover: any;
+	sound: Sound;
+
+	divSequence: any;
+	divTracks: any;
+	inputDurationInTicks: any;
+	inputSequenceName: any;
+	inputTickSelected: any;
+	inputTicksPerSecond: any;
+	selectInstrument: any;
+	selectTicks: any;
+	selectTrack: any;
+
+	constructor
+	(
+		name: string,
+		ticksPerSecond: number,
+		durationInTicks: number,
+		tracks: Track[]
+	)
 	{
 		this.name = name;
 		this.ticksPerSecond = ticksPerSecond;
@@ -15,7 +42,7 @@ class Sequence
 	static TickIndexDigitsMax = 4;
 	static TrackDelimiter = " | ";
 
-	static demo(instrumentName, sequenceName)
+	static demo(instrumentName: string, sequenceName: string): Sequence
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
@@ -76,7 +103,7 @@ class Sequence
 		return returnValue;
 	}
 
-	static demo2(instrumentName, sequenceName)
+	static demo2(instrumentName: string, sequenceName: string): Sequence
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
@@ -137,14 +164,17 @@ class Sequence
 		return returnValue;
 	}
 
-	static blank(instrumentName, sequencesSoFar)
+	static blank
+	(
+		instrumentName: string, numberOfSequencesSoFar: number
+	): Sequence
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
 
 		var sequenceName = String.fromCharCode
 		(
-			"A".charCodeAt(0) + sequencesSoFar
+			"A".charCodeAt(0) + numberOfSequencesSoFar
 		);
 
 		var returnValue = new Sequence
@@ -164,30 +194,30 @@ class Sequence
 		return returnValue;
 	}
 
-	durationInSamples(song)
+	durationInSamples(song: Song): number
 	{
 		return this.durationInSeconds() * song.samplesPerSecond;
 	}
 
-	durationInSeconds()
+	durationInSeconds(): number
 	{
 		return this.durationInTicks / this.ticksPerSecond;
 	}
 
-	noteAtTickCurrent()
+	noteAtTickCurrent(): Note
 	{
 		var trackSelected = this.trackSelected();
 		var noteAtTick = trackSelected.noteAtTick(this.tickIndexSelected);
 		return noteAtTick;
 	}
 
-	noteAtTickCurrentSet(value)
+	noteAtTickCurrentSet(value: Note): void
 	{
 		var trackSelected = this.trackSelected();
-		var noteAtTick = trackSelected.noteAtTickSet(this.tickIndexSelected, value);
+		trackSelected.noteAtTickSet(this.tickIndexSelected, value);
 	}
 
-	noteAtTickCurrentTimeStartInTicksAdd(ticksToMove)
+	noteAtTickCurrentTimeStartInTicksAdd(ticksToMove: number): Sequence
 	{
 		var track = this.trackSelected();
 
@@ -212,14 +242,14 @@ class Sequence
 		return this;
 	}
 
-	notePrecedingTickCurrent()
+	notePrecedingTickCurrent(): Note
 	{
 		var trackSelected = this.trackSelected();
 		var noteAtTick = trackSelected.notePrecedingTick(this.tickIndexSelected);
 		return noteAtTick;
 	}
 
-	notesSustainAll()
+	notesSustainAll(): void
 	{
 		for (var t = 0; t < this.tracks.length; t++)
 		{
@@ -228,21 +258,21 @@ class Sequence
 		}
 	}
 
-	play(song)
+	play(song: Song): void
 	{
 		var samples = this.toSamples(song);
 		var wavFile = Tracker.samplesToWavFile
 		(
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
-		this.sound = new Sound("", wavFile);
+		this.sound = new Sound("", wavFile, null);
 		var sequence = this;
 		this.sound.play( () => { sequence.stop(); } );
 
 		this.uiCursorFollow(song);
 	}
 
-	playOrStop(song)
+	playOrStop(song: Song): void
 	{
 		if (this.sound == null)
 		{
@@ -254,7 +284,7 @@ class Sequence
 		}
 	}
 
-	stop()
+	stop(): void
 	{
 		if (this.sound != null)
 		{
@@ -268,7 +298,7 @@ class Sequence
 		}
 	}
 
-	tickInsertAtCursor()
+	tickInsertAtCursor(): void
 	{
 		var track = this.trackSelected();
 		var notes = track.notes;
@@ -282,7 +312,7 @@ class Sequence
 		}
 	}
 
-	tickRemoveAtCursor()
+	tickRemoveAtCursor(): void
 	{
 		this.noteAtTickCurrentSet(null);
 		var track = this.trackSelected();
@@ -297,7 +327,7 @@ class Sequence
 		}
 	}
 
-	tickSelectAtIndex(tickIndexToSelect)
+	tickSelectAtIndex(tickIndexToSelect: number): void
 	{
 		if (tickIndexToSelect < 0)
 		{
@@ -310,19 +340,19 @@ class Sequence
 		this.tickIndexSelected = tickIndexToSelect;
 	}
 
-	tickSelectNextInDirection(direction)
+	tickSelectNextInDirection(direction: number): void
 	{
 		this.tickSelectAtIndex(this.tickIndexSelected + direction);
 	}
 
-	tickSelectedAsString()
+	tickSelectedAsString(): string
 	{
 		var noteAtTick = this.noteAtTickCurrent();
 		var tickAsString = (noteAtTick == null ? Note.Blank : noteAtTick.toString());
 		return tickAsString;
 	}
 
-	trackSelectAtIndex(trackIndexToSelect)
+	trackSelectAtIndex(trackIndexToSelect: number): void
 	{
 		if (trackIndexToSelect >= this.tracks.length)
 		{
@@ -335,38 +365,39 @@ class Sequence
 		this.trackIndexSelected = trackIndexToSelect;
 	}
 
-	trackSelectNextInDirection(direction)
+	trackSelectNextInDirection(direction: number): void
 	{
 		this.trackSelectAtIndex(this.trackIndexSelected + direction);
 	}
 
-	trackSelected(value)
+	trackSelected(): Track
 	{
-		if (value != null)
-		{
-			this.trackIndexSelected = this.tracks.indexOf(value);
-		}
 		return this.tracks[this.trackIndexSelected];
+	}
+
+	trackSelectedSet(value: Track): void
+	{
+		this.trackIndexSelected = this.tracks.indexOf(value);
 	}
 
 	// cloneable
 
-	clone()
+	clone(): Sequence
 	{
 		return new Sequence
 		(
 			this.name + "_Cloned",
 			this.ticksPerSecond,
 			this.durationInTicks,
-			this.tracks.clone()
+			ArrayHelper.clone(this.tracks)
 		);
 	}
 
 	// samples
 
-	toSamples(song)
+	toSamples(song: Song): number[]
 	{
-		var sequenceAsSamples = [];
+		var sequenceAsSamples = new Array<number>();
 
 		var tracksAsSampleArrays = [];
 		var trackLengthInSamplesMaxSoFar = 0;
@@ -406,7 +437,7 @@ class Sequence
 
 	// ui
 
-	ticksAsStrings()
+	ticksAsStrings(): string[]
 	{
 		var returnValues = [];
 		for (var i = 0; i < this.durationInTicks; i++)
@@ -418,7 +449,7 @@ class Sequence
 		return returnValues;
 	}
 
-	tickAtIndexAsString(tickIndex)
+	tickAtIndexAsString(tickIndex: number): string
 	{
 		var ticksForTracksToJoin = [];
 
@@ -429,15 +460,18 @@ class Sequence
 			ticksForTracksToJoin.push(tickFromTrackAsString);
 		}
 
-		var tickIndex = ("" + tickIndex).padLeft(Sequence.TickIndexDigitsMax, "0");
-		ticksForTracksToJoin.insertElementAt(tickIndex, 0);
+		var tickAtIndexAsString = StringHelper.padLeft
+		(
+			"" + tickIndex, Sequence.TickIndexDigitsMax, "0"
+		);
+		ArrayHelper.insertElementAt(ticksForTracksToJoin, tickAtIndexAsString, 0);
 
 		var tickAsString = ticksForTracksToJoin.join(Sequence.TrackDelimiter);
 
 		return tickAsString;
 	}
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSequence;
 		delete this.inputSequenceName;
@@ -450,7 +484,7 @@ class Sequence
 		delete this.selectTicks;
 	}
 
-	uiCursorFollow(song)
+	uiCursorFollow(song: Song): void
 	{
 		var sequence = this;
 
@@ -474,7 +508,7 @@ class Sequence
 		);
 	}
 
-	uiUpdate(song)
+	uiUpdate(song: Song): any
 	{
 		if (this.divSequence == null)
 		{
@@ -492,7 +526,7 @@ class Sequence
 		return this.divSequence;
 	}
 
-	uiUpdate_Create(song)
+	uiUpdate_Create(song: Song): any
 	{
 		var sequence = this;
 
@@ -507,11 +541,11 @@ class Sequence
 		divSequence.appendChild(labelSequenceName);
 
 		var inputSequenceName = d.createElement("input");
-		inputSequenceName.onchange = (event) =>
+		inputSequenceName.onchange = (event: any) =>
 		{
 			var sequenceNameNew = event.target.value;
 			song.sequenceRename(sequence.name, sequenceNameNew);
-			Tracker.Instance.uiUpdate();
+			Tracker.Instance().uiUpdate();
 		}
 		divSequence.appendChild(inputSequenceName);
 		this.inputSequenceName = inputSequenceName;
@@ -532,7 +566,7 @@ class Sequence
 
 		var inputTicksPerSecond = d.createElement("input");
 		inputTicksPerSecond.type = "number";
-		inputTicksPerSecond.onchange = (event) =>
+		inputTicksPerSecond.onchange = (event: any) =>
 		{
 			var inputTicksPerSecond = event.target;
 			var ticksPerSecondAsString = inputTicksPerSecond.value;
@@ -551,7 +585,7 @@ class Sequence
 
 		var inputDurationInTicks = d.createElement("input");
 		inputDurationInTicks.type = "number";
-		inputDurationInTicks.onchange = (event) =>
+		inputDurationInTicks.onchange = (event: any) =>
 		{
 			var inputDurationInTicks = event.target;
 			var durationInTicksAsString = inputDurationInTicks.value;
@@ -577,13 +611,13 @@ class Sequence
 		return divSequence;
 	}
 
-	uiUpdate_SelectTrack()
+	uiUpdate_SelectTrack(): void
 	{
 		var selectTrack = this.selectTrack;
 		selectTrack.innerHTML = "";
 		for (var i = 0; i < this.tracks.length; i++)
 		{
-			var track = this.tracks[i];
+			//var track = this.tracks[i];
 			var trackAsSelectOption = document.createElement("option");
 			trackAsSelectOption.innerText = "" + i;
 			selectTrack.appendChild(trackAsSelectOption);
@@ -591,7 +625,7 @@ class Sequence
 		selectTrack.selectedIndex = this.trackIndexSelected;
 	}
 
-	uiUpdate_Tracks(song)
+	uiUpdate_Tracks(song: Song): any
 	{
 		if (this.divTracks == null)
 		{
@@ -600,12 +634,12 @@ class Sequence
 
 		this.uiUpdate_Tracks_Instruments(song);
 
-		this.uiUpdate_Tracks_Ticks(song);
+		this.uiUpdate_Tracks_Ticks();
 
 		return this.divTracks;
 	}
 
-	uiUpdate_Tracks_Create(song)
+	uiUpdate_Tracks_Create(song: Song): any
 	{
 		var d = document;
 
@@ -626,7 +660,7 @@ class Sequence
 			var instrument = song.instruments[0];
 			var track = new Track(instrument.name, []);
 			sequence.tracks.push(track);
-			sequence.trackSelected(track);
+			sequence.trackSelectedSet(track);
 			sequence.uiUpdate(song);
 		}
 		divTracks.appendChild(buttonTrackNew);
@@ -660,7 +694,7 @@ class Sequence
 			var trackToClone = sequence.trackSelected();
 			var trackCloned = trackToClone.clone();
 			sequence.tracks.splice(sequence.trackIndexSelected, 0, trackCloned);
-			sequence.trackSelected(trackCloned);
+			sequence.trackSelectedSet(trackCloned);
 			sequence.uiUpdate(song);
 		}
 		divTracks.appendChild(buttonTrackClone);
@@ -673,7 +707,7 @@ class Sequence
 			if (tracks.length > 1)
 			{
 				var trackSelected = sequence.trackSelected();
-				tracks.remove(trackSelected);
+				ArrayHelper.remove(tracks, trackSelected);
 				sequence.trackIndexSelected = 0;
 				sequence.uiUpdate(song);
 			}
@@ -727,7 +761,7 @@ class Sequence
 		inputTickSelected.style.fontFamily = "monospace";
 		inputTickSelected.size = 12;
 		inputTickSelected.disabled = true;
-		inputTickSelected.onkeypress = (event) =>
+		inputTickSelected.onkeypress = (event: any) =>
 		{
 			var keyPressed = event.key;
 			if (keyPressed == "Enter")
@@ -964,7 +998,7 @@ class Sequence
 		return divTracks;
 	}
 
-	uiUpdate_Tracks_Instruments(song)
+	uiUpdate_Tracks_Instruments(song: Song): void
 	{
 		this.selectInstrument.innerHTML = "";
 		var instruments = song.instruments;
@@ -984,7 +1018,7 @@ class Sequence
 		this.selectInstrument.value = trackSelected.instrumentName;
 	}
 
-	uiUpdate_Tracks_Ticks()
+	uiUpdate_Tracks_Ticks(): void
 	{
 		var selectTicks = this.selectTicks;
 
@@ -1007,9 +1041,9 @@ class Sequence
 		}
 	}
 
-	uiUpdate_TickCursorPositionFromSelected(shouldHighlightWholeTick)
+	uiUpdate_TickCursorPositionFromSelected(shouldHighlightWholeTick: boolean): void
 	{
-		var trackSelected = this.trackSelected();
+		//var trackSelected = this.trackSelected();
 
 		var trackDelimiter = Sequence.TrackDelimiter;
 		var charsPerTrack = trackDelimiter.length + Note.Blank.length;
@@ -1061,7 +1095,7 @@ class Sequence
 
 	// ui event handlers
 
-	selectTicks_Clicked(song, event)
+	selectTicks_Clicked(song: Song, event: any): void
 	{
 		var selectTicks = event.target;
 		var cursorOffset = selectTicks.selectionStart;
@@ -1087,6 +1121,6 @@ class Sequence
 		this.trackSelectAtIndex(trackIndex);
 		this.tickSelectAtIndex(tickIndex);
 
-		this.uiUpdate_TickCursorPositionFromSelected();
+		this.uiUpdate_TickCursorPositionFromSelected(null);
 	}
 }

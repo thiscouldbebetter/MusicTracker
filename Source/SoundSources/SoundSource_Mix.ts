@@ -1,16 +1,23 @@
 
-class SoundSource_Mix
+class SoundSource_Mix extends SoundSourceChild
 {
-	constructor(children)
+	children: SoundSource[];
+
+	childIndexSelected: number;
+
+	selectChild: any;
+	childAsOption: any;
+
+	constructor(children: SoundSource[])
 	{
-		this.typeName = SoundSourceType.Instances().Mix.name;
+		super(SoundSourceType.Instances().Mix.name);
 
 		this.children = children;
 
 		this.childIndexSelected = 0;
 	}
 
-	childSelected()
+	childSelected(): SoundSource
 	{
 		return this.children[this.childIndexSelected];
 	}
@@ -19,8 +26,8 @@ class SoundSource_Mix
 
 	sampleForFrequencyAndTime
 	(
-		frequencyInHertz, timeInSeconds
-	)
+		frequencyInHertz: number, timeInSeconds: number
+	): number
 	{
 		var returnValue = 0;
 
@@ -46,7 +53,7 @@ class SoundSource_Mix
 
 	// ui
 
-	uiClear()
+	uiClear(): void
 	{
 		delete this.divSoundSource;
 		delete this.selectChild;
@@ -57,7 +64,7 @@ class SoundSource_Mix
 		}
 	}
 
-	uiUpdate()
+	uiUpdate(): void
 	{
 		var d = document;
 
@@ -74,9 +81,9 @@ class SoundSource_Mix
 			var selectChild = d.createElement("select");
 			for (var i = 0; i < this.children.length; i++)
 			{
-				var child = this.children[i];
-				childAsOption = d.createElement("option");
-				childAsOption = "" + i;
+				// var child = this.children[i];
+				var childAsOption = d.createElement("option");
+				childAsOption.value = "" + i;
 				selectChild.appendChild(childAsOption);
 			}
 			selectChild.onchange = (selectChildChangedEvent) =>
@@ -112,7 +119,7 @@ class SoundSource_Mix
 				soundSource.childIndexSelected = childIndex;
 				soundSource.children.push(child);
 				var childAsOption = d.createElement("option");
-				childAsOption.innerText = childIndex;
+				childAsOption.innerText = "" + childIndex;
 				selectChild.appendChild(childAsOption);
 				soundSource.uiUpdate();
 			};
@@ -128,7 +135,7 @@ class SoundSource_Mix
 
 			if (childSelected != null)
 			{
-				this.selectChild.value = childSelected.name;
+				this.selectChild.value = childSelected.child.typeName;
 				childSelected.uiUpdate();
 			}
 		}

@@ -1,5 +1,4 @@
-function main()
-{
-	Tracker.Instance = Tracker.default();
-	Tracker.Instance.uiUpdate();
+"use strict";
+function main() {
+    Tracker.Instance().uiUpdate();
 }

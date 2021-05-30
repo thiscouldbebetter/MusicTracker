@@ -3,7 +3,7 @@ class Base64Encoder
 {
 	// static methods
 
-	static bytesToStringBase64(bytes)
+	static bytesToStringBase64(bytes: number[]): string
 	{
 		var bytesAsBinaryString = "";
 		for (var i = 0; i < bytes.length; i++)
@@ -18,7 +18,7 @@ class Base64Encoder
 		return returnValue;
 	}
 
-	static stringBase64ToBytes(stringBase64)
+	static stringBase64ToBytes(stringBase64: string): number[]
 	{
 		var bytesAsBinaryString = atob(stringBase64);
 		var bytes = [];
