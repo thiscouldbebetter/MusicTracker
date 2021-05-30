@@ -3,14 +3,11 @@ class Tracker
 {
 	songCurrent: Song;
 
-	useKeyboardCommands: boolean;
-
 	divTracker: any;
 
 	constructor(songCurrent: Song)
 	{
 		this.songCurrent = songCurrent;
-		this.useKeyboardCommands = false;
 	}
 
 	static default(): Tracker
@@ -105,9 +102,9 @@ class Tracker
 
 	// events
 
-	handleEventKeyDown(event: any): void
+	handleEventKeyDown(event: KeyboardEvent): void
 	{
-		if (this.useKeyboardCommands == false)
+		if (event.altKey == false)
 		{
 			return;
 		}

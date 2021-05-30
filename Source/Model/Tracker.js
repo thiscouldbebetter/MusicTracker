@@ -2,7 +2,6 @@
 class Tracker {
     constructor(songCurrent) {
         this.songCurrent = songCurrent;
-        this.useKeyboardCommands = false;
     }
     static default() {
         var song = Song.demo(null, null);
@@ -52,7 +51,7 @@ class Tracker {
     }
     // events
     handleEventKeyDown(event) {
-        if (this.useKeyboardCommands == false) {
+        if (event.altKey == false) {
             return;
         }
         event.preventDefault();

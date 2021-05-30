@@ -986,11 +986,18 @@ class Sequence
 
 		divTracks.appendChild(d.createElement("br"));
 
+		var labelArrowKeys = d.createElement("label");
+		labelArrowKeys.innerText = "Click below, then hold Alt and press arrow keys to move between tracks and ticks.";
+		divTracks.appendChild(labelArrowKeys);
+
+		divTracks.appendChild(d.createElement("br"));
+
 		var selectTicks = d.createElement("textarea");
 		selectTicks.cols = 40;
 		selectTicks.rows = 16;
 		selectTicks.style.fontFamily = "monospace";
 		selectTicks.onclick = this.selectTicks_Clicked.bind(this, song);
+		selectTicks.readOnly = true;
 
 		divTracks.appendChild(selectTicks);
 		this.selectTicks = selectTicks;

@@ -733,19 +733,9 @@ class Song
 
 		divSong.appendChild(d.createElement("br"));
 
-		var checkboxKeyboardCommands = d.createElement("input");
-		checkboxKeyboardCommands.type = "checkbox";
-		checkboxKeyboardCommands.value = "Keyboard Commands";
-		checkboxKeyboardCommands.checked = Tracker.Instance().useKeyboardCommands;
-		checkboxKeyboardCommands.onchange = (event: any) =>
-		{
-			Tracker.Instance().useKeyboardCommands = event.target.checked;
-		}
-		divSong.appendChild(checkboxKeyboardCommands);
-
-		var labelKeyboardCommands = d.createElement("label");
-		labelKeyboardCommands.innerText = "Enable Keyboard Commands";
-		divSong.appendChild(labelKeyboardCommands);
+		var labelHotkeys = d.createElement("label");
+		labelHotkeys.innerText = "To use hotkeys, hold Alt then press the key indicated on the button.";
+		divSong.appendChild(labelHotkeys);
 
 		divSong.appendChild(d.createElement("br"));
 
