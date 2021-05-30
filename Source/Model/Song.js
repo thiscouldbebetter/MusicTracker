@@ -728,7 +728,7 @@ class Song
 				+ ("" + now.getSeconds()).padLeft(2, "0");
 			var instrumentName = "Instrument" + nowAsString;
 			var instrument = Instrument.default(instrumentName);
-			instrumentAsOption = d.createElement("option");
+			var instrumentAsOption = d.createElement("option");
 			instrumentAsOption.innerText = instrument.name;
 			selectInstrument.appendChild(instrumentAsOption);
 			selectInstrument.value = instrument.name;

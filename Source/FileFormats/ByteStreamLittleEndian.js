@@ -1,19 +1,20 @@
 
-function ByteStreamLittleEndian(bytes)
+class ByteStreamLittleEndian
 {
-	this.bytes = bytes;
+	constructor(bytes)
+	{
+		this.bytes = bytes;
 
-	this.numberOfBytesTotal = this.bytes.length;
-	this.byteIndexCurrent = 0;
-}
+		this.numberOfBytesTotal = this.bytes.length;
+		this.byteIndexCurrent = 0;
+	}
 
-{
-	ByteStreamLittleEndian.prototype.hasMoreBytes = function()
+	hasMoreBytes()
 	{
 		return (this.byteIndexCurrent < this.numberOfBytesTotal);
 	}
 
-	ByteStreamLittleEndian.prototype.peekBytes = function(numberOfBytesToRead)
+	peekBytes(numberOfBytesToRead)
 	{
 		var returnValue = [];
 
@@ -25,7 +26,7 @@ function ByteStreamLittleEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamLittleEndian.prototype.readBytes = function(numberOfBytesToRead)
+	readBytes(numberOfBytesToRead)
 	{
 		var returnValue = [];
 
@@ -37,7 +38,7 @@ function ByteStreamLittleEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamLittleEndian.prototype.readByte = function()
+	readByte()
 	{
 		var returnValue = this.bytes[this.byteIndexCurrent];
 
@@ -46,7 +47,7 @@ function ByteStreamLittleEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamLittleEndian.prototype.readInt = function()
+	readInt()
 	{
 		var returnValue =
 		(
@@ -59,7 +60,7 @@ function ByteStreamLittleEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamLittleEndian.prototype.readShort = function()
+	readShort()
 	{
 		var returnValue =
 		(
@@ -70,7 +71,7 @@ function ByteStreamLittleEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamLittleEndian.prototype.readString = function(numberOfBytesToRead)
+	readString(numberOfBytesToRead)
 	{
 		var returnValue = "";
 
@@ -83,7 +84,7 @@ function ByteStreamLittleEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamLittleEndian.prototype.writeBytes = function(bytesToWrite)
+	writeBytes(bytesToWrite)
 	{
 		for (var b = 0; b < bytesToWrite.length; b++)
 		{
@@ -93,14 +94,14 @@ function ByteStreamLittleEndian(bytes)
 		this.byteIndexCurrent = this.bytes.length;
 	}
 
-	ByteStreamLittleEndian.prototype.writeByte = function(byteToWrite)
+	writeByte(byteToWrite)
 	{
 		this.bytes.push(byteToWrite);
 
 		this.byteIndexCurrent++;
 	}
 
-	ByteStreamLittleEndian.prototype.writeInt = function(integerToWrite)
+	writeInt(integerToWrite)
 	{
 		this.bytes.push( (integerToWrite & 0x000000FF) );
 		this.bytes.push( (integerToWrite & 0x0000FF00) >>> 8 );
@@ -110,7 +111,7 @@ function ByteStreamLittleEndian(bytes)
 		this.byteIndexCurrent += 4;
 	}
 
-	ByteStreamLittleEndian.prototype.writeShort = function(shortToWrite)
+	writeShort(shortToWrite)
 	{
 		this.bytes.push( (shortToWrite & 0x00FF) );
 		this.bytes.push( (shortToWrite & 0xFF00) >>> 8 );
@@ -118,7 +119,7 @@ function ByteStreamLittleEndian(bytes)
 		this.byteIndexCurrent += 2;
 	}
 
-	ByteStreamLittleEndian.prototype.writeString = function(stringToWrite)
+	writeString(stringToWrite)
 	{
 		for (var i = 0; i < stringToWrite.length; i++)
 		{

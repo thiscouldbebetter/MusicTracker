@@ -1,18 +1,19 @@
 
-function ByteConverter(numberOfBits)
+class ByteConverter
 {
-	this.numberOfBits = numberOfBits;
-	this.numberOfBytes = Math.floor(this.numberOfBits / 8);
+	constructor(numberOfBits)
+	{
+		this.numberOfBits = numberOfBits;
+		this.numberOfBytes = Math.floor(this.numberOfBits / 8);
 
-	this.maxValueSigned =
-		(1 << (numberOfBits - 1)) - 1;
+		this.maxValueSigned =
+			(1 << (numberOfBits - 1)) - 1;
 
-	this.maxValueUnsigned =
-		(1 << (numberOfBits));
-}
+		this.maxValueUnsigned =
+			(1 << (numberOfBits));
+	}
 
-{
-	ByteConverter.prototype.bytesToFloat = function(bytes)
+	bytesToFloat(bytes)
 	{
 		var bytesAsInteger = this.bytesToInteger(bytes);
 
@@ -22,7 +23,7 @@ function ByteConverter(numberOfBits)
 		return returnValue;
 	}
 
-	ByteConverter.prototype.bytesToIntegerSignedBE = function(bytes)
+	bytesToIntegerSignedBE(bytes)
 	{
 		// Big-endian.
 
@@ -44,7 +45,7 @@ function ByteConverter(numberOfBits)
 		return returnValue;
 	}
 
-	ByteConverter.prototype.bytesToIntegerSignedLE = function(bytes)
+	bytesToIntegerSignedLE(bytes)
 	{
 		// Little-endian.
 
@@ -65,7 +66,7 @@ function ByteConverter(numberOfBits)
 		return returnValue;
 	}
 
-	ByteConverter.prototype.bytesToIntegerUnsignedBE = function(bytes)
+	bytesToIntegerUnsignedBE(bytes)
 	{
 		// Big-endian.
 
@@ -82,7 +83,7 @@ function ByteConverter(numberOfBits)
 		return returnValue;
 	}
 
-	ByteConverter.prototype.bytesToIntegerUnsignedLE = function(bytes)
+	bytesToIntegerUnsignedLE(bytes)
 	{
 		// Little-endian.
 
@@ -98,12 +99,12 @@ function ByteConverter(numberOfBits)
 		return returnValue;
 	}
 
-	ByteConverter.prototype.floatToInteger = function(float)
+	floatToInteger(float)
 	{
 		return float * this.maxValueSigned;
 	}
 
-	ByteConverter.prototype.integerToBytesBE = function(integer)
+	integerToBytesBE(integer)
 	{
 		// Big-endian.
 		var returnValues = [];
@@ -117,7 +118,7 @@ function ByteConverter(numberOfBits)
 		return returnValues;
 	}
 
-	ByteConverter.prototype.integerToBytesLE = function(integer)
+	integerToBytesLE(integer)
 	{
 		// Little-endian.
 		var returnValues = [];
@@ -131,7 +132,7 @@ function ByteConverter(numberOfBits)
 		return returnValues;
 	}
 
-	ByteConverter.prototype.integerToFloat = function(integer)
+	integerToFloat(integer)
 	{
 		var returnValue =
 			integer / this.maxValueSigned;

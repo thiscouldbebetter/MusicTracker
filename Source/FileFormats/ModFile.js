@@ -1,17 +1,19 @@
 
-function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequences)
+class ModFile
 {
-	this.name = name;
-	this.title = title;
-	this.instruments = instruments;
-	this.sequenceIndicesToPlayInOrder = sequenceIndicesToPlayInOrder;
-	this.sequences = sequences;
-}
-{
-	ModFile.SamplesPerSecond = 8287;
-	ModFile.BitsPerSample = 16;
+	constructor(name, title, instruments, sequenceIndicesToPlayInOrder, sequences)
+	{
+		this.name = name;
+		this.title = title;
+		this.instruments = instruments;
+		this.sequenceIndicesToPlayInOrder = sequenceIndicesToPlayInOrder;
+		this.sequences = sequences;
+	}
 
-	ModFile.fromBytes = function(name, bytes)
+	static SamplesPerSecond = 8287;
+	static BitsPerSample = 16;
+
+	static fromBytes(name, bytes)
 	{
 		// Based on descriptions of the MOD file format found at the URLs:
 		// "https://www.aes.id.au/modformat.html"
@@ -170,7 +172,7 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 
 	} // end function
 
-	ModFile.pitchNameToPitchCodeLookup =
+	static pitchNameToPitchCodeLookup =
 	{
 		// Pitch codes:
 		// From https://www.ocf.berkeley.edu/~eek/index.html/tiny_examples/ptmod/ap12.html:
@@ -216,7 +218,7 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 		"B_3": 113,
 	};
 
-	ModFile.pitchNameForPitchCode = function(pitchCodeToFind)
+	static pitchNameForPitchCode(pitchCodeToFind)
 	{
 		var returnValue = null;
 
@@ -241,14 +243,16 @@ function ModFile(name, title, instruments, sequenceIndicesToPlayInOrder, sequenc
 
 } // end class ModFile
 
-function ModFileDivisionCell(instrumentIndex, pitchCode, effect)
+class ModFileDivisionCell
 {
-	this.instrumentIndex = instrumentIndex;
-	this.pitchCode = pitchCode;
-	this.effect = effect;
-}
-{
-	ModFileDivisionCell.prototype.toString = function()
+	constructor(instrumentIndex, pitchCode, effect)
+	{
+		this.instrumentIndex = instrumentIndex;
+		this.pitchCode = pitchCode;
+		this.effect = effect;
+	}
+
+	toString()
 	{
 		var returnValue =
 		(
@@ -260,13 +264,15 @@ function ModFileDivisionCell(instrumentIndex, pitchCode, effect)
 	}
 }
 
-function ModFileEffect(defnID, arg0, arg1)
+class ModFileEffect
 {
-	this.defnID = defnID;
-	this.arg0 = arg0;
-	this.arg1 = arg1;
-}
-{
+	constructor(defnID, arg0, arg1)
+	{
+		this.defnID = defnID;
+		this.arg0 = arg0;
+		this.arg1 = arg1;
+	}
+
 	// Effect Defn IDs
 	// 0 - Arpeggio
 	// 1 - Slide Up
@@ -300,7 +306,7 @@ function ModFileEffect(defnID, arg0, arg1)
 		// F - Invert Loop
 	// F - Set Speed
 
-	ModFileEffect.prototype.toString = function()
+	toString()
 	{
 		var returnValue =
 		(
@@ -312,27 +318,33 @@ function ModFileEffect(defnID, arg0, arg1)
 	}
 }
 
-function ModFileInstrument
-(
-	name,
-	numberOfSamplesPlusOne,
-	pitchShiftInSixteenthTones,
-	volume,
-	repeatOffsetInWords,
-	repeatLengthInWords
-)
+class ModFileInstrument
 {
-	this.name = name;
-	this.numberOfSamplesPlusOne = numberOfSamplesPlusOne;
-	this.pitchShiftInSixteenthTones = pitchShiftInSixteenthTones;
-	this.volume = volume;
-	this.repeatOffsetInWords = repeatOffsetInWords;
-	this.repeatLengthInWords = repeatLengthInWords;
+	constructor
+	(
+		name,
+		numberOfSamplesPlusOne,
+		pitchShiftInSixteenthTones,
+		volume,
+		repeatOffsetInWords,
+		repeatLengthInWords
+	)
+	{
+		this.name = name;
+		this.numberOfSamplesPlusOne = numberOfSamplesPlusOne;
+		this.pitchShiftInSixteenthTones = pitchShiftInSixteenthTones;
+		this.volume = volume;
+		this.repeatOffsetInWords = repeatOffsetInWords;
+		this.repeatLengthInWords = repeatLengthInWords;
 
-	this.samples = null;
+		this.samples = null;
+	}
 }
 
-function ModFileSequence(divisionCellsForChannels)
+class ModFileSequence
 {
-	this.divisionCellsForChannels = divisionCellsForChannels;
+	constructor(divisionCellsForChannels)
+	{
+		this.divisionCellsForChannels = divisionCellsForChannels;
+	}
 }

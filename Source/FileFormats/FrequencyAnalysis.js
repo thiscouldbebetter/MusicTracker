@@ -1,10 +1,12 @@
-function FrequencyAnalysis(sineAmplitudes, cosineAmplitudes)
+class FrequencyAnalysis
 {
-	this.sineAmplitudes = sineAmplitudes;
-	this.cosineAmplitudes = cosineAmplitudes;
-}
-{
-	FrequencyAnalysis.fromSamples = function
+	constructor(sineAmplitudes, cosineAmplitudes)
+	{
+		this.sineAmplitudes = sineAmplitudes;
+		this.cosineAmplitudes = cosineAmplitudes;
+	}
+
+	static fromSamples
 	(
 		numberOfOscillators, frequencyLowestInCyclesPerSecond, samplesPerSecond, samples
 	)
@@ -62,7 +64,7 @@ function FrequencyAnalysis(sineAmplitudes, cosineAmplitudes)
 		return returnValue;
 	}
 
-	FrequencyAnalysis.prototype.toSamples = function
+	toSamples
 	(
 		samplesPerSecond, frequencyFundamentalInCyclesPerSecond, durationInSeconds
 	)

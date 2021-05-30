@@ -1,15 +1,9 @@
 
-// classes
-
-function Base64Encoder()
-{
-	// do nothing
-}
-
+class Base64Encoder
 {
 	// static methods
 
-	Base64Encoder.bytesToStringBase64 = function(bytes)
+	static bytesToStringBase64(bytes)
 	{
 		var bytesAsBinaryString = "";
 		for (var i = 0; i < bytes.length; i++)
@@ -24,7 +18,7 @@ function Base64Encoder()
 		return returnValue;
 	}
 
-	Base64Encoder.stringBase64ToBytes = function(stringBase64)
+	static stringBase64ToBytes(stringBase64)
 	{
 		var bytesAsBinaryString = atob(stringBase64);
 		var bytes = [];

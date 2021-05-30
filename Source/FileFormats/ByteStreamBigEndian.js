@@ -1,19 +1,20 @@
 
-function ByteStreamBigEndian(bytes)
+class ByteStreamBigEndian
 {
-	this.bytes = bytes;
+	constructor(bytes)
+	{
+		this.bytes = bytes;
 
-	this.numberOfBytesTotal = this.bytes.length;
-	this.byteIndexCurrent = 0;
-}
+		this.numberOfBytesTotal = this.bytes.length;
+		this.byteIndexCurrent = 0;
+	}
 
-{
-	ByteStreamBigEndian.prototype.hasMoreBytes = function()
+	hasMoreBytes()
 	{
 		return (this.byteIndexCurrent < this.numberOfBytesTotal);
 	}
 
-	ByteStreamBigEndian.prototype.peekBytes = function(numberOfBytesToRead)
+	peekBytes(numberOfBytesToRead)
 	{
 		var returnValue = [];
 
@@ -25,7 +26,7 @@ function ByteStreamBigEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamBigEndian.prototype.readBytes = function(numberOfBytesToRead)
+	readBytes(numberOfBytesToRead)
 	{
 		var returnValue = [];
 
@@ -37,7 +38,7 @@ function ByteStreamBigEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamBigEndian.prototype.readByte = function()
+	readByte()
 	{
 		var returnValue = this.bytes[this.byteIndexCurrent];
 
@@ -46,7 +47,7 @@ function ByteStreamBigEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamBigEndian.prototype.readInt = function()
+	readInt()
 	{
 		var returnValue =
 		(
@@ -59,7 +60,7 @@ function ByteStreamBigEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamBigEndian.prototype.readShort = function()
+	readShort()
 	{
 		var returnValue =
 		(
@@ -70,7 +71,7 @@ function ByteStreamBigEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamBigEndian.prototype.readString = function(numberOfBytesToRead)
+	readString(numberOfBytesToRead)
 	{
 		var returnValue = "";
 
@@ -83,7 +84,7 @@ function ByteStreamBigEndian(bytes)
 		return returnValue;
 	}
 
-	ByteStreamBigEndian.prototype.writeBytes = function(bytesToWrite)
+	writeBytes(bytesToWrite)
 	{
 		for (var b = 0; b < bytesToWrite.length; b++)
 		{
@@ -93,14 +94,14 @@ function ByteStreamBigEndian(bytes)
 		this.byteIndexCurrent = this.bytes.length;
 	}
 
-	ByteStreamBigEndian.prototype.writeByte = function(byteToWrite)
+	writeByte(byteToWrite)
 	{
 		this.bytes.push(byteToWrite);
 
 		this.byteIndexCurrent++;
 	}
 
-	ByteStreamBigEndian.prototype.writeInt = function(integerToWrite)
+	writeInt(integerToWrite)
 	{
 		this.bytes.push( (integerToWrite & 0xFF000000) >>> 24 );
 		this.bytes.push( (integerToWrite & 0x00FF0000) >>> 16 );
@@ -110,7 +111,7 @@ function ByteStreamBigEndian(bytes)
 		this.byteIndexCurrent += 4;
 	}
 
-	ByteStreamBigEndian.prototype.writeShort = function(shortToWrite)
+	writeShort(shortToWrite)
 	{
 		this.bytes.push( (shortToWrite & 0xFF00) >>> 8 );
 		this.bytes.push( (shortToWrite & 0x00FF) );
@@ -118,7 +119,7 @@ function ByteStreamBigEndian(bytes)
 		this.byteIndexCurrent += 2;
 	}
 
-	ByteStreamBigEndian.prototype.writeString = function(stringToWrite)
+	writeString(stringToWrite)
 	{
 		for (var i = 0; i < stringToWrite.length; i++)
 		{

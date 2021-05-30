@@ -1,20 +1,21 @@
 
-function Sound(name, sourceWavFile, offsetInSeconds)
+class Sound
 {
-	this.name = name;
-	this.offsetInSeconds = (offsetInSeconds || 0);
-	this.sourceWavFile = sourceWavFile;
-}
+	constructor(name, sourceWavFile, offsetInSeconds)
+	{
+		this.name = name;
+		this.offsetInSeconds = (offsetInSeconds || 0);
+		this.sourceWavFile = sourceWavFile;
+	}
 
-{
 	// instance methods
 
-	Sound.prototype.durationInSeconds = function()
+	durationInSeconds()
 	{
 		return this.sourceWavFile.durationInSeconds();
 	}
 
-	Sound.prototype.play = function(callback)
+	play(callback)
 	{
 		var soundAsWavFile = this.sourceWavFile;
 
@@ -30,7 +31,7 @@ function Sound(name, sourceWavFile, offsetInSeconds)
 		var domElementAudio = document.createElement("audio");
 		domElementAudio.autoplay = "autoplay";
 		var sound = this;
-		domElementAudio.onended = function()
+		domElementAudio.onended = () =>
 		{
 			sound.stop();
 			if (callback != null)
@@ -45,7 +46,7 @@ function Sound(name, sourceWavFile, offsetInSeconds)
 		document.body.appendChild(domElementAudio);
 	}
 
-	Sound.prototype.stop = function()
+	stop()
 	{
 		if (this.domElementAudio != null)
 		{

@@ -1,41 +1,42 @@
 
-function WavFile
-(
-	filePath,
-	samplingInfo,
-	samplesForChannels
-)
+class WavFile
 {
-	this.filePath = filePath;
-	this.samplingInfo = samplingInfo;
-	this.samplesForChannels = samplesForChannels;
-
-	 // hack
-	if (this.samplingInfo == null)
+	constructor
+	(
+		filePath,
+		samplingInfo,
+		samplesForChannels
+	)
 	{
-		this.samplingInfo = WavFileSamplingInfo.default();
-	}
+		this.filePath = filePath;
+		this.samplingInfo = samplingInfo;
+		this.samplesForChannels = samplesForChannels;
 
-	if (this.samplesForChannels == null)
-	{
-		var numberOfChannels = this.samplingInfo.numberOfChannels;
-
-		this.samplesForChannels = [];
-		for (var c = 0; c < numberOfChannels; c++)
+		 // hack
+		if (this.samplingInfo == null)
 		{
-			this.samplesForChannels[c] = [];
+			this.samplingInfo = WavFileSamplingInfo.default();
+		}
+
+		if (this.samplesForChannels == null)
+		{
+			var numberOfChannels = this.samplingInfo.numberOfChannels;
+
+			this.samplesForChannels = [];
+			for (var c = 0; c < numberOfChannels; c++)
+			{
+				this.samplesForChannels[c] = [];
+			}
 		}
 	}
-}
 
-{
 	// constants
 
-	WavFile.NumberOfBytesInRiffWaveAndFormatChunks = 36;
+	static NumberOfBytesInRiffWaveAndFormatChunks = 36;
 
 	// static methods
 
-	WavFile.prototype.appendClipFromWavFileBetweenTimesStartAndEnd = function
+	appendClipFromWavFileBetweenTimesStartAndEnd
 	(
 		wavFileToClipFrom,
 		timeStartInSeconds,
@@ -71,7 +72,7 @@ function WavFile
 		return this;
 	}
 
-	WavFile.prototype.clipBetweenTimes = function(timeStartInSeconds, timeEndInSeconds)
+	clipBetweenTimes(timeStartInSeconds, timeEndInSeconds)
 	{
 		var numberOfChannels = this.samplesForChannels.length;
 		var samplesForChannels = [];
@@ -97,7 +98,7 @@ function WavFile
 		return clip;
 	}
 
-	WavFile.prototype.durationInSamples = function()
+	durationInSamples()
 	{
 		var returnValue = 0;
 		if (this.samplesForChannels != null)
@@ -111,7 +112,7 @@ function WavFile
 		return returnValue;
 	}
 
-	WavFile.prototype.durationInSeconds = function()
+	durationInSeconds()
 	{
 		var durationInSamples = this.durationInSamples();
 		var returnValue =
@@ -120,7 +121,7 @@ function WavFile
 		return returnValue;
 	}
 
-	WavFile.prototype.extendOrTrimSamples = function(numberOfSamplesToExtendOrTrimTo)
+	extendOrTrimSamples(numberOfSamplesToExtendOrTrimTo)
 	{
 		var numberOfChannels = this.samplingInfo.numberOfChannels;
 		var samplesForChannelsNew = [];
@@ -150,7 +151,7 @@ function WavFile
 
 	// read
 
-	WavFile.fromBytes = function(name, bytes)
+	static fromBytes(name, bytes)
 	{
 		var returnValue = new WavFile(name);
 		var reader = new ByteStreamLittleEndian(bytes);
@@ -158,7 +159,7 @@ function WavFile
 		return returnValue;
 	}
 
-	WavFile.prototype.fromBytes_Chunks = function(reader)
+	fromBytes_Chunks(reader)
 	{
 		var riffStringAsBytes = reader.readBytes(4);
 
@@ -185,7 +186,7 @@ function WavFile
 		}
 	}
 
-	WavFile.prototype.fromBytes_Chunks_Data = function(reader)
+	fromBytes_Chunks_Data(reader)
 	{
 		var subchunk2SizeInBytes = reader.readInt();
 
@@ -200,7 +201,7 @@ function WavFile
 		this.samplesForChannels = samplesForChannels;
 	}
 
-	WavFile.prototype.fromBytes_Chunks_Data_SamplesForChannels = function
+	fromBytes_Chunks_Data_SamplesForChannels
 	(
 		samplingInfo,
 		bytesToConvert
@@ -253,7 +254,7 @@ function WavFile
 		return returnSamples;
 	}
 
-	WavFile.prototype.fromBytes_Chunks_Format = function(reader)
+	fromBytes_Chunks_Format(reader)
 	{
 		var chunkSizeInBytes = reader.readInt();
 		var formatCode = reader.readShort();
@@ -284,7 +285,7 @@ function WavFile
 		this.samplingInfo = samplingInfo;
 	}
 
-	WavFile.prototype.fromBytes_Chunks_Unrecognized = function(reader)
+	fromBytes_Chunks_Unrecognized(reader)
 	{
 		var chunkDataSizeInBytes = reader.readInt();
 		var chunkData = reader.readBytes(chunkDataSizeInBytes);
@@ -292,14 +293,14 @@ function WavFile
 
 	// write
 
-	WavFile.prototype.toBytes = function()
+	toBytes()
 	{
 		var writer = new ByteStreamLittleEndian([]);
 		this.toBytes_Chunks(writer);
 		return writer.bytes;
 	}
 
-	WavFile.prototype.toBytes_Chunks = function(writer)
+	toBytes_Chunks(writer)
 	{
 		writer.writeString("RIFF");
 
@@ -328,7 +329,7 @@ function WavFile
 		this.toBytes_Chunks_Data(writer);
 	}
 
-	WavFile.prototype.toBytes_Chunks_Data = function(writer)
+	toBytes_Chunks_Data(writer)
 	{
 		writer.writeString("data");
 
@@ -344,7 +345,7 @@ function WavFile
 		writer.writeBytes(samplesForChannelsMixedAsBytes);
 	}
 
-	WavFile.prototype.toBytes_Chunks_Data_SamplesForChannels = function
+	toBytes_Chunks_Data_SamplesForChannels
 	(
 		samplesForChannelsToConvert,
 		samplingInfo
@@ -393,7 +394,7 @@ function WavFile
 		return returnBytes;
 	}
 
-	WavFile.prototype.toBytes_Chunks_Format = function(writer)
+	toBytes_Chunks_Format(writer)
 	{
 		writer.writeString("fmt ");
 
@@ -415,14 +416,14 @@ function WavFile
 
 	// json
 
-	WavFile.fromStringJSON = function(wavFileAsJSON)
+	static fromStringJSON(wavFileAsJSON)
 	{
 		var wavFile = JSON.parse(wavFileAsJSON);
 		wavFile = WavFile.objectPrototypesSet(wavFile);
 		return wavFile;
 	}
 
-	WavFile.objectPrototypesSet = function(wavFile)
+	static objectPrototypesSet(wavFile)
 	{
 		wavFile.__proto__ = WavFile.prototype;
 
@@ -445,7 +446,7 @@ function WavFile
 		return wavFile;
 	}
 
-	WavFile.prototype.toStringJSON = function()
+	toStringJSON()
 	{
 		var samplesForChannelsToRestore = this.samplesForChannels;
 
@@ -469,30 +470,32 @@ function WavFile
 
 ////////
 
-function WavFileSamplingInfo
-(
-	formatCode,
-	numberOfChannels,
-	samplesPerSecond,
-	bitsPerSample,
-	extraBytes
-)
+class WavFileSamplingInfo
 {
-	this.formatCode = (formatCode || WavFileSamplingInfo.FormatCodeDefault);
-	this.numberOfChannels = numberOfChannels;
-	this.samplesPerSecond = samplesPerSecond;
-	this.bitsPerSample = bitsPerSample;
-	this.extraBytes = (extraBytes || []);
-}
-{
+	constructor
+	(
+		formatCode,
+		numberOfChannels,
+		samplesPerSecond,
+		bitsPerSample,
+		extraBytes
+	)
+	{
+		this.formatCode = (formatCode || WavFileSamplingInfo.FormatCodeDefault);
+		this.numberOfChannels = numberOfChannels;
+		this.samplesPerSecond = samplesPerSecond;
+		this.bitsPerSample = bitsPerSample;
+		this.extraBytes = (extraBytes || []);
+	}
+
 	// constants
 
-	WavFileSamplingInfo.ChunkSizeInBytesMin = 16;
-	WavFileSamplingInfo.FormatCodeDefault = 1; // Uncompressed.
+	static ChunkSizeInBytesMin = 16;
+	static FormatCodeDefault = 1; // Uncompressed.
 
 	// static methods
 
-	WavFileSamplingInfo.default = function()
+	static default()
 	{
 		var returnValue = new WavFileSamplingInfo
 		(
@@ -505,28 +508,28 @@ function WavFileSamplingInfo
 		return returnValue;
 	}
 
-	WavFileSamplingInfo.prototype.bytesPerSample = function()
+	bytesPerSample()
 	{
 		return this.bitsPerSample / Constants.BitsPerByte;
 	}
 
-	WavFileSamplingInfo.prototype.bytesPerSampleForAllChannels = function()
+	bytesPerSampleForAllChannels()
 	{
 		return this.bytesPerSample() * this.numberOfChannels;
 	}
 
-	WavFileSamplingInfo.prototype.bytesPerSecond = function()
+	bytesPerSecond()
 	{
 		return this.samplesPerSecond
 			* this.bytesPerSampleForAllChannels();
 	}
 
-	WavFileSamplingInfo.prototype.chunkSizeInBytes = function()
+	chunkSizeInBytes()
 	{
 		return WavFileSamplingInfo.ChunkSizeInBytesMin + this.extraBytes.length;
 	}
 
-	WavFileSamplingInfo.prototype.samplesDenormalize = function(samplesToDenormalize)
+	samplesDenormalize(samplesToDenormalize)
 	{
 		var sampleDenormalizedMax = Math.pow(2, this.bitsPerSample) - 1;
 		var samplesDenormalized = [];
@@ -553,7 +556,7 @@ function WavFileSamplingInfo
 		return samplesDenormalized;
 	}
 
-	WavFileSamplingInfo.prototype.samplesNormalize = function(samplesToNormalize)
+	samplesNormalize(samplesToNormalize)
 	{
 		var sampleDenormalizedMax = Math.pow(2, this.bitsPerSample) - 1;
 		var samplesNormalized = [];

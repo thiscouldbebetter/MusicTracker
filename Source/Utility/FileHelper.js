@@ -1,14 +1,10 @@
 
-function FileHelper()
+class FileHelper
 {
-	// static class
-}
-
-{
-	FileHelper.loadFileAsText = function(fileToLoad, callback)
+	static loadFileAsText(fileToLoad, callback)
 	{
 		var fileReader = new FileReader();
-		fileReader.onload = function(fileLoadedEvent)
+		fileReader.onload(fileLoadedEvent)
 		{
 			var textFromFileLoaded = fileLoadedEvent.target.result;
 			callback(fileToLoad, textFromFileLoaded);
@@ -16,10 +12,10 @@ function FileHelper()
 		fileReader.readAsText(fileToLoad, "UTF-8");
 	}
 
-	FileHelper.loadFileAsBytes = function(fileToLoad, callback)
+	static loadFileAsBytes(fileToLoad, callback)
 	{
 		var fileReader = new FileReader();
-		fileReader.onload = function(fileLoadedEvent)
+		fileReader.onload(fileLoadedEvent)
 		{
 			var fileContentsAsBinaryString = fileLoadedEvent.target.result;
 			var fileContentsAsBytes = [];
@@ -33,7 +29,7 @@ function FileHelper()
 		fileReader.readAsBinaryString(fileToLoad);
 	}
 
-	FileHelper.saveBytesToFile = function(bytesToSave, filenameToSaveTo)
+	static saveBytesToFile(bytesToSave, filenameToSaveTo)
 	{
 		var numberOfBytes = bytesToSave.length;
 		var bytesAsArrayBuffer = new ArrayBuffer(numberOfBytes);
@@ -56,7 +52,7 @@ function FileHelper()
 
 	}
 
-	FileHelper.saveTextAsFile = function(textToWrite, fileNameToSaveAs)
+	static saveTextAsFile(textToWrite, fileNameToSaveAs)
 	{
 		var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
 
