@@ -467,21 +467,31 @@ class Song
 	{
 		var song = this;
 
-		//var sequences = song.sequences;
 		var sequenceNameIndex = 0;
 		var sequenceNames = song.sequenceNamesToPlayInOrder;
 		var sequenceName = sequenceNames[sequenceNameIndex];
-		var sequence = this.sequencesByName.get(sequenceName);
-		sequence.tickSelectAtIndex(0);
-		var ticksPerSecond = sequence.ticksPerSecond; // hack - Assuming this doesn't change.
-		var millisecondsPerTick = 1000 / ticksPerSecond;
+		song.sequenceSelectByName(sequenceName);
+		var sequenceStart = song.sequenceSelected();
+		sequenceStart.tickSelectAtIndex(0);
+		var millisecondsPerCursorUpdate = 50; // 20 ticks/second: Hopefully fast enough.
+		var timeSequenceStarted = new Date();
 
 		this.cursorMover = setInterval
 		(
 			() =>
 			{
 				var sequence = song.sequenceSelected();
-				sequence.tickIndexSelected++;
+
+				var now = new Date();
+				var millisecondsSinceSequenceStarted =
+					now.getTime() - timeSequenceStarted.getTime();
+				var secondsSinceSequenceStarted = millisecondsSinceSequenceStarted / 1000;
+				var tickIndexToSelect = Math.floor
+				(
+					secondsSinceSequenceStarted * sequence.ticksPerSecond
+				);
+				sequence.tickIndexSelected = tickIndexToSelect;
+
 				if (sequence.tickIndexSelected > sequence.durationInTicks)
 				{
 					sequenceNameIndex++;
@@ -491,16 +501,19 @@ class Song
 					}
 					else
 					{
-						sequenceName = sequenceNames[sequenceNameIndex];
-						sequence = song.sequencesByName.get(sequenceName);
-						sequence.tickIndexSelected = 0;
-						song.sequenceSelectByName(sequenceName);
-						sequence.uiUpdate(song);
+						var sequenceNextName = sequenceNames[sequenceNameIndex];
+						song.sequenceSelectByName(sequenceNextName);
+						var sequenceNext = song.sequenceSelected();
+						sequenceNext.tickSelectAtIndex(0);
+						sequenceNext.uiUpdate(song);
+						sequence = sequenceNext;
+						timeSequenceStarted = new Date();
 					}
 				}
 				sequence.uiUpdate_TickCursorPositionFromSelected(true);
 			},
-			millisecondsPerTick
+
+			millisecondsPerCursorUpdate
 		);
 	}
 

@@ -111,7 +111,7 @@ class Sequence {
         return returnValue;
     }
     durationInSamples(song) {
-        return this.durationInSeconds() * song.samplesPerSecond;
+        return Math.round(this.durationInSeconds() * song.samplesPerSecond);
     }
     durationInSeconds() {
         return this.durationInTicks / this.ticksPerSecond;

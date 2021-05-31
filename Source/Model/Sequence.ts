@@ -196,7 +196,7 @@ class Sequence
 
 	durationInSamples(song: Song): number
 	{
-		return this.durationInSeconds() * song.samplesPerSecond;
+		return Math.round(this.durationInSeconds() * song.samplesPerSecond);
 	}
 
 	durationInSeconds(): number

@@ -51,6 +51,15 @@ class Tracker {
     }
     // events
     handleEventKeyDown(event) {
+        var key = event.key;
+        if (key == "F5"
+            || (event.ctrlKey && key == "F4")) {
+            var message = "Keyboard command partially disabled to prevent accidental"
+                + " loss of work.  Press key again to confirm.";
+            alert(message);
+            event.preventDefault();
+            return;
+        }
         if (event.altKey == false) {
             return;
         }
@@ -58,7 +67,6 @@ class Tracker {
         var song = this.songCurrent;
         var sequence = song.sequenceSelected();
         var track = sequence.trackSelected();
-        var key = event.key;
         if (key.startsWith("Arrow")) {
             if (key.endsWith("Left")) {
                 sequence.trackSelectNextInDirection(-1);
