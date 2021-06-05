@@ -12,6 +12,7 @@ class Octave {
 }
 class Octave_Instances {
     constructor() {
+        // The very low and high octaves may not be audible by all humans.
         this.Zero = new Octave(16.352);
         this.One = new Octave(32.703);
         this.Two = new Octave(65.406);
@@ -21,6 +22,7 @@ class Octave_Instances {
         this.Six = new Octave(1046.5);
         this.Seven = new Octave(2093);
         this.Eight = new Octave(4186);
+        this.Nine = new Octave(8372);
         this._All =
             [
                 this.Zero,
@@ -31,7 +33,8 @@ class Octave_Instances {
                 this.Five,
                 this.Six,
                 this.Seven,
-                this.Eight
+                this.Eight,
+                this.Nine
             ];
     }
 }

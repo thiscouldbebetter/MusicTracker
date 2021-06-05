@@ -2,8 +2,8 @@
 class Song {
     constructor(name, samplesPerSecond, bitsPerSample, volumeAsFraction, instruments, sequences, sequenceNamesToPlayInOrder) {
         this.name = name;
-        this.samplesPerSecond = samplesPerSecond;
-        this.bitsPerSample = bitsPerSample;
+        this.samplesPerSecond = samplesPerSecond || 8000;
+        this.bitsPerSample = bitsPerSample || 8;
         this.volumeAsFraction = volumeAsFraction || 0.25;
         this.instruments = instruments;
         this.sequences = sequences;
@@ -18,9 +18,19 @@ class Song {
         this.sequencesByName =
             ArrayHelper.addLookups(this.sequences, (s) => s.name);
     }
+    static blank(samplesPerSecond, bitsPerSample) {
+        var instrument0 = Instrument.default("Instrument0");
+        var sequence0 = Sequence.blank(instrument0.name, 0);
+        var returnValue = new Song("[untitled]", samplesPerSecond, bitsPerSample, null, // volumeAsFraction
+        [instrument0], [sequence0], 
+        // sequenceNamesToPlayInOrder
+        [
+            sequence0.name,
+            sequence0.name
+        ]);
+        return returnValue;
+    }
     static demo(samplesPerSecond, bitsPerSample) {
-        samplesPerSecond = (samplesPerSecond == null ? 8000 : samplesPerSecond);
-        bitsPerSample = (bitsPerSample == null ? 8 : bitsPerSample);
         var instrument0 = Instrument.default("Instrument0");
         var sequenceA = Sequence.demo(instrument0.name, "A");
         var sequenceB = Sequence.demo2(instrument0.name, "B");
@@ -31,20 +41,6 @@ class Song {
             sequenceA.name,
             sequenceB.name,
             sequenceA.name
-        ]);
-        return returnValue;
-    }
-    static blank(samplesPerSecond, bitsPerSample) {
-        samplesPerSecond = (samplesPerSecond == null ? 8000 : samplesPerSecond);
-        bitsPerSample = (bitsPerSample == null ? 8 : bitsPerSample);
-        var instrument0 = Instrument.default("Instrument0");
-        var sequence0 = Sequence.blank(instrument0.name, 0);
-        var returnValue = new Song("[untitled]", samplesPerSecond, bitsPerSample, null, // volumeAsFraction
-        [instrument0], [sequence0], 
-        // sequenceNamesToPlayInOrder
-        [
-            sequence0.name,
-            sequence0.name
         ]);
         return returnValue;
     }
@@ -71,7 +67,7 @@ class Song {
     play() {
         var samples = this.toSamples();
         var wavFile = Tracker.samplesToWavFile("", this.samplesPerSecond, this.bitsPerSample, samples);
-        this.sound = new Sound("", wavFile, null);
+        this.sound = Sound.fromWavFile(wavFile);
         var song = this;
         this.sound.play(() => { song.stop(); });
         song.uiCursorFollow();

@@ -6,6 +6,9 @@ class Sound //
         this.offsetInSeconds = (offsetInSeconds || 0);
         this.sourceWavFile = sourceWavFile;
     }
+    static fromWavFile(wavFile) {
+        return new Sound("", wavFile, null);
+    }
     // instance methods
     durationInSeconds() {
         return this.sourceWavFile.durationInSeconds();

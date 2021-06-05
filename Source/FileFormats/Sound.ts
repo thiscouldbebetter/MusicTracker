@@ -17,6 +17,11 @@ class Sound //
 		this.sourceWavFile = sourceWavFile;
 	}
 
+	static fromWavFile(wavFile: WavFile): Sound
+	{
+		return new Sound("", wavFile, null);
+	}
+
 	// instance methods
 
 	durationInSeconds(): number

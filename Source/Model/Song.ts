@@ -41,8 +41,8 @@ class Song
 	)
 	{
 		this.name = name;
-		this.samplesPerSecond = samplesPerSecond;
-		this.bitsPerSample = bitsPerSample;
+		this.samplesPerSecond = samplesPerSecond || 8000;
+		this.bitsPerSample = bitsPerSample || 8;
 		this.volumeAsFraction = volumeAsFraction || 0.25;
 		this.instruments = instruments;
 		this.sequences = sequences;
@@ -62,11 +62,32 @@ class Song
 			ArrayHelper.addLookups(this.sequences, (s: Sequence) => s.name);
 	}
 
+	static blank(samplesPerSecond: number, bitsPerSample: number): Song
+	{
+		var instrument0 = Instrument.default("Instrument0");
+
+		var sequence0 = Sequence.blank(instrument0.name, 0);
+
+		var returnValue = new Song
+		(
+			"[untitled]",
+			samplesPerSecond,
+			bitsPerSample,
+			null, // volumeAsFraction
+			[ instrument0 ],
+			[ sequence0 ],
+			// sequenceNamesToPlayInOrder
+			[
+				sequence0.name,
+				sequence0.name
+			]
+		);
+
+		return returnValue;
+	}
+
 	static demo(samplesPerSecond: number, bitsPerSample: number): Song
 	{
-		samplesPerSecond = (samplesPerSecond == null ? 8000 : samplesPerSecond);
-		bitsPerSample = (bitsPerSample == null ? 8 : bitsPerSample);
-
 		var instrument0 = Instrument.default("Instrument0");
 
 		var sequenceA = Sequence.demo(instrument0.name, "A");
@@ -85,33 +106,6 @@ class Song
 				sequenceA.name,
 				sequenceB.name,
 				sequenceA.name
-			]
-		);
-
-		return returnValue;
-	}
-
-	static blank(samplesPerSecond: number, bitsPerSample: number): Song
-	{
-		samplesPerSecond = (samplesPerSecond == null ? 8000 : samplesPerSecond);
-		bitsPerSample = (bitsPerSample == null ? 8 : bitsPerSample);
-
-		var instrument0 = Instrument.default("Instrument0");
-
-		var sequence0 = Sequence.blank(instrument0.name, 0);
-
-		var returnValue = new Song
-		(
-			"[untitled]",
-			samplesPerSecond,
-			bitsPerSample,
-			null, // volumeAsFraction
-			[ instrument0 ],
-			[ sequence0 ],
-			// sequenceNamesToPlayInOrder
-			[
-				sequence0.name,
-				sequence0.name
 			]
 		);
 
@@ -156,7 +150,7 @@ class Song
 		(
 			"", this.samplesPerSecond, this.bitsPerSample, samples
 		);
-		this.sound = new Sound("", wavFile, null);
+		this.sound = Sound.fromWavFile(wavFile);
 		var song = this;
 		this.sound.play( () => { song.stop(); } );
 

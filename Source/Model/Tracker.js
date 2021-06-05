@@ -118,6 +118,14 @@ class Tracker {
             }
             sequence.noteAtTickCurrentSet(note.pitchCodeSet(pitchCode));
         }
+        else if (key.length == 1 && key >= "0" && key <= "9") {
+            var octaveIndex = parseInt(key);
+            var note = sequence.noteAtTickCurrent();
+            if (note == null) {
+                note = Note.default();
+            }
+            sequence.noteAtTickCurrentSet(note.octaveIndexSet(octaveIndex));
+        }
         else if (key == "-" || key == "_" || key == "=" || key == "+") {
             var note = sequence.noteAtTickCurrent();
             if (note != null) {
@@ -127,7 +135,7 @@ class Tracker {
                 }
                 else {
                     var octaveOffset = (key == "_" ? -1 : 1);
-                    sequence.noteAtTickCurrentSet(note.octaveAdd(octaveOffset));
+                    sequence.noteAtTickCurrentSet(note.octaveIndexAdd(octaveOffset));
                 }
             }
         }

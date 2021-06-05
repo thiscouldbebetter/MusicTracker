@@ -78,7 +78,7 @@ class SoundSource_Envelope extends SoundSourceChild {
             var inputTicksPerSecond = d.createElement("input");
             inputTicksPerSecond.type = "number";
             inputTicksPerSecond.style.width = "64px";
-            inputTicksPerSecond.onchange = function (event) {
+            inputTicksPerSecond.onchange = (event) => {
                 soundSource.ticksPerSecond = parseInt(inputTicksPerSecond.value);
             };
             this.divSoundSource.appendChild(inputTicksPerSecond);
@@ -90,7 +90,7 @@ class SoundSource_Envelope extends SoundSourceChild {
             var inputAttackDurationInTicks = d.createElement("input");
             inputAttackDurationInTicks.type = "number";
             inputAttackDurationInTicks.style.width = "64px";
-            inputAttackDurationInTicks.onchange = function (event) {
+            inputAttackDurationInTicks.onchange = (event) => {
                 soundSource.attackDurationInTicks = parseInt(inputAttackDurationInTicks.value);
             };
             this.divSoundSource.appendChild(inputAttackDurationInTicks);
@@ -102,7 +102,7 @@ class SoundSource_Envelope extends SoundSourceChild {
             var inputDecayDurationInTicks = d.createElement("input");
             inputDecayDurationInTicks.type = "number";
             inputDecayDurationInTicks.style.width = "64px";
-            inputDecayDurationInTicks.onchange = function (event) {
+            inputDecayDurationInTicks.onchange = (event) => {
                 soundSource.decayDurationInTicks = parseInt(inputDecayDurationInTicks.value);
             };
             this.divSoundSource.appendChild(inputDecayDurationInTicks);
@@ -114,7 +114,7 @@ class SoundSource_Envelope extends SoundSourceChild {
             var inputSustainDurationInTicks = d.createElement("input");
             inputSustainDurationInTicks.type = "number";
             inputSustainDurationInTicks.style.width = "64px";
-            inputSustainDurationInTicks.onchange = function (event) {
+            inputSustainDurationInTicks.onchange = (event) => {
                 soundSource.sustainDurationInTicks = parseInt(inputSustainDurationInTicks.value);
             };
             this.divSoundSource.appendChild(inputSustainDurationInTicks);
@@ -126,8 +126,9 @@ class SoundSource_Envelope extends SoundSourceChild {
             var inputSustainAmplitudeMultiplier = d.createElement("input");
             inputSustainAmplitudeMultiplier.type = "number";
             inputSustainAmplitudeMultiplier.style.width = "64px";
-            inputSustainAmplitudeMultiplier.onchange = function (event) {
-                soundSource.sustainAmplitudeMultiplier = parseFloat(inputSustainAmplitudeMultiplier.value);
+            inputSustainAmplitudeMultiplier.onchange = (event) => {
+                soundSource.sustainAmplitudeMultiplier =
+                    parseFloat(inputSustainAmplitudeMultiplier.value);
             };
             this.divSoundSource.appendChild(inputSustainAmplitudeMultiplier);
             this.divSoundSource.appendChild(d.createElement("br"));
@@ -138,8 +139,9 @@ class SoundSource_Envelope extends SoundSourceChild {
             var inputReleaseDurationInTicks = d.createElement("input");
             inputReleaseDurationInTicks.type = "number";
             inputReleaseDurationInTicks.style.width = "64px";
-            inputReleaseDurationInTicks.onchange = function (event) {
-                soundSource.releaseDurationInTicks = parseInt(inputReleaseDurationInTicks.value);
+            inputReleaseDurationInTicks.onchange = (event) => {
+                soundSource.releaseDurationInTicks =
+                    parseInt(inputReleaseDurationInTicks.value);
             };
             this.divSoundSource.appendChild(inputReleaseDurationInTicks);
             this.divSoundSource.appendChild(d.createElement("br"));

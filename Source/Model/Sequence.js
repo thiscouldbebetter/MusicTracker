@@ -583,7 +583,7 @@ class Sequence {
         button.onclick = () => {
             var note = sequence.noteAtTickCurrent();
             if (note != null) {
-                sequence.noteAtTickCurrentSet(note.octaveAdd(-1));
+                sequence.noteAtTickCurrentSet(note.octaveIndexAdd(-1));
                 sequence.uiUpdate(song);
             }
         };
@@ -593,7 +593,7 @@ class Sequence {
         button.onclick = () => {
             var note = sequence.noteAtTickCurrent();
             if (note != null) {
-                sequence.noteAtTickCurrentSet(note.octaveAdd(1));
+                sequence.noteAtTickCurrentSet(note.octaveIndexAdd(1));
                 sequence.uiUpdate(song);
             }
         };
@@ -669,7 +669,8 @@ class Sequence {
         divTracks.appendChild(divTrack);
         divTracks.appendChild(d.createElement("br"));
         var labelArrowKeys = d.createElement("label");
-        labelArrowKeys.innerText = "Click below, then hold Alt and press arrow keys to move between tracks and ticks.";
+        labelArrowKeys.innerText =
+            "Click below, then hold Alt and press arrow keys to move between tracks and ticks.";
         divTracks.appendChild(labelArrowKeys);
         divTracks.appendChild(d.createElement("br"));
         var selectTicks = d.createElement("textarea");

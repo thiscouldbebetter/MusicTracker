@@ -79,9 +79,14 @@ class Note
 		return Octave.Instances()._All[this.octaveIndex];
 	}
 
-	octaveAdd(octaveOffset: number): Note
+	octaveIndexAdd(octaveOffset: number): Note
 	{
-		this.octaveIndex += octaveOffset;
+		return this.octaveIndexSet(this.octaveIndex + octaveOffset);
+	}
+
+	octaveIndexSet(value: number): Note
+	{
+		this.octaveIndex = value;
 		if (this.octaveIndex < 0)
 		{
 			this.octaveIndex = 0;
@@ -121,7 +126,7 @@ class Note
 			}
 			else
 			{
-				this.octaveAdd(-1);
+				this.octaveIndexAdd(-1);
 				pitchIndex = pitches.length - 1;
 			}
 		}
@@ -133,7 +138,7 @@ class Note
 			}
 			else
 			{
-				this.octaveAdd(1);
+				this.octaveIndexAdd(1);
 				pitchIndex = 0;
 			}
 		}
