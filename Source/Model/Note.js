@@ -113,6 +113,18 @@ class Note {
     timeStartInSeconds(sequence) {
         return this.timeStartInTicks / sequence.ticksPerSecond;
     }
+    timeSubdivideByFactor(factor) {
+        this.timeStartInTicks =
+            factor.clone().multiplyInteger(this.timeStartInTicks).toNumber();
+        this.durationInTicks =
+            factor.clone().multiplyInteger(this.durationInTicks).toNumber();
+        return this;
+    }
+    timeSubdivideByFactorIsPossible(factor) {
+        var returnValue = (factor.clone().multiplyInteger(this.timeStartInTicks).isInteger()
+            && factor.clone().multiplyInteger(this.durationInTicks).isInteger());
+        return returnValue;
+    }
     volumeAsFraction() {
         return this.volumeAsPercentage / Note.VolumeAsPercentageMax;
     }

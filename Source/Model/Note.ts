@@ -192,6 +192,25 @@ class Note
 		return this.timeStartInTicks / sequence.ticksPerSecond;
 	}
 
+	timeSubdivideByFactor(factor: RationalNumber): Note
+	{
+		this.timeStartInTicks =
+			factor.clone().multiplyInteger(this.timeStartInTicks).toNumber();
+		this.durationInTicks =
+			factor.clone().multiplyInteger(this.durationInTicks).toNumber();
+		return this;
+	}
+
+	timeSubdivideByFactorIsPossible(factor: RationalNumber): boolean
+	{
+		var returnValue =
+		(
+			factor.clone().multiplyInteger(this.timeStartInTicks).isInteger()
+			&& factor.clone().multiplyInteger(this.durationInTicks).isInteger()
+		);
+		return returnValue;
+	}
+
 	volumeAsFraction(): number
 	{
 		return this.volumeAsPercentage / Note.VolumeAsPercentageMax;

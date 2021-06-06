@@ -199,6 +199,25 @@ class Track
 		return returnValues;
 	}
 
+	timeSubdivideByFactor(factor: RationalNumber): Track
+	{
+		this.notes.forEach(x => x.timeSubdivideByFactor(factor));
+		return this;
+	}
+
+	timeSubdivideByFactorIsPossible(factor: RationalNumber): boolean
+	{
+		var returnValue =
+		(
+			this.notes.some
+			(
+				x => x.timeSubdivideByFactorIsPossible(factor)
+			) == false
+		);
+
+		return returnValue;
+	}
+
 	// samples
 
 	toSamples(song: Song, sequence: Sequence): number[]

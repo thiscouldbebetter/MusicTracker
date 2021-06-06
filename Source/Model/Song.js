@@ -18,6 +18,13 @@ class Song {
         this.sequencesByName =
             ArrayHelper.addLookups(this.sequences, (s) => s.name);
     }
+    instrumentRename(instrumentNameOld, instrumentNameNew) {
+        var instrument = this.instrumentsByName.get(instrumentNameOld);
+        this.instrumentsByName.delete(instrumentNameOld);
+        instrument.name = instrumentNameNew;
+        this.instrumentsByName.set(instrumentNameNew, instrument);
+        this.instrumentNameSelected = instrument.name;
+    }
     static blank(samplesPerSecond, bitsPerSample) {
         var instrument0 = Instrument.default("Instrument0");
         var sequence0 = Sequence.blank(instrument0.name, 0);
@@ -107,6 +114,14 @@ class Song {
             ? null
             : this.sequencesByName.get(this.sequenceNameSelected));
         return returnValue;
+    }
+    sequenceSelectedDelete() {
+        var sequenceSelected = this.sequenceSelected();
+        var sequences = this.sequences;
+        var sequenceIndexSelected = sequences.indexOf(sequenceSelected);
+        sequences.splice(sequenceIndexSelected, 1);
+        this.sequencesByName.delete(sequenceSelected.name);
+        this.sequenceSelectByName(sequences[0].name);
     }
     sequencesToPlayInOrder() {
         var returnValues = [];
@@ -547,8 +562,8 @@ class Song {
         var labelSequencesToPlay = d.createElement("label");
         labelSequencesToPlay.innerText = "Sequences to Play:";
         divSong.appendChild(labelSequencesToPlay);
-        divSong.appendChild(d.createElement("br"));
         var inputSequenceNamesToPlayInOrder = d.createElement("input");
+        inputSequenceNamesToPlayInOrder.style.width = "100%";
         inputSequenceNamesToPlayInOrder.onchange = (event) => {
             song.sequenceNamesToPlayInOrder =
                 inputSequenceNamesToPlayInOrder.value.split(";");
@@ -606,13 +621,10 @@ class Song {
         var buttonSequenceDelete = d.createElement("button");
         buttonSequenceDelete.innerText = "Delete";
         buttonSequenceDelete.onclick = () => {
-            var sequenceSelected = song.sequenceSelected();
-            var sequences = song.sequences;
-            var sequenceIndexSelected = sequences.indexOf(sequenceSelected);
-            sequences.splice(sequenceIndexSelected, 1);
-            song.sequencesByName.delete(sequenceSelected.name);
-            song.sequenceSelectByName(sequences[0].name);
-            song.uiUpdate();
+            song.sequenceSelectedDelete();
+            var tracker = Tracker.Instance();
+            tracker.uiClear();
+            tracker.uiUpdate();
         };
         divSong.appendChild(buttonSequenceDelete);
         divSong.appendChild(d.createElement("br"));

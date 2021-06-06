@@ -352,6 +352,27 @@ class Sequence
 		return tickAsString;
 	}
 
+	timeSubdivideByFactor(factor: RationalNumber): Sequence
+	{
+		this.ticksPerSecond =
+			factor.clone().multiplyInteger(this.ticksPerSecond).toNumber();
+		this.durationInTicks =
+			factor.clone().multiplyInteger(this.durationInTicks).toNumber();
+		this.tracks.forEach(x => x.timeSubdivideByFactor(factor));
+		return this;
+	}
+
+	timeSubdivideByFactorIsPossible(factor: RationalNumber): boolean
+	{
+		var returnValue =
+		(
+			factor.clone().multiplyInteger(this.ticksPerSecond).isInteger()
+			&& factor.clone().multiplyInteger(this.durationInTicks).isInteger()
+			&& this.tracks.some(x => x.timeSubdivideByFactorIsPossible(factor) ) == false
+		);
+		return returnValue
+	}
+
 	trackSelectAtIndex(trackIndexToSelect: number): void
 	{
 		if (trackIndexToSelect >= this.tracks.length)
@@ -495,7 +516,7 @@ class Sequence
 
 		this.cursorMover = setInterval
 		(
-			function()
+			() =>
 			{
 				sequence.tickIndexSelected++;
 				if (sequence.tickIndexSelected > sequence.durationInTicks)
@@ -545,10 +566,14 @@ class Sequence
 		{
 			var sequenceNameNew = event.target.value;
 			song.sequenceRename(sequence.name, sequenceNameNew);
-			Tracker.Instance().uiUpdate();
+			var tracker = Tracker.Instance();
+			tracker.uiClear();
+			tracker.uiUpdate();
 		}
 		divSequence.appendChild(inputSequenceName);
 		this.inputSequenceName = inputSequenceName;
+
+		divSequence.appendChild(d.createElement("br"));
 
 		var buttonSequenceSelectedPlay = d.createElement("button");
 		buttonSequenceSelectedPlay.innerText = "Play/Stop (s)";
@@ -557,6 +582,41 @@ class Sequence
 			sequence.playOrStop(song);
 		}
 		divSequence.appendChild(buttonSequenceSelectedPlay);
+
+		var selectTimeSubdivisionFactor = d.createElement("select");
+		var timeSubdivisionFactors = [ "2", "3", "1/2", "1/3" ];
+		timeSubdivisionFactors.forEach
+		(
+			x =>
+			{
+				var option = d.createElement("option");
+				option.text = x;
+				selectTimeSubdivisionFactor.appendChild(option);
+			}
+		);
+
+		var buttonSequenceSelectedTimeSubdivide = d.createElement("button");
+		buttonSequenceSelectedTimeSubdivide.innerText = "Subdivide Time by: ";
+		buttonSequenceSelectedTimeSubdivide.onclick = () =>
+		{
+			var timeSubdivisionFactorAsString = selectTimeSubdivisionFactor.value;
+			var timeSubdivisionFactor =
+				RationalNumber.fromString(timeSubdivisionFactorAsString);
+			var isTimeSubdivisionPossible =
+				sequence.timeSubdivideByFactorIsPossible(timeSubdivisionFactor);
+			if (isTimeSubdivisionPossible == false)
+			{
+				alert("Cannot subdivide by factor: " + timeSubdivisionFactor.toString());
+			}
+			else
+			{
+				sequence.timeSubdivideByFactor(timeSubdivisionFactor);
+				sequence.uiUpdate(song);
+			}
+		}
+
+		divSequence.appendChild(buttonSequenceSelectedTimeSubdivide);
+		divSequence.appendChild(selectTimeSubdivisionFactor);
 
 		divSequence.appendChild(d.createElement("br"));
 
@@ -994,7 +1054,8 @@ class Sequence
 		divTracks.appendChild(d.createElement("br"));
 
 		var selectTicks = d.createElement("textarea");
-		selectTicks.cols = 40;
+		//selectTicks.cols = 80;
+		selectTicks.style.width = "100%";
 		selectTicks.rows = 16;
 		selectTicks.style.fontFamily = "monospace";
 		selectTicks.onclick = this.selectTicks_Clicked.bind(this, song);

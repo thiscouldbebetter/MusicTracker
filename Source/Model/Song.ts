@@ -62,6 +62,15 @@ class Song
 			ArrayHelper.addLookups(this.sequences, (s: Sequence) => s.name);
 	}
 
+	instrumentRename(instrumentNameOld: string, instrumentNameNew: string): void
+	{
+		var instrument = this.instrumentsByName.get(instrumentNameOld);
+		this.instrumentsByName.delete(instrumentNameOld);
+		instrument.name = instrumentNameNew;
+		this.instrumentsByName.set(instrumentNameNew, instrument);
+		this.instrumentNameSelected = instrument.name;
+	}
+
 	static blank(samplesPerSecond: number, bitsPerSample: number): Song
 	{
 		var instrument0 = Instrument.default("Instrument0");
@@ -209,6 +218,16 @@ class Song
 			: this.sequencesByName.get(this.sequenceNameSelected)
 		);
 		return returnValue;
+	}
+
+	sequenceSelectedDelete(): void
+	{
+		var sequenceSelected = this.sequenceSelected();
+		var sequences = this.sequences;
+		var sequenceIndexSelected = sequences.indexOf(sequenceSelected);
+		sequences.splice(sequenceIndexSelected, 1);
+		this.sequencesByName.delete(sequenceSelected.name);
+		this.sequenceSelectByName(sequences[0].name);
 	}
 
 	sequencesToPlayInOrder(): Sequence[]
@@ -831,9 +850,9 @@ class Song
 		var labelSequencesToPlay = d.createElement("label");
 		labelSequencesToPlay.innerText = "Sequences to Play:"
 		divSong.appendChild(labelSequencesToPlay);
-		divSong.appendChild(d.createElement("br"));
 
 		var inputSequenceNamesToPlayInOrder = d.createElement("input");
+		inputSequenceNamesToPlayInOrder.style.width = "100%";
 		inputSequenceNamesToPlayInOrder.onchange = (event) =>
 		{
 			song.sequenceNamesToPlayInOrder =
@@ -906,13 +925,10 @@ class Song
 		buttonSequenceDelete.innerText = "Delete";
 		buttonSequenceDelete.onclick = () =>
 		{
-			var sequenceSelected = song.sequenceSelected();
-			var sequences = song.sequences;
-			var sequenceIndexSelected = sequences.indexOf(sequenceSelected);
-			sequences.splice(sequenceIndexSelected, 1);
-			song.sequencesByName.delete(sequenceSelected.name);
-			song.sequenceSelectByName(sequences[0].name);
-			song.uiUpdate();
+			song.sequenceSelectedDelete();
+			var tracker = Tracker.Instance();
+			tracker.uiClear();
+			tracker.uiUpdate();
 		}
 		divSong.appendChild(buttonSequenceDelete);
 

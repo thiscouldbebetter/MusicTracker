@@ -115,11 +115,14 @@ class Instrument
 
 			var inputName = d.createElement("input");
 			inputName.value = this.name;
-			inputName.onchange = (event) =>
+			inputName.onchange = (event: any) =>
 			{
-				instrument.name = inputName.value;
-				instrument.uiClear();
-				instrument.uiUpdate();
+				var instrumentNameNew = event.target.value;
+				var tracker = Tracker.Instance();
+				var song = tracker.songCurrent;
+				song.instrumentRename(instrument.name, instrumentNameNew);
+				tracker.uiClear();
+				tracker.uiUpdate();
 			}
 			divInstrument.appendChild(inputName);
 			this.inputName = inputName;
@@ -128,7 +131,6 @@ class Instrument
 			buttonSave.innerText = "Save";
 			buttonSave.onclick = () =>
 			{
-				instrument.uiClear();
 				var instrumentAsJSON = instrument.toStringJSON();
 				instrument.uiUpdate();
 				FileHelper.saveTextAsFile(instrumentAsJSON, "Instrument.json");
