@@ -228,7 +228,7 @@ class Sequence {
     timeSubdivideByFactorIsPossible(factor) {
         var returnValue = (factor.clone().multiplyInteger(this.ticksPerSecond).isInteger()
             && factor.clone().multiplyInteger(this.durationInTicks).isInteger()
-            && this.tracks.some(x => x.timeSubdivideByFactorIsPossible(factor)) == false);
+            && this.tracks.some(x => x.timeSubdivideByFactorIsPossible(factor) == false) == false);
         return returnValue;
     }
     trackSelectAtIndex(trackIndexToSelect) {

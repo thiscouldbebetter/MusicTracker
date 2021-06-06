@@ -211,7 +211,7 @@ class Track
 		(
 			this.notes.some
 			(
-				x => x.timeSubdivideByFactorIsPossible(factor)
+				x => x.timeSubdivideByFactorIsPossible(factor) == false
 			) == false
 		);
 

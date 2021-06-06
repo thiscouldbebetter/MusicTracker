@@ -134,7 +134,7 @@ class Track {
         return this;
     }
     timeSubdivideByFactorIsPossible(factor) {
-        var returnValue = (this.notes.some(x => x.timeSubdivideByFactorIsPossible(factor)) == false);
+        var returnValue = (this.notes.some(x => x.timeSubdivideByFactorIsPossible(factor) == false) == false);
         return returnValue;
     }
     // samples
