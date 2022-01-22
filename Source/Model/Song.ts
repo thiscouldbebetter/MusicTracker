@@ -637,12 +637,15 @@ class Song
 						file,
 						(file: any, fileAsBytes: number[]) => // callback
 						{
-							//var modFile =
-							ModFile.fromBytes
+							var modFile = ModFile.fromBytes
 							(
 								file.name, fileAsBytes
 							);
-							alert("todo");
+							var modFileAsSong = Song.fromModFile(modFile);
+							var tracker = Tracker.Instance();
+							tracker.songCurrent = modFileAsSong;
+							tracker.uiClear();
+							tracker.uiUpdate();
 						}
 					);
 				}

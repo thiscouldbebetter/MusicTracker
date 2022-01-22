@@ -398,9 +398,12 @@ class Song {
                 if (fileName.endsWith(".mod")) {
                     FileHelper.loadFileAsBytes(file, (file, fileAsBytes) => // callback
                      {
-                        //var modFile =
-                        ModFile.fromBytes(file.name, fileAsBytes);
-                        alert("todo");
+                        var modFile = ModFile.fromBytes(file.name, fileAsBytes);
+                        var modFileAsSong = Song.fromModFile(modFile);
+                        var tracker = Tracker.Instance();
+                        tracker.songCurrent = modFileAsSong;
+                        tracker.uiClear();
+                        tracker.uiUpdate();
                     });
                 }
                 else // Assume JSON.

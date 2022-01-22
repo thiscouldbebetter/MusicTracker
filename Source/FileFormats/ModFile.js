@@ -13,11 +13,13 @@ class ModFile {
         // and
         // "https://www.ocf.berkeley.edu/~eek/index.html/tiny_examples/ptmod/ap12.html".
         var reader = new ByteStreamBigEndian(bytes);
-        var title = StringHelper.replaceAll(reader.readString(20), "\0", "").trim();
+        var titleRaw = reader.readString(20);
+        var title = StringHelper.replaceAll(titleRaw, "\0", "").trim();
         var instruments = [];
         var numberOfInstruments = 31; // Or maybe 15?
         for (var i = 0; i < numberOfInstruments; i++) {
-            var instrumentName = StringHelper.makeIdentifier(StringHelper.replaceAll(reader.readString(22), "\0", "").trim()).trim();
+            var instrumentNameRaw = StringHelper.replaceAll(reader.readString(22), "\0", "");
+            var instrumentName = instrumentNameRaw.trim().split(".").join("_");
             // In "words". 2 bytes/word
             var numberOfSamplesInInstrumentPlusOne = reader.readShort();
             var pitchShiftInSixteenthTones = reader.readByte(); // -8 to 7.
@@ -99,10 +101,10 @@ class ModFile {
     static pitchNameForPitchCode(pitchCodeToFind) {
         var returnValue = null;
         var lookup = ModFile.pitchCodesByName;
-        for (var pitchName in lookup) {
-            var pitchCodeFromLookup = lookup.get(pitchName);
-            if (pitchCodeFromLookup <= pitchCodeToFind) {
-                returnValue = pitchName;
+        for (var keyValuePair of lookup) {
+            var pitchCode = keyValuePair[1];
+            if (pitchCode <= pitchCodeToFind) {
+                returnValue = keyValuePair[0];
                 break;
             }
         }
@@ -118,6 +120,7 @@ ModFile.pitchCodesByName = new Map([
     // Pitch codes:
     // From https://www.ocf.berkeley.edu/~eek/index.html/tiny_examples/ptmod/ap12.html:
     // "Periodtable for Tuning 0, Normal
+    // This is counterintuitive: The "octave" number goes up as the frequency decresases?
     ["C_1", 856],
     ["C#1", 808],
     ["D_1", 762],
@@ -154,6 +157,33 @@ ModFile.pitchCodesByName = new Map([
     ["A_3", 127],
     ["A#3", 120],
     ["B_3", 113],
+    // Not given in the document mentioned in the above comment.
+    // Extrapolated, and rounded up.
+    ["C_4", 107],
+    ["C#4", 101],
+    ["D_4", 95],
+    ["D#4", 90],
+    ["E_4", 85],
+    ["F_4", 80],
+    ["F#4", 75.5],
+    ["G_4", 71.5],
+    ["G#4", 67.5],
+    ["A_4", 63.5],
+    ["A#4", 60],
+    ["B_4", 56.5],
+    ["C_5", 54],
+    ["C#5", 51],
+    ["D_5", 48],
+    ["D#5", 45],
+    ["E_5", 43],
+    ["F_5", 40],
+    ["F#5", 38],
+    ["G_5", 36],
+    ["G#5", 34],
+    ["A_5", 32],
+    ["A#5", 30],
+    ["B_5", 29],
+    ["C_6", 0], // hack - todo - Perhaps this pitch code is used for effects?
 ]);
 class ModFileDivisionCell {
     constructor(instrumentIndex, pitchCode, effect) {
