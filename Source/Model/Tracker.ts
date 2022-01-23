@@ -1,5 +1,8 @@
 
-class Tracker
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class Tracker
 {
 	songCurrent: Song;
 
@@ -272,4 +275,6 @@ class Tracker
 		sequence.uiUpdate_TickCursorPositionFromSelected(null);
 		sequence.uiUpdate_Tracks(song);
 	}
+}
+
 }

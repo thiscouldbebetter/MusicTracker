@@ -1,5 +1,8 @@
 
-class ByteStreamBigEndian
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class ByteStreamBigEndian
 {
 	bytes: number[];
 
@@ -131,4 +134,6 @@ class ByteStreamBigEndian
 			this.writeByte(stringToWrite.charCodeAt(i));
 		}
 	}
+}
+
 }

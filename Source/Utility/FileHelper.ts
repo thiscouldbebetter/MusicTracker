@@ -1,5 +1,8 @@
 
-class FileHelper
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class FileHelper
 {
 	static loadFileAsText(fileToLoad: any, callback: any): void
 	{
@@ -62,4 +65,6 @@ class FileHelper
 		downloadLink.href = URL.createObjectURL(textFileAsBlob);
 		downloadLink.click();
 	}
+}
+
 }

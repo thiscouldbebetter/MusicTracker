@@ -1,5 +1,8 @@
 
-class WavFile //
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class WavFile //
 {
 	filePath: string;
 	samplingInfo: WavFileSamplingInfo;
@@ -477,7 +480,7 @@ class WavFile //
 
 ////////
 
-class WavFileSamplingInfo
+export class WavFileSamplingInfo
 {
 	formatCode: number;
 	numberOfChannels: number;
@@ -605,4 +608,6 @@ class WavFileSamplingInfo
 		}
 		return samplesNormalized;
 	}
+}
+
 }

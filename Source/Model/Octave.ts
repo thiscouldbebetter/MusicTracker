@@ -1,5 +1,8 @@
 
-class Octave
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class Octave
 {
 	frequencyInHertzOfC: number;
 
@@ -19,7 +22,7 @@ class Octave
 	}
 }
 
-class Octave_Instances
+export class Octave_Instances
 {
 	Zero: Octave;
 	One: Octave;
@@ -71,4 +74,4 @@ class Octave_Instances
 	}
 }
 
-
+}

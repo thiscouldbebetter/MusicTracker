@@ -1,5 +1,8 @@
 
-class RationalNumber
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class RationalNumber
 {
 	numerator: number;
 	denominator: number;
@@ -67,4 +70,6 @@ class RationalNumber
 	{
 		return "" + this.numerator + "/" + this.denominator;
 	}
+}
+
 }

@@ -1,5 +1,8 @@
 
-class ModFile
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class ModFile
 {
 	name: string;
 	title: string;
@@ -294,7 +297,7 @@ class ModFile
 
 } // end class ModFile
 
-class ModFileDivisionCell
+export class ModFileDivisionCell
 {
 	instrumentIndex: number;
 	pitchCode: number;
@@ -322,7 +325,7 @@ class ModFileDivisionCell
 	}
 }
 
-class ModFileEffect
+export class ModFileEffect
 {
 	defnID: number;
 	arg0: number;
@@ -380,7 +383,7 @@ class ModFileEffect
 	}
 }
 
-class ModFileInstrument
+export class ModFileInstrument
 {
 	name: string;
 	numberOfSamplesPlusOne: number;
@@ -412,7 +415,7 @@ class ModFileInstrument
 	}
 }
 
-class ModFileSequence
+export class ModFileSequence
 {
 	divisionCellsForChannels: ModFileDivisionCell[][];
 
@@ -420,4 +423,6 @@ class ModFileSequence
 	{
 		this.divisionCellsForChannels = divisionCellsForChannels;
 	}
+}
+
 }

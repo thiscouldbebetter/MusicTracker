@@ -1,5 +1,8 @@
 
-class SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSourceChild
 {
 	typeName: string;
 
@@ -26,5 +29,7 @@ class SoundSourceChild
 	{
 		throw new Error("Must be implemented in subclass!");
 	}
+
+}
 
 }

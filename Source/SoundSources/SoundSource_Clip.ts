@@ -1,5 +1,8 @@
 
-class SoundSource_Clip extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_Clip extends SoundSourceChild
 {
 	startInSeconds: number;
 	endInSeconds: number;
@@ -102,4 +105,6 @@ class SoundSource_Clip extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }

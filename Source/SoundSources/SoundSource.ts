@@ -1,5 +1,8 @@
 
-class SoundSource //
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource //
 {
 	child: SoundSourceChild;
 
@@ -99,4 +102,6 @@ class SoundSource //
 
 		return this.divSoundSource;
 	}
+}
+
 }

@@ -1,5 +1,8 @@
 
-class SoundSource_Scale extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_Scale extends SoundSourceChild
 {
 	amplitudeMultiplier: number;
 	child: SoundSource;
@@ -73,4 +76,6 @@ class SoundSource_Scale extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }

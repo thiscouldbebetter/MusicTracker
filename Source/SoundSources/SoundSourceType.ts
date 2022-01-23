@@ -1,5 +1,8 @@
 
-class SoundSourceType
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSourceType
 {
 	name: string;
 	soundSourceCreate: ()=>SoundSourceChild;
@@ -28,7 +31,7 @@ class SoundSourceType
 	}
 }
 
-class SoundSourceType_Instances
+export class SoundSourceType_Instances
 {
 	Clip: SoundSourceType;
 	Envelope: SoundSourceType;
@@ -276,4 +279,6 @@ class SoundSourceType_Instances
 	{
 		return this._AllByName.get(name);
 	}
+}
+
 }

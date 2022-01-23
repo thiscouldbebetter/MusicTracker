@@ -1,5 +1,8 @@
 
-class StringHelper
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class StringHelper
 {
 	static padLeft
 	(
@@ -28,4 +31,6 @@ class StringHelper
 			new RegExp(stringToBeReplaced, "g"), stringToReplaceWith
 		);
 	}
+}
+
 }

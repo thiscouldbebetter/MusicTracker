@@ -1,5 +1,8 @@
 
-class Song
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class Song
 {
 	name: string;
 	samplesPerSecond: number;
@@ -339,7 +342,7 @@ class Song
 
 		var song = new Song
 		(
-			this.name,
+			modFile.name,
 			ModFile.SamplesPerSecond, // samplesPerSecond,
 			ModFile.BitsPerSample, // bitsPerSample,
 			null, // volumeAsFraction
@@ -982,4 +985,6 @@ class Song
 
 		return song;
 	}
+}
+
 }

@@ -1,5 +1,7 @@
+namespace ThisCouldBeBetter.MusicTracker
+{
 
-class Sequence
+export class Sequence
 {
 	name: string;
 	ticksPerSecond: number;
@@ -1195,4 +1197,6 @@ class Sequence
 
 		this.uiUpdate_TickCursorPositionFromSelected(null);
 	}
+}
+
 }

@@ -1,5 +1,8 @@
 
-class SoundSource_Sine extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_Sine extends SoundSourceChild
 {
 	constructor()
 	{
@@ -9,7 +12,7 @@ class SoundSource_Sine extends SoundSourceChild
 	sampleForFrequencyAndTime
 	(
 		frequencyInHertz: number, timeInSeconds: number
-	)
+	): number
 	{
 		var secondsPerCycle = 1 / frequencyInHertz;
 		var secondsSinceCycleStarted = timeInSeconds % secondsPerCycle;
@@ -37,4 +40,6 @@ class SoundSource_Sine extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }

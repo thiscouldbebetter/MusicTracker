@@ -1,5 +1,8 @@
 
-class Track
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class Track
 {
 	instrumentName: string;
 	notes: Note[];
@@ -291,5 +294,6 @@ class Track
 			millisecondsPerTick
 		);
 	}
+}
 
 }

@@ -1,5 +1,8 @@
 
-class Note
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class Note
 {
 	timeStartInTicks: number;
 	octaveIndex: number;
@@ -319,4 +322,6 @@ class Note
 			+ StringHelper.padLeft("" + this.durationInTicks, 4, "0");
 		return returnValue
 	}
+}
+
 }

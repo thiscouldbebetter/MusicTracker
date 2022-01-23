@@ -1,5 +1,8 @@
 
-class SoundSource_Envelope extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_Envelope extends SoundSourceChild
 {
 	ticksPerSecond: number;
 	attackDurationInTicks: number;
@@ -243,4 +246,6 @@ class SoundSource_Envelope extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }

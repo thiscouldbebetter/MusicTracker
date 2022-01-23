@@ -1,5 +1,8 @@
 
-class Base64Encoder
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class Base64Encoder
 {
 	// static methods
 
@@ -30,5 +33,7 @@ class Base64Encoder
 
 		return bytes;
 	}
+
+}
 
 }

@@ -1,5 +1,8 @@
 
-class Sound //
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class Sound //
 {
 	name: string;
 	sourceWavFile: WavFile;
@@ -71,4 +74,6 @@ class Sound //
 			this.domElementAudio = null;
 		}
 	}
+}
+
 }

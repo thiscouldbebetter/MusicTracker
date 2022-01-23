@@ -1,5 +1,8 @@
 
-class SoundSource_Vibrato extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_Vibrato extends SoundSourceChild
 {
 	pitchChangesPerSecond: number;
 	pitchMultipliers: number[];
@@ -138,4 +141,6 @@ class SoundSource_Vibrato extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }

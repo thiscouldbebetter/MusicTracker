@@ -1,5 +1,8 @@
 
-class SoundSource_Sawtooth extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_Sawtooth extends SoundSourceChild
 {
 	constructor()
 	{
@@ -37,4 +40,6 @@ class SoundSource_Sawtooth extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }

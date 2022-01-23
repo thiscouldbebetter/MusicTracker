@@ -1,4 +1,9 @@
-class FrequencyAnalysis
+
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+
+export class FrequencyAnalysis
 {
 	sineAmplitudes: number[];
 	cosineAmplitudes: number[];
@@ -121,4 +126,6 @@ class FrequencyAnalysis
 
 		return samples;
 	}
+}
+
 }

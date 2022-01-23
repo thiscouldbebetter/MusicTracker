@@ -1,5 +1,8 @@
 
-class ByteConverter
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class ByteConverter
 {
 	numberOfBits: number;
 	numberOfBytes: number;
@@ -143,4 +146,6 @@ class ByteConverter
 
 		return returnValue;
 	}
+}
+
 }

@@ -1,5 +1,8 @@
 
-class SoundSource_Triangle extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_Triangle extends SoundSourceChild
 {
 	constructor()
 	{
@@ -45,4 +48,6 @@ class SoundSource_Triangle extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }

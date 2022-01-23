@@ -1,4 +1,5 @@
 "use strict";
 function main() {
-    Tracker.Instance().uiUpdate();
+    var tracker = ThisCouldBeBetter.MusicTracker.Tracker.Instance();
+    tracker.uiUpdate();
 }

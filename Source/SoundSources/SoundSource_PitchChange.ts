@@ -1,5 +1,8 @@
 
-class SoundSource_PitchChange extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_PitchChange extends SoundSourceChild
 {
 	frequencyMultiplier: number;
 	child: SoundSource;
@@ -80,4 +83,6 @@ class SoundSource_PitchChange extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }

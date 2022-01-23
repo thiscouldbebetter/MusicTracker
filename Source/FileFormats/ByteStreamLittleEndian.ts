@@ -1,5 +1,8 @@
 
-class ByteStreamLittleEndian
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class ByteStreamLittleEndian
 {
 	bytes: number[];
 
@@ -131,4 +134,6 @@ class ByteStreamLittleEndian
 			this.writeByte(stringToWrite.charCodeAt(i));
 		}
 	}
+}
+
 }

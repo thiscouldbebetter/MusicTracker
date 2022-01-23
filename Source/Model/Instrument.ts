@@ -1,5 +1,8 @@
 
-class Instrument
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class Instrument
 {
 	name: string;
 	soundSource: SoundSource;
@@ -199,4 +202,6 @@ class Instrument
 
 		return returnValue;
 	}
+}
+
 }

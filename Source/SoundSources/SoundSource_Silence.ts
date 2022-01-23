@@ -1,5 +1,8 @@
 
-class SoundSource_Silence extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_Silence extends SoundSourceChild
 {
 	constructor()
 	{
@@ -28,5 +31,7 @@ class SoundSource_Silence extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+
+}
 
 }

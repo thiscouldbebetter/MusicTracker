@@ -1,5 +1,8 @@
 
-class Pitch
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class Pitch
 {
 	name: string;
 	code: string;
@@ -22,7 +25,8 @@ class Pitch
 		return Pitch._instances;
 	}
 }
-class Pitch_Instances
+
+export class Pitch_Instances
 {
 	C: Pitch;
 	CSharp:Pitch;
@@ -82,3 +86,4 @@ class Pitch_Instances
 	}
 }
 
+}

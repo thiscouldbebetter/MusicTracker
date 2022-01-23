@@ -1,5 +1,8 @@
 
-class ArrayHelper
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class ArrayHelper
 {
 	static addLookups<K, E>(array: E[], getKeyForElement: (e: E) => K ): Map<K, E>
 	{
@@ -50,4 +53,6 @@ class ArrayHelper
 		array.splice(index, 1);
 		return array;
 	}
+}
+
 }

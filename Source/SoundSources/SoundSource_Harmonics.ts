@@ -1,5 +1,8 @@
 
-class SoundSource_Harmonics extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_Harmonics extends SoundSourceChild
 {
 	relativeAmplitudesOfHarmonics: number[];
 
@@ -135,4 +138,6 @@ class SoundSource_Harmonics extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }

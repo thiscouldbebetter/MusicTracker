@@ -1,5 +1,8 @@
 
-class SoundSource_WavFile extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_WavFile extends SoundSourceChild
 {
 	pitchBaseCode: string;
 	wavFile: WavFile;
@@ -139,4 +142,6 @@ class SoundSource_WavFile extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }

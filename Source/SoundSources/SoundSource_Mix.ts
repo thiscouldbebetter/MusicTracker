@@ -1,5 +1,8 @@
 
-class SoundSource_Mix extends SoundSourceChild
+namespace ThisCouldBeBetter.MusicTracker
+{
+
+export class SoundSource_Mix extends SoundSourceChild
 {
 	children: SoundSource[];
 
@@ -142,4 +145,6 @@ class SoundSource_Mix extends SoundSourceChild
 
 		return this.divSoundSource;
 	}
+}
+
 }
