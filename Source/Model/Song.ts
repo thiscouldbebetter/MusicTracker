@@ -157,12 +157,7 @@ export class Song
 
 	play(): void
 	{
-		var samples = this.toSamples();
-		var wavFile = Tracker.samplesToWavFile
-		(
-			"", this.samplesPerSecond, this.bitsPerSample, samples
-		);
-		this.sound = Sound.fromWavFile(wavFile);
+		this.sound = this.toSound();
 		var song = this;
 		this.sound.play( () => { song.stop(); } );
 
@@ -303,6 +298,13 @@ export class Song
 		this.trimSamples(songAsSamples);
 
 		return songAsSamples;
+	}
+
+	toSound(): Sound
+	{
+		var wavFile = this.toWavFile();
+		var sound = Sound.fromWavFile(wavFile);
+		return sound;
 	}
 
 	trimSamples(samplesToTrim: number[]): void
@@ -984,6 +986,19 @@ export class Song
 		song.instrumentAndSequenceLookupsBuild();
 
 		return song;
+	}
+
+	// wav
+
+	toWavFile(): WavFile
+	{
+		var samples = this.toSamples();
+		var wavFile = Tracker.samplesToWavFile
+		(
+			"", this.samplesPerSecond, this.bitsPerSample, samples
+		);
+
+		return wavFile;
 	}
 }
 

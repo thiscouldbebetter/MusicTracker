@@ -76,9 +76,7 @@ var ThisCouldBeBetter;
                 this.instrumentNameSelected = value.name;
             }
             play() {
-                var samples = this.toSamples();
-                var wavFile = MusicTracker.Tracker.samplesToWavFile("", this.samplesPerSecond, this.bitsPerSample, samples);
-                this.sound = MusicTracker.Sound.fromWavFile(wavFile);
+                this.sound = this.toSound();
                 var song = this;
                 this.sound.play(() => { song.stop(); });
                 song.uiCursorFollow();
@@ -174,6 +172,11 @@ var ThisCouldBeBetter;
                 }
                 this.trimSamples(songAsSamples);
                 return songAsSamples;
+            }
+            toSound() {
+                var wavFile = this.toWavFile();
+                var sound = MusicTracker.Sound.fromWavFile(wavFile);
+                return sound;
             }
             trimSamples(samplesToTrim) {
                 for (var s = 0; s < samplesToTrim.length; s++) {
@@ -665,6 +668,12 @@ var ThisCouldBeBetter;
                 }
                 song.instrumentAndSequenceLookupsBuild();
                 return song;
+            }
+            // wav
+            toWavFile() {
+                var samples = this.toSamples();
+                var wavFile = MusicTracker.Tracker.samplesToWavFile("", this.samplesPerSecond, this.bitsPerSample, samples);
+                return wavFile;
             }
         }
         MusicTracker.Song = Song;
