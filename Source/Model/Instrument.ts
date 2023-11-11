@@ -65,6 +65,16 @@ export class Instrument
 		return noteAsSamples;
 	}
 
+	// File.
+
+	saveToFile(): void
+	{
+		var instrument = this;
+		var instrumentAsJSON = instrument.toStringJSON();
+		instrument.uiUpdate();
+		FileHelper.saveTextAsFile(instrumentAsJSON, instrument.name + ".json");
+	}
+
 	// string
 
 	static objectPrototypesSet(objectToSet: any): void
@@ -132,12 +142,7 @@ export class Instrument
 
 			var buttonSave = d.createElement("button");
 			buttonSave.innerText = "Save";
-			buttonSave.onclick = () =>
-			{
-				var instrumentAsJSON = instrument.toStringJSON();
-				instrument.uiUpdate();
-				FileHelper.saveTextAsFile(instrumentAsJSON, "Instrument.json");
-			}
+			buttonSave.onclick = this.saveToFile;
 			divInstrument.appendChild(buttonSave);
 
 			divInstrument.appendChild(d.createElement("br"));

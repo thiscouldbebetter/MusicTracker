@@ -26,6 +26,13 @@ var ThisCouldBeBetter;
                 }
                 return noteAsSamples;
             }
+            // File.
+            saveToFile() {
+                var instrument = this;
+                var instrumentAsJSON = instrument.toStringJSON();
+                instrument.uiUpdate();
+                MusicTracker.FileHelper.saveTextAsFile(instrumentAsJSON, instrument.name + ".json");
+            }
             // string
             static objectPrototypesSet(objectToSet) {
                 Object.setPrototypeOf(objectToSet, Instrument.prototype);
@@ -74,11 +81,7 @@ var ThisCouldBeBetter;
                     this.inputName = inputName;
                     var buttonSave = d.createElement("button");
                     buttonSave.innerText = "Save";
-                    buttonSave.onclick = () => {
-                        var instrumentAsJSON = instrument.toStringJSON();
-                        instrument.uiUpdate();
-                        MusicTracker.FileHelper.saveTextAsFile(instrumentAsJSON, "Instrument.json");
-                    };
+                    buttonSave.onclick = this.saveToFile;
                     divInstrument.appendChild(buttonSave);
                     divInstrument.appendChild(d.createElement("br"));
                     var labelSoundSource = d.createElement("label");

@@ -98,12 +98,12 @@ export class Song
 		return returnValue;
 	}
 
-	static demo(samplesPerSecond: number, bitsPerSample: number): Song
+	static demoScale(samplesPerSecond: number, bitsPerSample: number): Song
 	{
 		var instrument0 = Instrument.default("Instrument0");
 
-		var sequenceA = Sequence.demo(instrument0.name, "A");
-		var sequenceB = Sequence.demo2(instrument0.name, "B");
+		var sequenceA = Sequence.demoScale(instrument0.name, "A");
+		var sequenceB = Sequence.demoScale2(instrument0.name, "B");
 
 		var returnValue = new Song
 		(
@@ -581,14 +581,7 @@ export class Song
 
 		var buttonNew = d.createElement("button");
 		buttonNew.innerText = "New";
-		buttonNew.onclick = () =>
-		{
-			var song = Song.blank(null, null);
-			var tracker = Tracker.Instance();
-			tracker.songCurrent = song;
-			tracker.uiClear();
-			tracker.uiUpdate();
-		}
+		buttonNew.onclick = this.songLoadBlank;
 		divSong.appendChild(buttonNew);
 
 		var labelName = d.createElement("label");
@@ -605,72 +598,23 @@ export class Song
 
 		var buttonSave = d.createElement("button");
 		buttonSave.innerText = "Save";
-		buttonSave.onclick = () =>
-		{
-			var parentElement = song.divSong.parentElement;
-			song.uiClear();
-			var songAsJSON = JSON.stringify(song, null, 4);
-
-			var songAsBlob = new Blob([songAsJSON], {type:"text/plain"});
-			var songAsObjectURL = window.URL.createObjectURL(songAsBlob);
-
-			var aDownload = d.createElement("a");
-			aDownload.href = songAsObjectURL;
-			aDownload.download = song.name + ".json";
-			aDownload.click();
-
-			parentElement.appendChild(song.uiUpdate());
-		}
+		buttonSave.onclick = () => this.songSave(song);
 		divSong.appendChild(buttonSave);
 
 		var labelLoad = d.createElement("label");
 		labelLoad.innerText = "Load:";
 		divSong.appendChild(labelLoad);
 
-		var inputFileToLoad = d.createElement("input");
-		inputFileToLoad.type = "file";
-		inputFileToLoad.onchange = (event: any) =>
-		{
-			var file = event.target.files[0];
-			if (file != null)
-			{
-				var fileName = file.name;
-				if (fileName.endsWith(".mod"))
-				{
-					FileHelper.loadFileAsBytes
-					(
-						file,
-						(file: any, fileAsBytes: number[]) => // callback
-						{
-							var modFile = ModFile.fromBytes
-							(
-								file.name, fileAsBytes
-							);
-							var modFileAsSong = Song.fromModFile(modFile);
-							var tracker = Tracker.Instance();
-							tracker.songCurrent = modFileAsSong;
-							tracker.uiClear();
-							tracker.uiUpdate();
-						}
-					);
-				}
-				else // Assume JSON.
-				{
-					var fileReader = new FileReader();
-					fileReader.onload = (event2: any) =>
-					{
-						var songAsJSON = event2.target.result;
-						var song = Song.fromJSON(songAsJSON);
-						var tracker = Tracker.Instance();
-						tracker.songCurrent = song;
-						tracker.uiClear();
-						tracker.uiUpdate();
-					}
-					fileReader.readAsText(file);
-				}
-			}
-		}
-		divSong.appendChild(inputFileToLoad);
+		var buttonLoadSongDemoScale = d.createElement("button");
+		buttonLoadSongDemoScale.innerHTML = "Scale";
+		buttonLoadSongDemoScale.onclick = this.songLoadDemoScale;
+		divSong.appendChild(buttonLoadSongDemoScale);
+
+		var inputSongFileToLoad = d.createElement("input");
+		inputSongFileToLoad.type = "file";
+		inputSongFileToLoad.onchange =
+			(event: any) => this.inputSongFileToLoad_Changed(event);
+		divSong.appendChild(inputSongFileToLoad);
 
 		divSong.appendChild(d.createElement("br"));
 
@@ -683,13 +627,8 @@ export class Song
 		var inputSamplesPerSecond = d.createElement("input");
 		inputSamplesPerSecond.type = "number";
 		inputSamplesPerSecond.style.width = "64px";
-		inputSamplesPerSecond.onchange = (event: any) =>
-		{
-			var inputSamplesPerSecond = event.target;
-			var samplesPerSecondAsString = inputSamplesPerSecond.value;
-			var samplesPerSecond = parseInt(samplesPerSecondAsString);
-			song.samplesPerSecond = samplesPerSecond;
-		}
+		inputSamplesPerSecond.onchange =
+			(event: any) => this.inputSamplesPerSecond_Changed(event, song);
 		divSong.appendChild(inputSamplesPerSecond);
 		this.inputSamplesPerSecond = inputSamplesPerSecond;
 
@@ -798,53 +737,19 @@ export class Song
 
 		var buttonInstrumentNew = d.createElement("button");
 		buttonInstrumentNew.innerText = "New";
-		buttonInstrumentNew.onclick = () =>
-		{
-			var now = new Date();
-			var nowAsString =
-				StringHelper.padLeft("" + now.getHours(), 2, "0")
-				+ StringHelper.padLeft("" + now.getMinutes(), 2, "0")
-				+ StringHelper.padLeft("" + now.getSeconds(), 2, "0");
-			var instrumentName = "Instrument" + nowAsString;
-			var instrument = Instrument.default(instrumentName);
-			var instrumentAsOption = d.createElement("option");
-			instrumentAsOption.innerText = instrument.name;
-			selectInstrument.appendChild(instrumentAsOption);
-			selectInstrument.value = instrument.name;
-			song.instrumentAdd(instrument);
-			song.instrumentSelectedSet(instrument);
-			song.divInstrument.innerHTML = "";
-			song.divInstrument.appendChild(instrument.uiUpdate());
-			song.uiUpdate();
-		}
+		buttonInstrumentNew.onclick =
+			() => this.buttonInstrumentNew_Clicked(song);
 		divSong.appendChild(buttonInstrumentNew);
 
 		var labelLoad = d.createElement("label");
 		labelLoad.innerText = "Load:";
 		divSong.appendChild(labelLoad);
 
-		var inputFileToLoad = d.createElement("input");
-		inputFileToLoad.type = "file";
-		inputFileToLoad.onchange = (event: any) =>
-		{
-			var file = event.target.files[0];
-			if (file != null)
-			{
-				FileHelper.loadFileAsText
-				(
-					file,
-					(file: any, instrumentAsJSON: string) => // callback
-					{
-						var instrument = Instrument.fromStringJSON(instrumentAsJSON);
-						song.instrumentAdd(instrument);
-						song.instrumentSelectedSet(instrument);
-						song.uiClear();
-						song.uiUpdate();
-					}
-				);
-			}
-		}
-		divSong.appendChild(inputFileToLoad);
+		var inputInstrumentFileToLoad = d.createElement("input");
+		inputInstrumentFileToLoad.type = "file";
+		inputInstrumentFileToLoad.onchange =
+			(event: any) => this.inputInstrumentFileToLoad_Changed(event, song);
+		divSong.appendChild(inputInstrumentFileToLoad);
 
 		var divInstrument = d.createElement("div");
 		divInstrument.style.border = "1px solid";
@@ -895,49 +800,17 @@ export class Song
 
 		var buttonSequenceNew = d.createElement("button");
 		buttonSequenceNew.innerText = "New";
-		buttonSequenceNew.onclick = () =>
-		{
-			var sequences = song.sequences;
-			var sequenceNew = Sequence.blank
-			(
-				song.instruments[0].name, sequences.length
-			);
-			sequences.push(sequenceNew);
-			song.sequencesByName.set(sequenceNew.name, sequenceNew);
-			var sequenceNewAsOption = d.createElement("option");
-			sequenceNewAsOption.innerText = sequenceNew.name;
-			selectSequence.appendChild(sequenceNewAsOption);
-			song.sequenceSelectByName(sequenceNew.name);
-		}
+		buttonSequenceNew.onclick = () => this.sequenceNew(selectSequence);
 		divSong.appendChild(buttonSequenceNew);
 
 		var buttonSequenceClone = d.createElement("button");
 		buttonSequenceClone.innerText = "Clone";
-		buttonSequenceClone.onclick = () =>
-		{
-			var sequences = song.sequences;
-			var sequenceNameNext = String.fromCharCode("A".charCodeAt(0) + sequences.length);
-			var sequenceSelected = song.sequenceSelected();
-			var sequenceCloned = sequenceSelected.clone();
-			sequenceCloned.name = sequenceNameNext;
-			sequences.push(sequenceCloned);
-			song.sequencesByName.set(sequenceCloned.name, sequenceCloned);
-			var sequenceClonedAsOption = d.createElement("option");
-			sequenceClonedAsOption.innerText = sequenceCloned.name;
-			selectSequence.appendChild(sequenceClonedAsOption);
-			song.sequenceSelectByName(sequenceCloned.name);
-		}
+		buttonSequenceClone.onclick = () => this.sequenceSelectedClone(selectSequence);
 		divSong.appendChild(buttonSequenceClone);
 
 		var buttonSequenceDelete = d.createElement("button");
 		buttonSequenceDelete.innerText = "Delete";
-		buttonSequenceDelete.onclick = () =>
-		{
-			song.sequenceSelectedDelete();
-			var tracker = Tracker.Instance();
-			tracker.uiClear();
-			tracker.uiUpdate();
-		}
+		buttonSequenceDelete.onclick = this.sequenceSelectedDeleteAndUpdateUi;
 		divSong.appendChild(buttonSequenceDelete);
 
 		divSong.appendChild(d.createElement("br"));
@@ -945,6 +818,178 @@ export class Song
 		var divSequenceSelected = d.createElement("div");
 		divSong.appendChild(divSequenceSelected);
 		this.divSequenceSelected = divSequenceSelected;
+	}
+
+	// Event handlers.
+
+	buttonInstrumentNew_Clicked(song: Song): void
+	{
+		var now = new Date();
+		var nowAsString =
+			StringHelper.padLeft("" + now.getHours(), 2, "0")
+			+ StringHelper.padLeft("" + now.getMinutes(), 2, "0")
+			+ StringHelper.padLeft("" + now.getSeconds(), 2, "0");
+		var instrumentName = "Instrument" + nowAsString;
+		var instrument = Instrument.default(instrumentName);
+		var d = document;
+		var instrumentAsOption = d.createElement("option");
+		instrumentAsOption.innerText = instrument.name;
+		var selectInstrument = song.selectInstrument;
+		selectInstrument.appendChild(instrumentAsOption);
+		selectInstrument.value = instrument.name;
+		song.instrumentAdd(instrument);
+		song.instrumentSelectedSet(instrument);
+		song.divInstrument.innerHTML = "";
+		song.divInstrument.appendChild(instrument.uiUpdate());
+		song.uiUpdate();
+	}
+
+	inputInstrumentFileToLoad_Changed(event: any, song: Song): void
+	{
+		var file = event.target.files[0];
+		if (file != null)
+		{
+			FileHelper.loadFileAsText
+			(
+				file,
+				(file: any, instrumentAsJSON: string) => // callback
+				{
+					var instrument = Instrument.fromStringJSON(instrumentAsJSON);
+					song.instrumentAdd(instrument);
+					song.instrumentSelectedSet(instrument);
+					song.uiClear();
+					song.uiUpdate();
+				}
+			);
+		}
+	}
+
+	inputSongFileToLoad_Changed(event: any): void
+	{
+		var file = event.target.files[0];
+		if (file != null)
+		{
+			var fileName = file.name;
+			if (fileName.endsWith(".mod"))
+			{
+				FileHelper.loadFileAsBytes
+				(
+					file,
+					(file: any, fileAsBytes: number[]) => // callback
+					{
+						var modFile = ModFile.fromBytes
+						(
+							file.name, fileAsBytes
+						);
+						var modFileAsSong = Song.fromModFile(modFile);
+						var tracker = Tracker.Instance();
+						tracker.songCurrent = modFileAsSong;
+						tracker.uiClear();
+						tracker.uiUpdate();
+					}
+				);
+			}
+			else // Assume JSON.
+			{
+				var fileReader = new FileReader();
+				fileReader.onload = (event2: any) =>
+				{
+					var songAsJSON = event2.target.result;
+					var song = Song.fromJSON(songAsJSON);
+					var tracker = Tracker.Instance();
+					tracker.songCurrent = song;
+					tracker.uiClear();
+					tracker.uiUpdate();
+				}
+				fileReader.readAsText(file);
+			}
+		}
+	}
+
+	inputSamplesPerSecond_Changed(event: any, song: Song): void
+	{
+		var inputSamplesPerSecond = event.target;
+		var samplesPerSecondAsString = inputSamplesPerSecond.value;
+		var samplesPerSecond = parseInt(samplesPerSecondAsString);
+		song.samplesPerSecond = samplesPerSecond;
+	}
+
+	sequenceSelectedClone(selectSequence: any): void
+	{
+		var song = this;
+		var sequences = song.sequences;
+		var sequenceNameNext = String.fromCharCode("A".charCodeAt(0) + sequences.length);
+		var sequenceSelected = song.sequenceSelected();
+		var sequenceCloned = sequenceSelected.clone();
+		sequenceCloned.name = sequenceNameNext;
+		sequences.push(sequenceCloned);
+		song.sequencesByName.set(sequenceCloned.name, sequenceCloned);
+		var d = document;
+		var sequenceClonedAsOption = d.createElement("option");
+		sequenceClonedAsOption.innerText = sequenceCloned.name;
+		selectSequence.appendChild(sequenceClonedAsOption);
+		song.sequenceSelectByName(sequenceCloned.name);
+	}
+
+	sequenceSelectedDeleteAndUpdateUi(): void
+	{
+		this.sequenceSelectedDelete();
+		var tracker = Tracker.Instance();
+		tracker.uiClear();
+		tracker.uiUpdate();
+	}
+
+	sequenceNew(selectSequence: any): void
+	{
+		var song = this;
+		var sequences = song.sequences;
+		var sequenceNew = Sequence.blank
+		(
+			song.instruments[0].name, sequences.length
+		);
+		sequences.push(sequenceNew);
+		song.sequencesByName.set(sequenceNew.name, sequenceNew);
+		var d = document;
+		var sequenceNewAsOption = d.createElement("option");
+		sequenceNewAsOption.innerText = sequenceNew.name;
+		selectSequence.appendChild(sequenceNewAsOption);
+		song.sequenceSelectByName(sequenceNew.name);
+	};
+
+	songLoadBlank(): void
+	{
+		var song = Song.blank(null, null);
+		var tracker = Tracker.Instance();
+		tracker.songCurrent = song;
+		tracker.uiClear();
+		tracker.uiUpdate();
+	}
+
+	songLoadDemoScale(): void
+	{
+		var song = Song.demoScale(null, null);
+		var tracker = Tracker.Instance();
+		tracker.songCurrent = song;
+		tracker.uiClear();
+		tracker.uiUpdate();
+	}
+
+	songSave(song: Song): void
+	{
+		var parentElement = song.divSong.parentElement;
+		song.uiClear();
+		var songAsJSON = JSON.stringify(song, null, 4);
+
+		var songAsBlob = new Blob([songAsJSON], {type:"text/plain"});
+		var songAsObjectURL = window.URL.createObjectURL(songAsBlob);
+
+		var d = document;
+		var aDownload = d.createElement("a");
+		aDownload.href = songAsObjectURL;
+		aDownload.download = song.name + ".json";
+		aDownload.click();
+
+		parentElement.appendChild(song.uiUpdate());
 	}
 
 	// json

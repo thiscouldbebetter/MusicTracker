@@ -15,7 +15,7 @@ export class Tracker
 
 	static default(): Tracker
 	{
-		var song = Song.demo(null, null);
+		var song = Song.demoScale(null, null);
 		var returnValue = new Tracker(song);
 		return returnValue;
 	}

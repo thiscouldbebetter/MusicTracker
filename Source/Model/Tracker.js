@@ -8,7 +8,7 @@ var ThisCouldBeBetter;
                 this.songCurrent = songCurrent;
             }
             static default() {
-                var song = MusicTracker.Song.demo(null, null);
+                var song = MusicTracker.Song.demoScale(null, null);
                 var returnValue = new Tracker(song);
                 return returnValue;
             }

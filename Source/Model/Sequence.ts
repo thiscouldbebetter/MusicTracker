@@ -44,7 +44,7 @@ export class Sequence
 	static TickIndexDigitsMax = 4;
 	static TrackDelimiter = " | ";
 
-	static demo(instrumentName: string, sequenceName: string): Sequence
+	static demoScale(instrumentName: string, sequenceName: string): Sequence
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
@@ -53,6 +53,12 @@ export class Sequence
 		var noteDuration = Math.floor(ticksPerSecond / 2);
 		var noteOctaveIndexLow = noteOctaveIndex - 1;
 		var noteDurationLong = noteDuration * 2;
+
+		var note = (timeStartInNotes: number, pitchName: string) =>
+			new Note(timeStartInNotes * noteDuration, noteOctaveIndex, pitchName, noteVolume, noteDuration);
+
+		var noteLong = (timeStartInNotes: number, pitchName: string) =>
+			new Note(timeStartInNotes * noteDurationLong, noteOctaveIndexLow, pitchName, noteVolume, noteDurationLong);
 
 		var returnValue = new Sequence
 		(
@@ -66,21 +72,21 @@ export class Sequence
 					[
 						// notes
 						// timeStartInTicks, octaveIndex, pitchCode, volume, durationInTicks
-						new Note(0 * noteDuration, noteOctaveIndex, "C_", noteVolume, noteDuration),
-						new Note(1 * noteDuration, noteOctaveIndex, "D_", noteVolume, noteDuration),
-						new Note(2 * noteDuration, noteOctaveIndex, "E_", noteVolume, noteDuration),
-						new Note(3 * noteDuration, noteOctaveIndex, "F_", noteVolume, noteDuration),
-						new Note(4 * noteDuration, noteOctaveIndex, "G_", noteVolume, noteDuration),
-						new Note(5 * noteDuration, noteOctaveIndex, "A_", noteVolume, noteDuration),
-						new Note(6 * noteDuration, noteOctaveIndex, "B_", noteVolume, noteDuration),
+						note(0, "C_"),
+						note(1, "D_"),
+						note(2, "E_"),
+						note(3, "F_"),
+						note(4, "G_"),
+						note(5, "A_"),
+						note(6, "B_"),
 						new Note(7 * noteDuration, noteOctaveIndex + 1, "C_", noteVolume, noteDuration),
-						new Note(8 * noteDuration, noteOctaveIndex, "B_", noteVolume, noteDuration),
-						new Note(9 * noteDuration, noteOctaveIndex, "A_", noteVolume, noteDuration),
-						new Note(10 * noteDuration, noteOctaveIndex, "G_", noteVolume, noteDuration),
-						new Note(11 * noteDuration, noteOctaveIndex, "F_", noteVolume, noteDuration),
-						new Note(12 * noteDuration, noteOctaveIndex, "E_", noteVolume, noteDuration),
-						new Note(13 * noteDuration, noteOctaveIndex, "D_", noteVolume, noteDuration),
-						new Note(14 * noteDuration, noteOctaveIndex, "C_", noteVolume, noteDuration),
+						note(8, "B_"),
+						note(9, "A_"),
+						note(10, "G_"),
+						note(11, "F_"),
+						note(12, "E_"),
+						note(13, "D_"),
+						note(14, "C_")
 					]
 				),
 				new Track
@@ -89,14 +95,14 @@ export class Sequence
 					[
 						// notes
 						// timeStartInTicks, octaveIndex, pitchCode, volume, durationInTicks
-						new Note(0 * noteDurationLong, noteOctaveIndexLow, "C_", noteVolume, noteDurationLong),
-						new Note(1 * noteDurationLong, noteOctaveIndexLow, "D_", noteVolume, noteDurationLong),
-						new Note(2 * noteDurationLong, noteOctaveIndexLow, "E_", noteVolume, noteDurationLong),
-						new Note(3 * noteDurationLong, noteOctaveIndexLow, "F_", noteVolume, noteDurationLong),
-						new Note(4 * noteDurationLong, noteOctaveIndexLow, "G_", noteVolume, noteDurationLong),
-						new Note(5 * noteDurationLong, noteOctaveIndexLow, "A_", noteVolume, noteDurationLong),
-						new Note(6 * noteDurationLong, noteOctaveIndexLow, "B_", noteVolume, noteDurationLong),
-						new Note(7 * noteDurationLong, noteOctaveIndexLow + 1, "C_", noteVolume, noteDurationLong),
+						noteLong(0, "C_"),
+						noteLong(1, "D_"),
+						noteLong(2, "E_"),
+						noteLong(3, "F_"),
+						noteLong(4, "G_"),
+						noteLong(5, "A_"),
+						noteLong(6, "B_"),
+						new Note(7 * noteDurationLong, noteOctaveIndexLow + 1, "C_", noteVolume, noteDurationLong)
 					]
 				)
 			]
@@ -105,7 +111,7 @@ export class Sequence
 		return returnValue;
 	}
 
-	static demo2(instrumentName: string, sequenceName: string): Sequence
+	static demoScale2(instrumentName: string, sequenceName: string): Sequence
 	{
 		var ticksPerSecond = 8;
 		var sequenceDurationInSeconds = 8;
@@ -114,6 +120,12 @@ export class Sequence
 		var noteDuration = Math.floor(ticksPerSecond / 2);
 		var noteOctaveIndexLow = noteOctaveIndex - 1;
 		var noteDurationLong = noteDuration * 2;
+
+		var note = (timeStartInNotes: number, pitchName: string) =>
+			new Note(timeStartInNotes * noteDuration, noteOctaveIndex, pitchName, noteVolume, noteDuration);
+
+		var noteLong = (timeStartInNotes: number, pitchName: string) =>
+			new Note(timeStartInNotes * noteDurationLong, noteOctaveIndexLow, pitchName, noteVolume, noteDurationLong);
 
 		var returnValue = new Sequence
 		(
@@ -128,19 +140,19 @@ export class Sequence
 						// notes
 						// timeStartInTicks, octaveIndex, pitchCode, volume, durationInTicks
 						new Note(0 * noteDuration, noteOctaveIndex + 1, "C_", noteVolume, noteDuration),
-						new Note(1 * noteDuration, noteOctaveIndex, "B_", noteVolume, noteDuration),
-						new Note(2 * noteDuration, noteOctaveIndex, "A_", noteVolume, noteDuration),
-						new Note(3 * noteDuration, noteOctaveIndex, "G_", noteVolume, noteDuration),
-						new Note(4 * noteDuration, noteOctaveIndex, "F_", noteVolume, noteDuration),
-						new Note(5 * noteDuration, noteOctaveIndex, "E_", noteVolume, noteDuration),
-						new Note(6 * noteDuration, noteOctaveIndex, "D_", noteVolume, noteDuration),
-						new Note(7 * noteDuration, noteOctaveIndex, "C_", noteVolume, noteDuration),
-						new Note(8 * noteDuration, noteOctaveIndex, "D_", noteVolume, noteDuration),
-						new Note(9 * noteDuration, noteOctaveIndex, "E_", noteVolume, noteDuration),
-						new Note(10 * noteDuration, noteOctaveIndex, "F_", noteVolume, noteDuration),
-						new Note(11 * noteDuration, noteOctaveIndex, "G_", noteVolume, noteDuration),
-						new Note(12 * noteDuration, noteOctaveIndex, "A_", noteVolume, noteDuration),
-						new Note(13 * noteDuration, noteOctaveIndex, "B_", noteVolume, noteDuration),
+						note(1, "B_"),
+						note(2, "A_"),
+						note(3, "G_"),
+						note(4, "F_"),
+						note(5, "E_"),
+						note(6, "D_"),
+						note(7, "C_"),
+						note(8, "D_"),
+						note(9, "E_"),
+						note(10, "F_"),
+						note(11, "G_"),
+						note(12, "A_"),
+						note(13, "B_"),
 						new Note(14 * noteDuration, noteOctaveIndex + 1, "C_", noteVolume, noteDuration),
 					]
 				),
@@ -150,13 +162,13 @@ export class Sequence
 					[
 						// notes
 						// timeStartInTicks, octaveIndex, pitchCode, volume, durationInTicks
-						new Note(0 * noteDurationLong, noteOctaveIndexLow, "C_", noteVolume, noteDurationLong),
-						new Note(1 * noteDurationLong, noteOctaveIndexLow, "D_", noteVolume, noteDurationLong),
-						new Note(2 * noteDurationLong, noteOctaveIndexLow, "E_", noteVolume, noteDurationLong),
-						new Note(3 * noteDurationLong, noteOctaveIndexLow, "F_", noteVolume, noteDurationLong),
-						new Note(4 * noteDurationLong, noteOctaveIndexLow, "G_", noteVolume, noteDurationLong),
-						new Note(5 * noteDurationLong, noteOctaveIndexLow, "A_", noteVolume, noteDurationLong),
-						new Note(6 * noteDurationLong, noteOctaveIndexLow, "B_", noteVolume, noteDurationLong),
+						noteLong(0, "C_"),
+						noteLong(1, "D_"),
+						noteLong(2, "E_"),
+						noteLong(3, "F_"),
+						noteLong(4, "G_"),
+						noteLong(5, "A_"),
+						noteLong(6, "B_"),
 						new Note(7 * noteDurationLong, noteOctaveIndexLow + 1, "C_", noteVolume, noteDurationLong),
 					]
 				)
