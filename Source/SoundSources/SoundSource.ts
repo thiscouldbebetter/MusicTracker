@@ -42,6 +42,11 @@ export class SoundSource //
 		type.objectPrototypesSet(child);
 	}
 
+	compressForSerialization(): void
+	{
+		this.child.compressForSerialization();
+	}
+
 	// ui
 
 	uiClear(): void

@@ -424,7 +424,39 @@ export class WavFile //
 		}
 	}
 
-	// json
+	// JSON and Serialization.
+
+	compressForSerialization(): void
+	{
+		var samplesForChannelsAsBytes = this.toBytes_Chunks_Data_SamplesForChannels
+		(
+			this.samplesForChannels, this.samplingInfo
+		);
+
+		var samplesForChannelsAsBase64 = Base64Encoder.bytesToStringBase64
+		(
+			samplesForChannelsAsBytes
+		);
+
+		this.samplesForChannels = samplesForChannelsAsBase64;
+	}
+
+	decompressAfterDeserialization(): void
+	{
+		var samplesForChannelsAsBase64 = this.samplesForChannels;
+		var samplesForChannelsAsBytes = Base64Encoder.stringBase64ToBytes
+		(
+			samplesForChannelsAsBase64
+		);
+
+		var samplesForChannels = this.fromBytes_Chunks_Data_SamplesForChannels
+		(
+			this.samplingInfo,
+			samplesForChannelsAsBytes
+		);
+
+		this.samplesForChannels = samplesForChannels;
+	}
 
 	static fromStringJSON(wavFileAsJSON: string): WavFile
 	{
@@ -439,38 +471,17 @@ export class WavFile //
 
 		Object.setPrototypeOf(wavFile.samplingInfo, WavFileSamplingInfo.prototype);
 
-		var samplesForChannelsAsBase64 = wavFile.samplesForChannels;
-		var samplesForChannelsAsBytes = Base64Encoder.stringBase64ToBytes
-		(
-			samplesForChannelsAsBase64
-		);
-
-		var samplesForChannels = wavFile.fromBytes_Chunks_Data_SamplesForChannels
-		(
-			wavFile.samplingInfo,
-			samplesForChannelsAsBytes
-		);
-
-		wavFile.samplesForChannels = samplesForChannels;
+		// wavFile.decompressAfterDeserialization();
 
 		return wavFile;
 	}
 
-	toStringJSON(): string
+	toStringJson(): string
 	{
 		var samplesForChannelsToRestore = this.samplesForChannels;
 
-		var samplesForChannelsAsBytes = this.toBytes_Chunks_Data_SamplesForChannels
-		(
-			this.samplesForChannels, this.samplingInfo
-		);
+		this.compressForSerialization();
 
-		var samplesForChannelsAsBase64 = Base64Encoder.bytesToStringBase64
-		(
-			samplesForChannelsAsBytes
-		);
-
-		this.samplesForChannels = samplesForChannelsAsBase64;
 		var returnValue = JSON.stringify(this);
 		this.samplesForChannels = samplesForChannelsToRestore;
 

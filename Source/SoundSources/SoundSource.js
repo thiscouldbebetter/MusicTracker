@@ -21,6 +21,9 @@ var ThisCouldBeBetter;
                 var type = MusicTracker.SoundSourceType.Instances().byName(childTypeName);
                 type.objectPrototypesSet(child);
             }
+            compressForSerialization() {
+                this.child.compressForSerialization();
+            }
             // ui
             uiClear() {
                 delete this.divSoundSource;

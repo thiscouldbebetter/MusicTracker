@@ -227,7 +227,18 @@ var ThisCouldBeBetter;
                     writer.writeBytes(this.samplingInfo.extraBytes);
                 }
             }
-            // json
+            // JSON and Serialization.
+            compressForSerialization() {
+                var samplesForChannelsAsBytes = this.toBytes_Chunks_Data_SamplesForChannels(this.samplesForChannels, this.samplingInfo);
+                var samplesForChannelsAsBase64 = MusicTracker.Base64Encoder.bytesToStringBase64(samplesForChannelsAsBytes);
+                this.samplesForChannels = samplesForChannelsAsBase64;
+            }
+            decompressAfterDeserialization() {
+                var samplesForChannelsAsBase64 = this.samplesForChannels;
+                var samplesForChannelsAsBytes = MusicTracker.Base64Encoder.stringBase64ToBytes(samplesForChannelsAsBase64);
+                var samplesForChannels = this.fromBytes_Chunks_Data_SamplesForChannels(this.samplingInfo, samplesForChannelsAsBytes);
+                this.samplesForChannels = samplesForChannels;
+            }
             static fromStringJSON(wavFileAsJSON) {
                 var wavFile = JSON.parse(wavFileAsJSON);
                 wavFile = WavFile.objectPrototypesSet(wavFile);
@@ -236,17 +247,12 @@ var ThisCouldBeBetter;
             static objectPrototypesSet(wavFile) {
                 Object.setPrototypeOf(wavFile, WavFile.prototype);
                 Object.setPrototypeOf(wavFile.samplingInfo, WavFileSamplingInfo.prototype);
-                var samplesForChannelsAsBase64 = wavFile.samplesForChannels;
-                var samplesForChannelsAsBytes = MusicTracker.Base64Encoder.stringBase64ToBytes(samplesForChannelsAsBase64);
-                var samplesForChannels = wavFile.fromBytes_Chunks_Data_SamplesForChannels(wavFile.samplingInfo, samplesForChannelsAsBytes);
-                wavFile.samplesForChannels = samplesForChannels;
+                // wavFile.decompressAfterDeserialization();
                 return wavFile;
             }
-            toStringJSON() {
+            toStringJson() {
                 var samplesForChannelsToRestore = this.samplesForChannels;
-                var samplesForChannelsAsBytes = this.toBytes_Chunks_Data_SamplesForChannels(this.samplesForChannels, this.samplingInfo);
-                var samplesForChannelsAsBase64 = MusicTracker.Base64Encoder.bytesToStringBase64(samplesForChannelsAsBytes);
-                this.samplesForChannels = samplesForChannelsAsBase64;
+                this.compressForSerialization();
                 var returnValue = JSON.stringify(this);
                 this.samplesForChannels = samplesForChannelsToRestore;
                 return returnValue;

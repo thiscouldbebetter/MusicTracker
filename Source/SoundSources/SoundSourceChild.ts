@@ -22,6 +22,20 @@ export class SoundSourceChild
 		throw new Error("Must be implemented in subclass!");
 	}
 
+	// Serialization.
+
+	compressForSerialization(): void
+	{
+		// By default, do nothing.
+	}
+
+	decompressAfterDeserialization(): void
+	{
+		// By default, do nothing.
+	}
+
+	// UI.
+
 	uiClear(): void
 	{}
 

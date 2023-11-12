@@ -10,6 +10,14 @@ var ThisCouldBeBetter;
             sampleForFrequencyAndTime(frequencyInHertz, timeInSeconds) {
                 throw new Error("Must be implemented in subclass!");
             }
+            // Serialization.
+            compressForSerialization() {
+                // By default, do nothing.
+            }
+            decompressAfterDeserialization() {
+                // By default, do nothing.
+            }
+            // UI.
             uiClear() { }
             uiUpdate() {
                 throw new Error("Must be implemented in subclass!");

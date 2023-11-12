@@ -46,7 +46,45 @@ var ThisCouldBeBetter;
                 }
                 return this._samplesPerSecond;
             }
-            // ui
+            // Serialization.
+            compressForSerialization() {
+                //var wavFile = this.wavFile;
+                this._samplesNormalized = null;
+                /*
+                var samples = wavFile.samplesForChannels;
+                var bitsPerSample = wavFile.samplingInfo.bitsPerSample;
+        
+                var samplesAsBytes = [];
+        
+                if (bitsPerSample == 8)
+                {
+                    samplesAsBytes = samples;
+                }
+                else if (bitsPerSample == 16)
+                {
+                    samples.forEach
+                    (
+                        sample =>
+                        {
+                            samplesAsBytes.push( (sample >> 8) && 0xFF );
+                            samplesAsBytes.push(sample && 0xFF);
+                        }
+                    )
+                }
+                else
+                {
+                    throw new Error("WAV sampling rates greater than 16 not yet supported!");
+                }
+        
+                var samplesAsBinaryString = samplesAsBytes.map(x => String.fromCharCode(x) ).join("");
+        
+                var samplesAsBase64 = btoa(samplesAsBinaryString);
+                */
+            }
+            decompressAfterDeserialization() {
+                // todo
+            }
+            // UI.
             uiClear() {
                 delete this.divSoundSource;
             }

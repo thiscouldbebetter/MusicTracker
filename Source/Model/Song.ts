@@ -959,35 +959,23 @@ export class Song
 	songLoadBlank(): void
 	{
 		var song = Song.blank(null, null);
-		var tracker = Tracker.Instance();
-		tracker.songCurrent = song;
-		tracker.uiClear();
-		tracker.uiUpdate();
+		Tracker.Instance().songCurrentSet(song);
 	}
 
 	songLoadDemoScale(): void
 	{
 		var song = Song.demoScale(null, null);
-		var tracker = Tracker.Instance();
-		tracker.songCurrent = song;
-		tracker.uiClear();
-		tracker.uiUpdate();
+		Tracker.Instance().songCurrentSet(song);
 	}
 
 	songSave(song: Song): void
 	{
 		var parentElement = song.divSong.parentElement;
 		song.uiClear();
-		var songAsJSON = JSON.stringify(song, null, 4);
+		var songAsJson = song.toJson();
 
-		var songAsBlob = new Blob([songAsJSON], {type:"text/plain"});
-		var songAsObjectURL = window.URL.createObjectURL(songAsBlob);
-
-		var d = document;
-		var aDownload = d.createElement("a");
-		aDownload.href = songAsObjectURL;
-		aDownload.download = song.name + ".json";
-		aDownload.click();
+		var songFileName = song.name + ".json";
+		FileHelper.saveTextAsFile(songAsJson, songFileName);
 
 		parentElement.appendChild(song.uiUpdate());
 	}
@@ -1031,6 +1019,14 @@ export class Song
 		song.instrumentAndSequenceLookupsBuild();
 
 		return song;
+	}
+
+	toJson(): string
+	{
+		this.instruments.forEach(x => x.compressForSerialization() );
+		var songAsJson = JSON.stringify(this, null, 4);
+		songAsJson = songAsJson.split("    ").join("\t");
+		return songAsJson;
 	}
 
 	// wav

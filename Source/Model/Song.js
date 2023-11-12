@@ -650,29 +650,18 @@ var ThisCouldBeBetter;
             ;
             songLoadBlank() {
                 var song = Song.blank(null, null);
-                var tracker = MusicTracker.Tracker.Instance();
-                tracker.songCurrent = song;
-                tracker.uiClear();
-                tracker.uiUpdate();
+                MusicTracker.Tracker.Instance().songCurrentSet(song);
             }
             songLoadDemoScale() {
                 var song = Song.demoScale(null, null);
-                var tracker = MusicTracker.Tracker.Instance();
-                tracker.songCurrent = song;
-                tracker.uiClear();
-                tracker.uiUpdate();
+                MusicTracker.Tracker.Instance().songCurrentSet(song);
             }
             songSave(song) {
                 var parentElement = song.divSong.parentElement;
                 song.uiClear();
-                var songAsJSON = JSON.stringify(song, null, 4);
-                var songAsBlob = new Blob([songAsJSON], { type: "text/plain" });
-                var songAsObjectURL = window.URL.createObjectURL(songAsBlob);
-                var d = document;
-                var aDownload = d.createElement("a");
-                aDownload.href = songAsObjectURL;
-                aDownload.download = song.name + ".json";
-                aDownload.click();
+                var songAsJson = song.toJson();
+                var songFileName = song.name + ".json";
+                MusicTracker.FileHelper.saveTextAsFile(songAsJson, songFileName);
                 parentElement.appendChild(song.uiUpdate());
             }
             // json
@@ -701,6 +690,12 @@ var ThisCouldBeBetter;
                 }
                 song.instrumentAndSequenceLookupsBuild();
                 return song;
+            }
+            toJson() {
+                this.instruments.forEach(x => x.compressForSerialization());
+                var songAsJson = JSON.stringify(this, null, 4);
+                songAsJson = songAsJson.split("    ").join("\t");
+                return songAsJson;
             }
             // wav
             toWavFile() {

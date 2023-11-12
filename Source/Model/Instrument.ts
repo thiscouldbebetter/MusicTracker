@@ -207,6 +207,13 @@ export class Instrument
 
 		return returnValue;
 	}
+
+	// Serialization.
+
+	compressForSerialization(): void
+	{
+		this.soundSource.compressForSerialization();
+	}
 }
 
 }

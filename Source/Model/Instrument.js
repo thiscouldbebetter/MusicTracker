@@ -120,6 +120,10 @@ var ThisCouldBeBetter;
                 }
                 return returnValue;
             }
+            // Serialization.
+            compressForSerialization() {
+                this.soundSource.compressForSerialization();
+            }
         }
         MusicTracker.Instrument = Instrument;
     })(MusicTracker = ThisCouldBeBetter.MusicTracker || (ThisCouldBeBetter.MusicTracker = {}));

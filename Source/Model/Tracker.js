@@ -35,6 +35,11 @@ var ThisCouldBeBetter;
                     }
                 }
             }
+            songCurrentSet(song) {
+                this.songCurrent = song;
+                this.uiClear();
+                this.uiUpdate();
+            }
             // ui
             uiClear() {
                 this.divTracker.parentElement.removeChild(this.divTracker);

@@ -248,7 +248,7 @@ export class SoundSourceType_Instances
 			(objectToSet: any) => 
 			{
 				Object.setPrototypeOf(objectToSet, SoundSource_WavFile.prototype);
-				Object.setPrototypeOf(objectToSet.wavFile, WavFile.prototype);
+				WavFile.objectPrototypesSet(objectToSet.wavFile);
 			}
 		);
 

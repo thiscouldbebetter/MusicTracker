@@ -74,6 +74,13 @@ export class Tracker
 		}
 	}
 
+	songCurrentSet(song: Song): void
+	{
+		this.songCurrent = song;
+		this.uiClear();
+		this.uiUpdate();
+	}
+
 	// ui
 
 	uiClear(): void

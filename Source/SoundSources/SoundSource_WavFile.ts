@@ -81,7 +81,21 @@ export class SoundSource_WavFile extends SoundSourceChild
 		return this._samplesPerSecond;
 	}
 
-	// ui
+	// Serialization.
+
+	compressForSerialization(): void
+	{
+		this._samplesNormalized = null;
+
+		// todo - Convert samples to Base64.
+	}
+
+	decompressAfterDeserialization(): void
+	{
+		// todo - Convert samples back from Base64.
+	}
+
+	// UI.
 
 	uiClear(): void
 	{
