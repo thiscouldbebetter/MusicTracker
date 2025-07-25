@@ -456,7 +456,7 @@ var ThisCouldBeBetter;
                 divSong.appendChild(buttonExport);
                 divSong.appendChild(d.createElement("br"));
                 var labelHotkeys = d.createElement("label");
-                labelHotkeys.innerText = "To use hotkeys, hold Alt then press the key indicated on the button.";
+                labelHotkeys.innerText = "To use hotkeys, hold Alt then press the key indicated on the button, or a letter to insert a note at the cursor.";
                 divSong.appendChild(labelHotkeys);
                 divSong.appendChild(d.createElement("br"));
                 var labelInstruments = d.createElement("label");
