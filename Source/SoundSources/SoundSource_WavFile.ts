@@ -21,6 +21,14 @@ export class SoundSource_WavFile extends SoundSourceChild
 		this._frequencyBase = null;
 	}
 
+	static fromPitchBaseCodeAndWavFile
+	(
+		pitchBaseCode: string, wavFile: WavFile
+	): SoundSource_WavFile
+	{
+		return new SoundSource_WavFile(pitchBaseCode, wavFile);
+	}
+
 	frequencyBase(): number
 	{
 		if (this._frequencyBase == null)
@@ -149,7 +157,11 @@ export class SoundSource_WavFile extends SoundSourceChild
 			buttonPlay.innerText = "Play";
 			buttonPlay.onclick = () =>
 			{
-				new Sound("", soundSource.wavFile, null).play(null);
+				var sound = SoundFromWavFile.fromWavFile
+				(
+					soundSource.wavFile
+				);
+				sound.play();
 			}
 			this.divSoundSource.appendChild(buttonPlay);
 		}

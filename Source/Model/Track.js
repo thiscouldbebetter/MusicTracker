@@ -92,9 +92,9 @@ var ThisCouldBeBetter;
             play(song, sequence) {
                 var samples = this.toSamples(song, sequence);
                 var wavFile = MusicTracker.Tracker.samplesToWavFile("", song.samplesPerSecond, song.bitsPerSample, samples);
-                this.sound = new MusicTracker.Sound("", wavFile, null);
+                this.sound = MusicTracker.SoundFromWavFile.fromWavFile(wavFile);
                 var track = this;
-                this.sound.play(() => { track.stop(); });
+                this.sound.playThenCallCallback(() => { track.stop(); });
                 this.uiCursorFollow(song, sequence);
             }
             playOrStop(song, sequence) {

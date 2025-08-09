@@ -166,9 +166,9 @@ export class Note
 		(
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
-		this.sound = new Sound("", wavFile, null);
+		this.sound = SoundFromWavFile.fromWavFile(wavFile);
 		var note = this;
-		this.sound.play( () => { note.sound = null; } );
+		this.sound.playThenCallCallback( () => { note.sound = null; } );
 	}
 
 	stop(): void

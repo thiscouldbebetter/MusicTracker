@@ -279,9 +279,9 @@ export class Sequence
 		(
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
-		this.sound = new Sound("", wavFile, null);
+		this.sound = SoundFromWavFile.fromWavFile(wavFile);
 		var sequence = this;
-		this.sound.play( () => { sequence.stop(); } );
+		this.sound.playThenCallCallback( () => { sequence.stop(); } );
 
 		this.uiCursorFollow(song);
 	}

@@ -164,9 +164,9 @@ var ThisCouldBeBetter;
             play(song) {
                 var samples = this.toSamples(song);
                 var wavFile = MusicTracker.Tracker.samplesToWavFile("", song.samplesPerSecond, song.bitsPerSample, samples);
-                this.sound = new MusicTracker.Sound("", wavFile, null);
+                this.sound = MusicTracker.SoundFromWavFile.fromWavFile(wavFile);
                 var sequence = this;
-                this.sound.play(() => { sequence.stop(); });
+                this.sound.playThenCallCallback(() => { sequence.stop(); });
                 this.uiCursorFollow(song);
             }
             playOrStop(song) {

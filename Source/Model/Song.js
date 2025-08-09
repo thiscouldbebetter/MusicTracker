@@ -78,7 +78,7 @@ var ThisCouldBeBetter;
             play() {
                 this.sound = this.toSound();
                 var song = this;
-                this.sound.play(() => { song.stop(); });
+                this.sound.playThenCallCallback(() => { song.stop(); });
                 song.uiCursorFollow();
             }
             playOrStop() {
@@ -175,7 +175,7 @@ var ThisCouldBeBetter;
             }
             toSound() {
                 var wavFile = this.toWavFile();
-                var sound = MusicTracker.Sound.fromWavFile(wavFile);
+                var sound = MusicTracker.SoundFromWavFile.fromWavFile(wavFile);
                 return sound;
             }
             trimSamples(samplesToTrim) {

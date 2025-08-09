@@ -3,21 +3,26 @@ var ThisCouldBeBetter;
 (function (ThisCouldBeBetter) {
     var MusicTracker;
     (function (MusicTracker) {
-        class Sound //
-         {
+        class SoundFromWavFile {
             constructor(name, sourceWavFile, offsetInSeconds) {
-                this.name = name;
+                this.name = name || "";
                 this.offsetInSeconds = (offsetInSeconds || 0);
                 this.sourceWavFile = sourceWavFile;
             }
+            static fromNameWavFileAndOffsetInSeconds(name, sourceWavFile, offsetInSeconds) {
+                return new SoundFromWavFile(name, sourceWavFile, offsetInSeconds);
+            }
             static fromWavFile(wavFile) {
-                return new Sound("", wavFile, null);
+                return new SoundFromWavFile("", wavFile, null);
             }
             // instance methods
             durationInSeconds() {
                 return this.sourceWavFile.durationInSeconds();
             }
-            play(callback) {
+            play() {
+                this.playThenCallCallback(null);
+            }
+            playThenCallCallback(callback) {
                 var soundAsWavFile = this.sourceWavFile;
                 var soundAsBytes = soundAsWavFile.toBytes();
                 var soundAsStringBase64 = Base64Encoder.bytesToStringBase64(soundAsBytes);
@@ -44,6 +49,6 @@ var ThisCouldBeBetter;
                 }
             }
         }
-        MusicTracker.Sound = Sound;
+        MusicTracker.SoundFromWavFile = SoundFromWavFile;
     })(MusicTracker = ThisCouldBeBetter.MusicTracker || (ThisCouldBeBetter.MusicTracker = {}));
 })(ThisCouldBeBetter || (ThisCouldBeBetter = {}));

@@ -159,7 +159,7 @@ export class Song
 	{
 		this.sound = this.toSound();
 		var song = this;
-		this.sound.play( () => { song.stop(); } );
+		this.sound.playThenCallCallback( () => { song.stop(); } );
 
 		song.uiCursorFollow();
 	}
@@ -303,7 +303,7 @@ export class Song
 	toSound(): Sound
 	{
 		var wavFile = this.toWavFile();
-		var sound = Sound.fromWavFile(wavFile);
+		var sound = SoundFromWavFile.fromWavFile(wavFile);
 		return sound;
 	}
 

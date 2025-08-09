@@ -142,9 +142,9 @@ export class Track
 		(
 			"", song.samplesPerSecond, song.bitsPerSample, samples
 		);
-		this.sound = new Sound("", wavFile, null);
+		this.sound = SoundFromWavFile.fromWavFile(wavFile);
 		var track = this;
-		this.sound.play( () => { track.stop(); } );
+		this.sound.playThenCallCallback( () => { track.stop(); } );
 
 		this.uiCursorFollow(song, sequence);
 	}

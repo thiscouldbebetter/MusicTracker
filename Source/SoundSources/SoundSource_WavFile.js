@@ -10,6 +10,9 @@ var ThisCouldBeBetter;
                 this.wavFile = wavFile;
                 this._frequencyBase = null;
             }
+            static fromPitchBaseCodeAndWavFile(pitchBaseCode, wavFile) {
+                return new SoundSource_WavFile(pitchBaseCode, wavFile);
+            }
             frequencyBase() {
                 if (this._frequencyBase == null) {
                     var note = MusicTracker.Note.fromString(this.pitchBaseCode + "-00-0000", null);
@@ -89,7 +92,8 @@ var ThisCouldBeBetter;
                     var buttonPlay = d.createElement("button");
                     buttonPlay.innerText = "Play";
                     buttonPlay.onclick = () => {
-                        new MusicTracker.Sound("", soundSource.wavFile, null).play(null);
+                        var sound = MusicTracker.SoundFromWavFile.fromWavFile(soundSource.wavFile);
+                        sound.play();
                     };
                     this.divSoundSource.appendChild(buttonPlay);
                 }
