@@ -1,0 +1,3 @@
+[submodule "Source/FileFormats/WavFileViewer"]
+	path = Source/FileFormats/WavFileViewer
+	url = https://github.com/thiscouldbebetter/WavFileViewer

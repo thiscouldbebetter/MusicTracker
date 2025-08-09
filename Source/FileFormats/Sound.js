@@ -20,7 +20,7 @@ var ThisCouldBeBetter;
             play(callback) {
                 var soundAsWavFile = this.sourceWavFile;
                 var soundAsBytes = soundAsWavFile.toBytes();
-                var soundAsStringBase64 = MusicTracker.Base64Encoder.bytesToStringBase64(soundAsBytes);
+                var soundAsStringBase64 = Base64Encoder.bytesToStringBase64(soundAsBytes);
                 var soundAsDataURI = "data:audio/wav;base64," + soundAsStringBase64;
                 var domElementSoundSource = document.createElement("source");
                 domElementSoundSource.src = soundAsDataURI;

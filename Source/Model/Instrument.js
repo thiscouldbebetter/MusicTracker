@@ -109,8 +109,8 @@ var ThisCouldBeBetter;
                         samplesForChannel.push(sampleConverted);
                     }
                     var samplesForChannels = [samplesForChannel];
-                    var instrumentAsWavFile = new MusicTracker.WavFile("", // filePath,
-                    new MusicTracker.WavFileSamplingInfo(1, // formatCode
+                    var instrumentAsWavFile = new WavFile("", // filePath,
+                    new WavFileSamplingInfo(1, // formatCode
                     1, // numberOfChannels
                     MusicTracker.ModFile.SamplesPerSecond, MusicTracker.ModFile.BitsPerSample, null // ?
                     ), samplesForChannels);

@@ -58,5 +58,5 @@
 	"newLine": "LF"
   },
 
-  "exclude" : [ "Stub/Source/Imports.ts" ]
+  "exclude" : [ ]
 }

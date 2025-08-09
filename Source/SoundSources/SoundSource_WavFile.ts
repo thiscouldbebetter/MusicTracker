@@ -125,7 +125,7 @@ export class SoundSource_WavFile extends SoundSourceChild
 						(file: any, fileAsBytes: number[]) =>
 						{
 							soundSource.wavFile =
-								WavFile.fromBytes(file.name, fileAsBytes);
+								WavFile.fromNameAndBytes(file.name, fileAsBytes);
 						}
 					);
 				}

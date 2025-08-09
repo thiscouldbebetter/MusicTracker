@@ -19,12 +19,12 @@ var ThisCouldBeBetter;
                 return Tracker._instance;
             }
             static samplesToWavFile(fileName, samplesPerSecond, bitsPerSample, samplesToConvert) {
-                var samplingInfo = new MusicTracker.WavFileSamplingInfo(1, // formatCode
+                var samplingInfo = new WavFileSamplingInfo(1, // formatCode
                 1, // numberOfChannels
                 samplesPerSecond, bitsPerSample, null // ?
                 );
                 var samplesForWavFile = samplingInfo.samplesDenormalize(samplesToConvert);
-                var samplesAsWavFile = new MusicTracker.WavFile(fileName, samplingInfo, [samplesForWavFile] // samplesForChannels
+                var samplesAsWavFile = new WavFile(fileName, samplingInfo, [samplesForWavFile] // samplesForChannels
                 );
                 return samplesAsWavFile;
             }

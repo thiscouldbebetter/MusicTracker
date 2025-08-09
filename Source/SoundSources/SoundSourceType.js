@@ -105,7 +105,7 @@ var ThisCouldBeBetter;
                 });
                 this.WavFile = new SoundSourceType("WavFile", () => { return new MusicTracker.SoundSource_WavFile("C_3", null); }, (objectToSet) => {
                     Object.setPrototypeOf(objectToSet, MusicTracker.SoundSource_WavFile.prototype);
-                    MusicTracker.WavFile.objectPrototypesSet(objectToSet.wavFile);
+                    WavFile.objectPrototypesSet(objectToSet.wavFile);
                 });
                 this._All =
                     [

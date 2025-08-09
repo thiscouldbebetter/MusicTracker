@@ -48,41 +48,11 @@ var ThisCouldBeBetter;
             }
             // Serialization.
             compressForSerialization() {
-                //var wavFile = this.wavFile;
                 this._samplesNormalized = null;
-                /*
-                var samples = wavFile.samplesForChannels;
-                var bitsPerSample = wavFile.samplingInfo.bitsPerSample;
-        
-                var samplesAsBytes = [];
-        
-                if (bitsPerSample == 8)
-                {
-                    samplesAsBytes = samples;
-                }
-                else if (bitsPerSample == 16)
-                {
-                    samples.forEach
-                    (
-                        sample =>
-                        {
-                            samplesAsBytes.push( (sample >> 8) && 0xFF );
-                            samplesAsBytes.push(sample && 0xFF);
-                        }
-                    )
-                }
-                else
-                {
-                    throw new Error("WAV sampling rates greater than 16 not yet supported!");
-                }
-        
-                var samplesAsBinaryString = samplesAsBytes.map(x => String.fromCharCode(x) ).join("");
-        
-                var samplesAsBase64 = btoa(samplesAsBinaryString);
-                */
+                // todo - Convert samples to Base64.
             }
             decompressAfterDeserialization() {
-                // todo
+                // todo - Convert samples back from Base64.
             }
             // UI.
             uiClear() {
@@ -101,7 +71,7 @@ var ThisCouldBeBetter;
                         if (file != null) {
                             MusicTracker.FileHelper.loadFileAsBytes(file, (file, fileAsBytes) => {
                                 soundSource.wavFile =
-                                    MusicTracker.WavFile.fromBytes(file.name, fileAsBytes);
+                                    WavFile.fromNameAndBytes(file.name, fileAsBytes);
                             });
                         }
                     };
