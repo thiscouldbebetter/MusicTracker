@@ -175,7 +175,7 @@ var ThisCouldBeBetter;
             }
             toSound() {
                 var wavFile = this.toWavFile();
-                var sound = MusicTracker.SoundFromWavFile.fromWavFile(wavFile);
+                var sound = SoundFromWavFile.fromWavFile(wavFile);
                 return sound;
             }
             trimSamples(samplesToTrim) {

@@ -92,7 +92,7 @@ var ThisCouldBeBetter;
                     var buttonPlay = d.createElement("button");
                     buttonPlay.innerText = "Play";
                     buttonPlay.onclick = () => {
-                        var sound = MusicTracker.SoundFromWavFile.fromWavFile(soundSource.wavFile);
+                        var sound = SoundFromWavFile.fromWavFile(soundSource.wavFile);
                         sound.play();
                     };
                     this.divSoundSource.appendChild(buttonPlay);
