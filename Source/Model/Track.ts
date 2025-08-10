@@ -8,7 +8,7 @@ export class Track
 	notes: Note[];
 
 	cursorMover: any;
-	sound: Sound;
+	sound: WavFileViewer.Sound; // If the qualifying namespace is not included, downstream dependencies have name collisions.
 
 	constructor(instrumentName: string, notes: Note[])
 	{

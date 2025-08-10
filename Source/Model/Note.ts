@@ -10,7 +10,7 @@ export class Note
 	volumeAsPercentage: number;
 	durationInTicks: number;
 
-	sound: Sound;
+	sound: WavFileViewer.Sound; // If the qualifying namespace is not included, downstream dependencies have name collisions.
 
 	constructor
 	(

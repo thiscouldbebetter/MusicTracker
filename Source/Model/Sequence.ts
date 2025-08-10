@@ -12,7 +12,7 @@ export class Sequence
 	tickIndexSelected: number;
 
 	cursorMover: any;
-	sound: Sound;
+	sound: WavFileViewer.Sound; // If the qualifying namespace is not included, downstream dependencies have name collisions.
 
 	divSequence: any;
 	divTracks: any;

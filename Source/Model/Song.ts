@@ -19,7 +19,7 @@ export class Song
 	instrumentNameSelected: string;
 
 	cursorMover: any;
-	sound: Sound;
+	sound: WavFileViewer.Sound; // If the qualifying namespace is not included, downstream dependencies have name collisions.
 
 	divInstrument: any;
 	divSequenceSelected: any;
@@ -300,7 +300,7 @@ export class Song
 		return songAsSamples;
 	}
 
-	toSound(): Sound
+	toSound(): WavFileViewer.Sound
 	{
 		var wavFile = this.toWavFile();
 		var sound = SoundFromWavFile.fromWavFile(wavFile);
