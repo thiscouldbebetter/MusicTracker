@@ -498,7 +498,7 @@ export class Sequence
 			ticksForTracksToJoin.push(tickFromTrackAsString);
 		}
 
-		var tickAtIndexAsString = StringHelper.padLeft
+		var tickAtIndexAsString = StringHelper.padStart
 		(
 			"" + tickIndex, Sequence.TickIndexDigitsMax, "0"
 		);

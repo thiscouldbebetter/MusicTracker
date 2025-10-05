@@ -548,9 +548,9 @@ var ThisCouldBeBetter;
             // Event handlers.
             buttonInstrumentNew_Clicked(song) {
                 var now = new Date();
-                var nowAsString = MusicTracker.StringHelper.padLeft("" + now.getHours(), 2, "0")
-                    + MusicTracker.StringHelper.padLeft("" + now.getMinutes(), 2, "0")
-                    + MusicTracker.StringHelper.padLeft("" + now.getSeconds(), 2, "0");
+                var nowAsString = MusicTracker.StringHelper.padStart("" + now.getHours(), 2, "0")
+                    + MusicTracker.StringHelper.padStart("" + now.getMinutes(), 2, "0")
+                    + MusicTracker.StringHelper.padStart("" + now.getSeconds(), 2, "0");
                 var instrumentName = "Instrument" + nowAsString;
                 var instrument = MusicTracker.Instrument.default(instrumentName);
                 var d = document;

@@ -826,9 +826,9 @@ export class Song
 	{
 		var now = new Date();
 		var nowAsString =
-			StringHelper.padLeft("" + now.getHours(), 2, "0")
-			+ StringHelper.padLeft("" + now.getMinutes(), 2, "0")
-			+ StringHelper.padLeft("" + now.getSeconds(), 2, "0");
+			StringHelper.padStart("" + now.getHours(), 2, "0")
+			+ StringHelper.padStart("" + now.getMinutes(), 2, "0")
+			+ StringHelper.padStart("" + now.getSeconds(), 2, "0");
 		var instrumentName = "Instrument" + nowAsString;
 		var instrument = Instrument.default(instrumentName);
 		var d = document;

@@ -304,7 +304,7 @@ var ThisCouldBeBetter;
                     var tickFromTrackAsString = track.tickAtIndexAsString(this, tickIndex);
                     ticksForTracksToJoin.push(tickFromTrackAsString);
                 }
-                var tickAtIndexAsString = MusicTracker.StringHelper.padLeft("" + tickIndex, Sequence.TickIndexDigitsMax, "0");
+                var tickAtIndexAsString = MusicTracker.StringHelper.padStart("" + tickIndex, Sequence.TickIndexDigitsMax, "0");
                 MusicTracker.ArrayHelper.insertElementAt(ticksForTracksToJoin, tickAtIndexAsString, 0);
                 var tickAsString = ticksForTracksToJoin.join(Sequence.TrackDelimiter);
                 return tickAsString;

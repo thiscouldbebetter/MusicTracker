@@ -4,7 +4,7 @@ namespace ThisCouldBeBetter.MusicTracker
 
 export class StringHelper
 {
-	static padLeft
+	static padStart
 	(
 		stringToPad: string, lengthToPadTo: number, charToPadWith: string
 	): string

@@ -4,7 +4,7 @@ var ThisCouldBeBetter;
     var MusicTracker;
     (function (MusicTracker) {
         class StringHelper {
-            static padLeft(stringToPad, lengthToPadTo, charToPadWith) {
+            static padStart(stringToPad, lengthToPadTo, charToPadWith) {
                 var returnValue = stringToPad;
                 while (returnValue.length < lengthToPadTo) {
                     returnValue = charToPadWith + returnValue;

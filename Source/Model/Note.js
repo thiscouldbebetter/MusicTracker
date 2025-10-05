@@ -190,8 +190,8 @@ var ThisCouldBeBetter;
             }
             toString() {
                 var returnValue = this.pitchCode + this.octaveIndex + "-"
-                    + MusicTracker.StringHelper.padLeft("" + this.volumeAsPercentage, 2, "0") + "-"
-                    + MusicTracker.StringHelper.padLeft("" + this.durationInTicks, 4, "0");
+                    + MusicTracker.StringHelper.padStart("" + this.volumeAsPercentage, 2, "0") + "-"
+                    + MusicTracker.StringHelper.padStart("" + this.durationInTicks, 4, "0");
                 return returnValue;
             }
         }

@@ -36,9 +36,10 @@ export class ModFile
 		// and
 		// "https://www.ocf.berkeley.edu/~eek/index.html/tiny_examples/ptmod/ap12.html".
 
-		var reader = new ByteStreamBigEndian(bytes);
+		var reader = ByteStream.fromBytes(bytes);
+		var converter = new ByteConverter();
 
-		var titleRaw = reader.readString(20);
+		var titleRaw = converter.bytesToString(reader.readBytes(20) );
 		var title = StringHelper.replaceAll(titleRaw, "\0", "").trim();
 
 		var instruments = [];
@@ -48,13 +49,14 @@ export class ModFile
 		{
 			var instrumentNameRaw = StringHelper.replaceAll
 			(
-				reader.readString(22), "\0", ""
+				converter.bytesToString(reader.readBytes(22) ), "\0", ""
 			);
 
 			var instrumentName = instrumentNameRaw.trim().split(".").join("_");
 
 			// In "words". 2 bytes/word
-			var numberOfSamplesInInstrumentPlusOne = reader.readShort();
+			var numberOfSamplesInInstrumentPlusOne =
+				converter.bytesToIntegerSignedBE(reader.readBytes(2) );
 
 			var pitchShiftInSixteenthTones = reader.readByte(); // -8 to 7.
 			if (pitchShiftInSixteenthTones >= 8)
@@ -64,8 +66,8 @@ export class ModFile
 
 			var volume = reader.readByte(); // 0 to 64.
 
-			var repeatOffsetInWords = reader.readShort();
-			var repeatLengthInWords = reader.readShort();
+			var repeatOffsetInWords = converter.bytesToIntegerSignedBE(reader.readBytes(2) );
+			var repeatLengthInWords = converter.bytesToIntegerSignedBE(reader.readBytes(2) );
 
 			var instrument = new ModFileInstrument
 			(
@@ -95,7 +97,7 @@ export class ModFile
 		}
 		var numberOfSequenceDefns = sequenceIndexHighestSoFar + 1;
 
-		var signatureOrSequenceDefnsStart = reader.readString(4);
+		var signatureOrSequenceDefnsStart = converter.bytesToString(reader.readBytes(4) );
 		var signatureFor32InstrumentMode = "M.K."; // "Mahoney and Kaktus"
 
 		if (signatureOrSequenceDefnsStart == signatureFor32InstrumentMode)

@@ -318,8 +318,8 @@ export class Note
 	{
 		var returnValue =
 			this.pitchCode + this.octaveIndex + "-"
-			+ StringHelper.padLeft("" + this.volumeAsPercentage, 2, "0") + "-"
-			+ StringHelper.padLeft("" + this.durationInTicks, 4, "0");
+			+ StringHelper.padStart("" + this.volumeAsPercentage, 2, "0") + "-"
+			+ StringHelper.padStart("" + this.durationInTicks, 4, "0");
 		return returnValue
 	}
 }

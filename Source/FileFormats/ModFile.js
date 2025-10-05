@@ -16,23 +16,24 @@ var ThisCouldBeBetter;
                 // "https://www.aes.id.au/modformat.html"
                 // and
                 // "https://www.ocf.berkeley.edu/~eek/index.html/tiny_examples/ptmod/ap12.html".
-                var reader = new MusicTracker.ByteStreamBigEndian(bytes);
-                var titleRaw = reader.readString(20);
+                var reader = ByteStream.fromBytes(bytes);
+                var converter = new ByteConverter();
+                var titleRaw = converter.bytesToString(reader.readBytes(20));
                 var title = MusicTracker.StringHelper.replaceAll(titleRaw, "\0", "").trim();
                 var instruments = [];
                 var numberOfInstruments = 31; // Or maybe 15?
                 for (var i = 0; i < numberOfInstruments; i++) {
-                    var instrumentNameRaw = MusicTracker.StringHelper.replaceAll(reader.readString(22), "\0", "");
+                    var instrumentNameRaw = MusicTracker.StringHelper.replaceAll(converter.bytesToString(reader.readBytes(22)), "\0", "");
                     var instrumentName = instrumentNameRaw.trim().split(".").join("_");
                     // In "words". 2 bytes/word
-                    var numberOfSamplesInInstrumentPlusOne = reader.readShort();
+                    var numberOfSamplesInInstrumentPlusOne = converter.bytesToIntegerSignedBE(reader.readBytes(2));
                     var pitchShiftInSixteenthTones = reader.readByte(); // -8 to 7.
                     if (pitchShiftInSixteenthTones >= 8) {
                         // todo - Two's complement.
                     }
                     var volume = reader.readByte(); // 0 to 64.
-                    var repeatOffsetInWords = reader.readShort();
-                    var repeatLengthInWords = reader.readShort();
+                    var repeatOffsetInWords = converter.bytesToIntegerSignedBE(reader.readBytes(2));
+                    var repeatLengthInWords = converter.bytesToIntegerSignedBE(reader.readBytes(2));
                     var instrument = new ModFileInstrument(instrumentName, numberOfSamplesInInstrumentPlusOne, pitchShiftInSixteenthTones, volume, repeatOffsetInWords, repeatLengthInWords);
                     instruments.push(instrument);
                 }
@@ -48,7 +49,7 @@ var ThisCouldBeBetter;
                     }
                 }
                 var numberOfSequenceDefns = sequenceIndexHighestSoFar + 1;
-                var signatureOrSequenceDefnsStart = reader.readString(4);
+                var signatureOrSequenceDefnsStart = converter.bytesToString(reader.readBytes(4));
                 var signatureFor32InstrumentMode = "M.K."; // "Mahoney and Kaktus"
                 if (signatureOrSequenceDefnsStart == signatureFor32InstrumentMode) {
                     // Someone hacked the format to support 32 instruments, not 16.
